@@ -12,7 +12,12 @@
     <header class="header">
         <div class="container header-content">
             <h1 class="logo">KITALURO</h1>
-            <nav class="nav">
+            <button class="mobile-menu-toggle" aria-label="Abrir menú">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            <nav class="nav" id="main-nav">
                 <a href="{% url 'home' %}" class="nav-item">Inicio</a>
                 <a href="{% url 'productos:index' %}" class="nav-item">Productos</a>
                 <a href="#" class="nav-item">Nosotros</a>
@@ -28,6 +33,42 @@
     <footer class="footer">
         <p>M&C Dev Studio {{ now|date:"Y" }}. Todos los derechos reservados.</p>
     </footer>
+
+    <script>
+        // Menú móvil
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileToggle = document.querySelector('.mobile-menu-toggle');
+            const nav = document.querySelector('#main-nav');
+            const body = document.body;
+
+            if (mobileToggle && nav) {
+                mobileToggle.addEventListener('click', function() {
+                    nav.classList.toggle('nav-open');
+                    mobileToggle.classList.toggle('active');
+                    body.classList.toggle('nav-open');
+                });
+
+                // Cerrar menú al hacer clic en un enlace
+                const navItems = nav.querySelectorAll('.nav-item');
+                navItems.forEach(item => {
+                    item.addEventListener('click', function() {
+                        nav.classList.remove('nav-open');
+                        mobileToggle.classList.remove('active');
+                        body.classList.remove('nav-open');
+                    });
+                });
+
+                // Cerrar menú al hacer clic fuera
+                document.addEventListener('click', function(e) {
+                    if (!nav.contains(e.target) && !mobileToggle.contains(e.target)) {
+                        nav.classList.remove('nav-open');
+                        mobileToggle.classList.remove('active');
+                        body.classList.remove('nav-open');
+                    }
+                });
+            }
+        });
+    </script>
 
 </body>
 </html>

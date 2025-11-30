@@ -19,7 +19,13 @@
     </header>
 
     <div class="productos-layout">
-        <aside class="productos-sidebar">
+        <button class="sidebar-toggle mobile-only" aria-label="Filtros">
+            <span>Filtros</span>
+            <svg width="16" height="16" fill="currentColor">
+                <path d="M3 7h10l-3-3m0 6l3-3"/>
+            </svg>
+        </button>
+        <aside class="productos-sidebar" id="productos-sidebar">
             {% block productos_sidebar %}
             <!-- Sidebar con categorías, filtros adicionales, etc. -->
             <div class="sidebar-section">
@@ -38,77 +44,33 @@
         <main class="productos-content">
             {% block productos_content %}
             <div class="productos-grid">
-                <!-- Ejemplo de productos -->
+                <!-- Los productos se mostrarán aquí dinámicamente -->
+                {% comment %}
+                Ejemplo de estructura para cuando se agreguen productos reales:
+                {% for producto in productos %}
                 <div class="card">
                     <div class="card-image">
-                        <img src="{% static 'img/producto-ejemplo-1.jpg' %}" alt="Producto 1" onerror="this.style.display='none'">
+                        {% if producto.imagen %}
+                            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+                        {% endif %}
                     </div>
                     <div class="card-body">
-                        <h4 class="card-title">Smartphone Premium</h4>
-                        <p class="card-text">Teléfono inteligente con cámara de alta resolución y batería de larga duración.</p>
-                        <div class="card-price">$599.99</div>
-                        <button class="btn">Ver Detalles</button>
+                        <h4 class="card-title">{{ producto.nombre }}</h4>
+                        <p class="card-text">{{ producto.descripcion }}</p>
+                        <div class="card-price">${{ producto.precio }}</div>
+                        <a href="{% url 'productos:detalle' producto.id %}" class="btn btn-primary">Ver Detalles</a>
                     </div>
                 </div>
-
-                <div class="card">
-                    <div class="card-image">
-                        <img src="{% static 'img/producto-ejemplo-2.jpg' %}" alt="Producto 2" onerror="this.style.display='none'">
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title">Laptop Gaming</h4>
-                        <p class="card-text">Computadora portátil de alto rendimiento para gaming y trabajo profesional.</p>
-                        <div class="card-price">$1,299.99</div>
-                        <button class="btn">Ver Detalles</button>
-                    </div>
+                {% empty %}
+                <div class="text-center">
+                    <p>No hay productos disponibles en este momento.</p>
                 </div>
-
-                <div class="card">
-                    <div class="card-image">
-                        <img src="{% static 'img/producto-ejemplo-3.jpg' %}" alt="Producto 3" onerror="this.style.display='none'">
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title">Auriculares Inalámbricos</h4>
-                        <p class="card-text">Auriculares con cancelación de ruido y sonido de alta calidad.</p>
-                        <div class="card-price">$199.99</div>
-                        <button class="btn">Ver Detalles</button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-image">
-                        <img src="{% static 'img/producto-ejemplo-4.jpg' %}" alt="Producto 4" onerror="this.style.display='none'">
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title">Smart Watch</h4>
-                        <p class="card-text">Reloj inteligente con monitor de salud y notificaciones.</p>
-                        <div class="card-price">$299.99</div>
-                        <button class="btn">Ver Detalles</button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-image">
-                        <img src="{% static 'img/producto-ejemplo-5.jpg' %}" alt="Producto 5" onerror="this.style.display='none'">
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title">Tablet Pro</h4>
-                        <p class="card-text">Tablet de alta resolución ideal para trabajo creativo y entretenimiento.</p>
-                        <div class="card-price">$499.99</div>
-                        <button class="btn">Ver Detalles</button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-image">
-                        <img src="{% static 'img/producto-ejemplo-6.jpg' %}" alt="Producto 6" onerror="this.style.display='none'">
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title">Cámara Digital</h4>
-                        <p class="card-text">Cámara profesional con lentes intercambiables y grabación 4K.</p>
-                        <div class="card-price">$899.99</div>
-                        <button class="btn">Ver Detalles</button>
-                    </div>
+                {% endfor %}
+                {% endcomment %}
+                
+                <div class="text-center p-2xl">
+                    <h3>No hay productos disponibles</h3>
+                    <p class="text-secondary">Los productos se mostrarán aquí cuando estén disponibles.</p>
                 </div>
             </div>
 
@@ -128,4 +90,23 @@
         </main>
     </div>
 </div>
+
+<script>
+    // Sidebar móvil para productos
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebarToggle = document.querySelector('.sidebar-toggle');
+        const sidebar = document.querySelector('#productos-sidebar');
+
+        if (sidebarToggle && sidebar) {
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('sidebar-open');
+                const isOpen = sidebar.classList.contains('sidebar-open');
+                sidebarToggle.innerHTML = isOpen ? 
+                    '<span>Ocultar Filtros</span><svg width="16" height="16" fill="currentColor"><path d="M3 7h10l3 3m0-6l-3-3"/></svg>' :
+                    '<span>Filtros</span><svg width="16" height="16" fill="currentColor"><path d="M3 7h10l-3-3m0 6l3-3"/></svg>';
+            });
+        }
+    });
+</script>
+
 {% endblock %}

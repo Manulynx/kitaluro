@@ -1,38 +1,65 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Inicio | Kitaluro{% endblock %}
 
 {% block content %}
 <section class="hero">
-    <h2 class="hero-title">Bienvenido a Kitaluro</h2>
+    <h1 class="hero-title">Bienvenido a Kitaluro</h1>
     <p class="hero-subtitle">
         Catálogo moderno, productos confiables. Calidad sin complicaciones.
     </p>
+    <div class="flex justify-center gap-md mt-xl">
+        <a href="{% url 'productos:index' %}" class="btn btn-primary btn-lg">Ver Productos</a>
+        <a href="#" class="btn btn-outline btn-lg">Conocer Más</a>
+    </div>
 </section>
 
-<section class="section">
-    <h3 class="section-title">Artículos Destacados</h3>
+<section class="section container">
+    <h2 class="section-title">Artículos Destacados</h2>
+    <p class="section-subtitle">Descubre nuestra selección de productos de calidad</p>
+    
     <div class="card-grid">
-
-        <!-- Ejemplo de tarjeta -->
+        <!-- Ejemplo de tarjetas -->
         <div class="card">
-            <div class="card-image"></div>
+            <div class="card-image">
+                <img src="{% static 'img/producto-1.jpg' %}" alt="Producto 1" onerror="this.style.display='none'">
+            </div>
             <div class="card-body">
-                <h4 class="card-title">Nombre del Producto</h4>
-                <p class="card-text">Descripción breve del producto.</p>
-                <button class="btn">Ver más</button>
+                <h4 class="card-title">Producto Premium</h4>
+                <p class="card-text">Descripción breve del producto destacado con las mejores características.</p>
+                <div class="card-price">$299.99</div>
+                <a href="{% url 'productos:index' %}" class="btn btn-primary">Ver Detalles</a>
             </div>
         </div>
 
         <div class="card">
-            <div class="card-image"></div>
+            <div class="card-image">
+                <img src="{% static 'img/producto-2.jpg' %}" alt="Producto 2" onerror="this.style.display='none'">
+            </div>
             <div class="card-body">
-                <h4 class="card-title">Producto Ejemplo 2</h4>
-                <p class="card-text">Otra descripción absurda pero útil.</p>
-                <button class="btn">Ver más</button>
+                <h4 class="card-title">Producto Especial</h4>
+                <p class="card-text">Calidad excepcional y diseño moderno para usuarios exigentes.</p>
+                <div class="card-price">$449.99</div>
+                <a href="{% url 'productos:index' %}" class="btn btn-primary">Ver Detalles</a>
             </div>
         </div>
 
+        <div class="card">
+            <div class="card-image">
+                <img src="{% static 'img/producto-3.jpg' %}" alt="Producto 3" onerror="this.style.display='none'">
+            </div>
+            <div class="card-body">
+                <h4 class="card-title">Edición Limitada</h4>
+                <p class="card-text">Exclusividad y rendimiento en un solo producto increíble.</p>
+                <div class="card-price">$599.99</div>
+                <a href="{% url 'productos:index' %}" class="btn btn-primary">Ver Detalles</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-2xl">
+        <a href="{% url 'productos:index' %}" class="btn btn-outline btn-lg">Ver Todos los Productos</a>
     </div>
 </section>
 {% endblock %}
