@@ -8,7 +8,7 @@
     <header class="productos-header">
         <div class="header-top">
             <h2 class="productos-title">{% block page_title %}Productos{% endblock %}</h2>
-            <div class="results-count" id="results-count">Cargando...</div>
+            <div class="results-count" id="results-count">{{ productos|length }} producto{{ productos|length|pluralize }} encontrado{{ productos|length|pluralize }}</div>
         </div>
         
         <div class="productos-controls">
@@ -111,11 +111,50 @@
             {% block productos_content %}
             <!-- Cuadrícula de productos optimizada -->
             <div class="productos-grid" id="productos-grid" data-view="grid">
-                <!-- Productos se cargan dinámicamente -->
+                {% for producto in productos %}
+                <a href="#" class="product-card" data-product-id="{{ producto.id }}">
+                    <div class="product-image">
+                        <div class="image-placeholder">🔧</div>
+                        {% if producto.medias.first %}
+                            <img src="{{ producto.medias.first.imagen.url }}" alt="{{ producto.nombre }}" class="product-img" loading="lazy">
+                        {% elif producto.imagenes.first %}
+                            <img src="{{ producto.imagenes.first.imagen.url }}" alt="{{ producto.nombre }}" class="product-img" loading="lazy">
+                        {% else %}
+                            <img data-src="/static/img/no-image.webp" alt="{{ producto.nombre }}" class="product-img" loading="lazy">
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">{{ producto.nombre }}</h3>
+                        <div class="product-rating">
+                            <span class="stars">{% with avg_rating=producto.valoraciones.all|length %}{% if avg_rating %}★★★★☆{% else %}☆☆☆☆☆{% endif %}{% endwith %}</span>
+                            <span class="rating-value">{% with avg_rating=producto.valoraciones.all|length %}{% if avg_rating %}4.{{ avg_rating }}{% else %}0.0{% endif %}{% endwith %}</span>
+                        </div>
+                        <div class="product-price">
+                            {% if producto.precio_oferta %}
+                                <span class="price-original">${{ producto.precio }}</span>
+                                <span class="price-sale">${{ producto.precio_oferta }}</span>
+                            {% else %}
+                                ${{ producto.precio }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="product-actions">
+                        <button class="btn-quick-add" onclick="quickAdd({{ producto.id }}, event)" aria-label="Añadir rápido">
+                            🛒
+                        </button>
+                    </div>
+                </a>
+                {% empty %}
+                    <div class="no-products" style="grid-column: 1/-1; text-align: center; padding: 2rem;">
+                        <div class="empty-icon">📦</div>
+                        <h3>No hay productos disponibles</h3>
+                        <p>Agrega productos desde el panel de administración</p>
+                    </div>
+                {% endfor %}
             </div>
             
             <!-- Estado de carga -->
-            <div class="loading-state" id="loading-state">
+            <div class="loading-state" id="loading-state" style="display: none;">
                 <div class="loading-content">
                     <div class="loading-spinner">⟳</div>
                     <p>Cargando productos...</p>
@@ -175,20 +214,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Vista
     const viewBtns = document.querySelectorAll('.view-btn');
     
-    // Simular datos de productos (reemplazar con API real)
-    const sampleProducts = [
-        {id: 1, name: 'Smartphone Pro', price: 299, rating: 4.5, category: 'electronics', image: '/static/img/phone.webp'},
-        {id: 2, name: 'Camiseta Algodón', price: 25, rating: 4.2, category: 'clothing', image: '/static/img/shirt.webp'},
-        {id: 3, name: 'Cafetera Express', price: 89, rating: 4.7, category: 'home', image: '/static/img/coffee.webp'},
-        {id: 4, name: 'Auriculares BT', price: 59, rating: 4.1, category: 'electronics', image: '/static/img/headphones.webp'},
-        {id: 5, name: 'Pelota Fútbol', price: 35, rating: 4.4, category: 'sports', image: '/static/img/ball.webp'},
-        {id: 6, name: 'Tablet 10"', price: 199, rating: 4.3, category: 'electronics', image: '/static/img/tablet.webp'}
-    ];
+    // Productos cargados desde Django template
+    const totalProducts = {{ productos|length }};
+    const hasProducts = totalProducts > 0;
     
     // Inicializar
     function init() {
-        loadProducts(true);
         setupEventListeners();
+        // Los productos ya están renderizados desde Django
+        if (hasProducts) {
+            hideLoading();
+            hideEmptyState();
+        } else {
+            hideLoading();
+            showEmptyState();
+        }
     }
     
     // Event listeners
@@ -226,35 +266,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Cargar productos
+    // Función simplificada - los productos se cargan desde Django
     function loadProducts(reset = false) {
-        if (isLoading) return;
-        
-        isLoading = true;
-        showLoading();
-        
-        // Simular delay de red (remover en producción)
-        setTimeout(() => {
-            const startIndex = reset ? 0 : (currentPage - 1) * 6;
-            const endIndex = startIndex + 6;
-            const products = sampleProducts.slice(startIndex, endIndex);
-            
-            if (reset) {
-                grid.innerHTML = '';
-                currentPage = 1;
-            }
-            
-            if (products.length === 0) {
-                showEmptyState();
-            } else {
-                renderProducts(products, !reset);
-                updateLoadMoreState(endIndex, sampleProducts.length);
-                updateResultsCount(sampleProducts.length);
-            }
-            
-            hideLoading();
-            isLoading = false;
-        }, reset ? 800 : 400);
+        // Por ahora los productos se renderizan directamente desde Django
+        // Esta función se puede expandir más tarde para AJAX/paginación
+        if (hasProducts) {
+            hideEmptyState();
+            // Configurar lazy loading para imágenes existentes
+            const images = grid.querySelectorAll('img[data-src]');
+            images.forEach(img => lazyLoadImage(img));
+        } else {
+            showEmptyState();
+        }
+        hideLoading();
     }
     
     // Renderizar productos

@@ -43,3 +43,22 @@ def index(request):
         'busqueda': busqueda,
     }
     return render(request, 'index.html', context)
+
+
+def detalle(request, slug):
+    """Vista para mostrar el detalle de un producto"""
+    producto = get_object_or_404(Producto, slug=slug, activo=True)
+    
+    # Productos relacionados (misma categoría)
+    productos_relacionados = Producto.objects.filter(
+        categoria=producto.categoria, 
+        activo=True, 
+        disponible=True
+    ).exclude(id=producto.id)[:4]
+    
+    context = {
+        'page_title': producto.nombre,
+        'producto': producto,
+        'productos_relacionados': productos_relacionados,
+    }
+    return render(request, 'detalle.html', context)
