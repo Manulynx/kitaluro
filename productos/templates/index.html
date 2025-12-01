@@ -6,148 +6,434 @@
 {% block content %}
 <div class="productos-container">
     <header class="productos-header">
-        <h2 class="productos-title">{% block page_title %}Nuestros Productos{% endblock %}</h2>
-        <div class="productos-filters">
-            {% block productos_filters %}
-            <!-- Filtros y barra de búsqueda -->
-            <form method="get" action="{% url 'productos:index' %}" class="search-bar">
-                <input type="text" name="q" placeholder="Buscar productos..." class="search-input" value="{{ busqueda|default:'' }}">
-                <button type="submit" class="search-btn">Buscar</button>
-            </form>
-            {% endblock %}
+        <div class="header-top">
+            <h2 class="productos-title">{% block page_title %}Productos{% endblock %}</h2>
+            <div class="results-count" id="results-count">Cargando...</div>
+        </div>
+        
+        <div class="productos-controls">
+            <!-- Filtros móviles ocultos por defecto -->
+            <button class="filters-toggle mobile-only" id="filters-toggle" aria-label="Filtros">
+                🔍 Filtros
+            </button>
+            
+            <!-- Ordenación simple con select nativo -->
+            <div class="sort-container">
+                <label for="sort-select" class="sort-label">Ordenar:</label>
+                <select id="sort-select" class="sort-select">
+                    <option value="relevance">Relevancia</option>
+                    <option value="price-asc">Precio: Menor a Mayor</option>
+                    <option value="price-desc">Precio: Mayor a Menor</option>
+                    <option value="rating">Mejor Valorados</option>
+                    <option value="newest">Más Nuevos</option>
+                </select>
+            </div>
+            
+            <!-- Vista de cuadrícula/lista -->
+            <div class="view-toggle desktop-only">
+                <button class="view-btn active" data-view="grid" aria-label="Vista cuadrícula">⊞</button>
+                <button class="view-btn" data-view="list" aria-label="Vista lista">☰</button>
+            </div>
         </div>
     </header>
 
-    <div class="productos-layout">
-        <button class="sidebar-toggle mobile-only" aria-label="Filtros">
-            <span>Filtros</span>
-            <svg width="16" height="16" fill="currentColor">
-                <path d="M3 7h10l-3-3m0 6l3-3"/>
-            </svg>
-        </button>
-        <aside class="productos-sidebar" id="productos-sidebar">
-            {% block productos_sidebar %}
-            <!-- Sidebar con categorías, filtros adicionales, etc. -->
-            <div class="sidebar-section">
-                <h3>Categorías</h3>
-                <ul class="category-list">
-                    <li><a href="{% url 'productos:index' %}" class="category-item {% if not categoria_actual %}active{% endif %}">Todas</a></li>
-                    {% for categoria in categorias %}
-                    <li><a href="?categoria={{ categoria.slug }}" class="category-item {% if categoria_actual == categoria.slug %}active{% endif %}">{{ categoria.nombre }}</a></li>
-                    {% endfor %}
-                </ul>
+    <!-- Overlay para filtros móviles -->
+    <div class="filters-overlay" id="filters-overlay"></div>
+    
+    <!-- Modal/Drawer de filtros móviles -->
+    <div class="filters-modal" id="filters-modal">
+        <div class="filters-header">
+            <h3>Filtros</h3>
+            <button class="filters-close" id="filters-close">✕</button>
+        </div>
+        <div class="filters-content">
+            <!-- Categorías -->
+            <div class="filter-group">
+                <h4>Categorías</h4>
+                <div class="filter-options">
+                    <label class="filter-option">
+                        <input type="checkbox" name="category" value="all" checked>
+                        <span>Todas (125)</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="category" value="electronics">
+                        <span>Electrónicos (45)</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="category" value="clothing">
+                        <span>Ropa (32)</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="category" value="home">
+                        <span>Hogar (28)</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="checkbox" name="category" value="sports">
+                        <span>Deportes (20)</span>
+                    </label>
+                </div>
             </div>
             
-            <div class="sidebar-section">
-                <h3>Marcas</h3>
-                <ul class="category-list">
-                    {% for marca in marcas %}
-                    <li><a href="?marca={{ marca.id }}" class="category-item">{{ marca.nombre }}</a></li>
-                    {% endfor %}
-                </ul>
+            <!-- Rango de precio simple -->
+            <div class="filter-group">
+                <h4>Precio</h4>
+                <div class="price-inputs">
+                    <input type="number" placeholder="Mín" class="price-input" id="price-min">
+                    <span>-</span>
+                    <input type="number" placeholder="Máx" class="price-input" id="price-max">
+                </div>
             </div>
-            {% endblock %}
-        </aside>
+            
+            <!-- Valoración -->
+            <div class="filter-group">
+                <h4>Valoración</h4>
+                <div class="filter-options">
+                    <label class="filter-option">
+                        <input type="radio" name="rating" value="4">
+                        <span>★★★★☆ 4+ estrellas</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="rating" value="3">
+                        <span>★★★☆☆ 3+ estrellas</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="filters-actions">
+            <button class="btn-clear" id="clear-filters">Limpiar</button>
+            <button class="btn-apply" id="apply-filters">Aplicar Filtros</button>
+        </div>
+    </div>
+    
+    <div class="productos-layout">
 
         <main class="productos-content">
             {% block productos_content %}
-            <div class="productos-grid">
-                {% for producto in productos %}
-                <div class="card">
-                    <div class="card-image">
-                        {% with producto.medias.first as media %}
-                            {% if media and media.imagen %}
-                                <img src="{{ media.imagen.url }}" alt="{{ media.alt_text|default:producto.nombre }}">
-                            {% else %}
-                                <div style="background: #f0f0f0; height: 200px; display: flex; align-items: center; justify-content: center; color: #999;">
-                                    Sin imagen
-                                </div>
-                            {% endif %}
-                        {% endwith %}
-                        {% if producto.tiene_descuento %}
-                        <span class="badge badge-sale">-{{ producto.porcentaje_descuento }}%</span>
-                        {% endif %}
-                        {% if producto.destacado %}
-                        <span class="badge badge-featured">Destacado</span>
-                        {% endif %}
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title">{{ producto.nombre }}</h4>
-                        <p class="card-text">{{ producto.descripcion_corta }}</p>
-                        <div class="card-footer">
-                            <div class="price-container">
-                                {% if producto.tiene_descuento %}
-                                <span class="price-old">${{ producto.precio }}</span>
-                                <span class="price-current">${{ producto.precio_oferta }}</span>
-                                {% else %}
-                                <span class="price-current">${{ producto.precio }}</span>
-                                {% endif %}
-                            </div>
-                            {% if producto.stock > 0 %}
-                            <a href="#" class="btn btn-primary">Ver Detalles</a>
-                            {% else %}
-                            <span class="badge badge-out-stock">Agotado</span>
-                            {% endif %}
-                        </div>
-                    </div>
+            <!-- Cuadrícula de productos optimizada -->
+            <div class="productos-grid" id="productos-grid" data-view="grid">
+                <!-- Productos se cargan dinámicamente -->
+            </div>
+            
+            <!-- Estado de carga -->
+            <div class="loading-state" id="loading-state">
+                <div class="loading-content">
+                    <div class="loading-spinner">⟳</div>
+                    <p>Cargando productos...</p>
                 </div>
-                {% empty %}
-                <div class="text-center p-2xl" style="grid-column: 1 / -1;">
-                    <h3>No hay productos disponibles</h3>
-                    <p class="text-secondary">{% if busqueda %}No se encontraron productos para "{{ busqueda }}".{% else %}Los productos se mostrarán aquí cuando estén disponibles.{% endif %}</p>
+            </div>
+            
+            <!-- Estado vacío -->
+            <div class="empty-state" id="empty-state" style="display: none;">
+                <div class="empty-content">
+                    <div class="empty-icon">📦</div>
+                    <h3>No se encontraron productos</h3>
+                    <p>Prueba ajustar los filtros o términos de búsqueda</p>
+                    <button class="btn-clear-all" onclick="clearAllFilters()">Limpiar filtros</button>
                 </div>
-                {% endfor %}
+            </div>
+            
+            <!-- Botón cargar más -->
+            <div class="load-more-container" id="load-more-container" style="display: none;">
+                <button class="btn-load-more" id="btn-load-more">Cargar Más Productos</button>
+                <div class="load-more-info" id="load-more-info">Mostrando 20 de 125 productos</div>
             </div>
 
-            <!-- Paginación -->
-            {% block productos_pagination %}
-            {% if productos.has_other_pages %}
-            <div class="pagination-container">
-                <nav class="pagination">
-                    {% if productos.has_previous %}
-                    <a href="?page={{ productos.previous_page_number }}{% if categoria_actual %}&categoria={{ categoria_actual }}{% endif %}{% if busqueda %}&q={{ busqueda }}{% endif %}" class="page-link">« Anterior</a>
-                    {% else %}
-                    <span class="page-link disabled">« Anterior</span>
-                    {% endif %}
-                    
-                    {% for num in productos.paginator.page_range %}
-                        {% if productos.number == num %}
-                        <span class="page-link active">{{ num }}</span>
-                        {% elif num > productos.number|add:'-3' and num < productos.number|add:'3' %}
-                        <a href="?page={{ num }}{% if categoria_actual %}&categoria={{ categoria_actual }}{% endif %}{% if busqueda %}&q={{ busqueda }}{% endif %}" class="page-link">{{ num }}</a>
-                        {% endif %}
-                    {% endfor %}
-                    
-                    {% if productos.has_next %}
-                    <a href="?page={{ productos.next_page_number }}{% if categoria_actual %}&categoria={{ categoria_actual }}{% endif %}{% if busqueda %}&q={{ busqueda }}{% endif %}" class="page-link">Siguiente »</a>
-                    {% else %}
-                    <span class="page-link disabled">Siguiente »</span>
-                    {% endif %}
-                </nav>
-            </div>
-            {% endif %}
-            {% endblock %}
             {% endblock %}
         </main>
     </div>
 </div>
 
 <script>
-    // Sidebar móvil para productos
-    document.addEventListener('DOMContentLoaded', function() {
-        const sidebarToggle = document.querySelector('.sidebar-toggle');
-        const sidebar = document.querySelector('#productos-sidebar');
-
-        if (sidebarToggle && sidebar) {
-            sidebarToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('sidebar-open');
-                const isOpen = sidebar.classList.contains('sidebar-open');
-                sidebarToggle.innerHTML = isOpen ? 
-                    '<span>Ocultar Filtros</span><svg width="16" height="16" fill="currentColor"><path d="M3 7h10l3 3m0-6l-3-3"/></svg>' :
-                    '<span>Filtros</span><svg width="16" height="16" fill="currentColor"><path d="M3 7h10l-3-3m0 6l3-3"/></svg>';
-            });
+// PLP Ultra-Optimizada para Low-Data
+document.addEventListener('DOMContentLoaded', function() {
+    // Estado de la aplicación
+    let currentPage = 1;
+    let totalProducts = 0;
+    let isLoading = false;
+    let currentFilters = {};
+    
+    // Elementos DOM
+    const grid = document.getElementById('productos-grid');
+    const loadingState = document.getElementById('loading-state');
+    const emptyState = document.getElementById('empty-state');
+    const loadMoreContainer = document.getElementById('load-more-container');
+    const loadMoreBtn = document.getElementById('btn-load-more');
+    const loadMoreInfo = document.getElementById('load-more-info');
+    const resultsCount = document.getElementById('results-count');
+    
+    // Filtros móviles
+    const filtersToggle = document.getElementById('filters-toggle');
+    const filtersModal = document.getElementById('filters-modal');
+    const filtersOverlay = document.getElementById('filters-overlay');
+    const filtersClose = document.getElementById('filters-close');
+    const applyFilters = document.getElementById('apply-filters');
+    const clearFilters = document.getElementById('clear-filters');
+    
+    // Ordenación
+    const sortSelect = document.getElementById('sort-select');
+    
+    // Vista
+    const viewBtns = document.querySelectorAll('.view-btn');
+    
+    // Simular datos de productos (reemplazar con API real)
+    const sampleProducts = [
+        {id: 1, name: 'Smartphone Pro', price: 299, rating: 4.5, category: 'electronics', image: '/static/img/phone.webp'},
+        {id: 2, name: 'Camiseta Algodón', price: 25, rating: 4.2, category: 'clothing', image: '/static/img/shirt.webp'},
+        {id: 3, name: 'Cafetera Express', price: 89, rating: 4.7, category: 'home', image: '/static/img/coffee.webp'},
+        {id: 4, name: 'Auriculares BT', price: 59, rating: 4.1, category: 'electronics', image: '/static/img/headphones.webp'},
+        {id: 5, name: 'Pelota Fútbol', price: 35, rating: 4.4, category: 'sports', image: '/static/img/ball.webp'},
+        {id: 6, name: 'Tablet 10"', price: 199, rating: 4.3, category: 'electronics', image: '/static/img/tablet.webp'}
+    ];
+    
+    // Inicializar
+    function init() {
+        loadProducts(true);
+        setupEventListeners();
+    }
+    
+    // Event listeners
+    function setupEventListeners() {
+        // Filtros móviles
+        if (filtersToggle) {
+            filtersToggle.addEventListener('click', () => openFiltersModal());
         }
-    });
+        if (filtersClose) {
+            filtersClose.addEventListener('click', () => closeFiltersModal());
+        }
+        if (filtersOverlay) {
+            filtersOverlay.addEventListener('click', () => closeFiltersModal());
+        }
+        if (applyFilters) {
+            applyFilters.addEventListener('click', () => applyCurrentFilters());
+        }
+        if (clearFilters) {
+            clearFilters.addEventListener('click', () => clearAllFilters());
+        }
+        
+        // Cargar más
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', () => loadMoreProducts());
+        }
+        
+        // Ordenación
+        if (sortSelect) {
+            sortSelect.addEventListener('change', () => handleSortChange());
+        }
+        
+        // Vista
+        viewBtns.forEach(btn => {
+            btn.addEventListener('click', () => toggleView(btn.dataset.view));
+        });
+    }
+    
+    // Cargar productos
+    function loadProducts(reset = false) {
+        if (isLoading) return;
+        
+        isLoading = true;
+        showLoading();
+        
+        // Simular delay de red (remover en producción)
+        setTimeout(() => {
+            const startIndex = reset ? 0 : (currentPage - 1) * 6;
+            const endIndex = startIndex + 6;
+            const products = sampleProducts.slice(startIndex, endIndex);
+            
+            if (reset) {
+                grid.innerHTML = '';
+                currentPage = 1;
+            }
+            
+            if (products.length === 0) {
+                showEmptyState();
+            } else {
+                renderProducts(products, !reset);
+                updateLoadMoreState(endIndex, sampleProducts.length);
+                updateResultsCount(sampleProducts.length);
+            }
+            
+            hideLoading();
+            isLoading = false;
+        }, reset ? 800 : 400);
+    }
+    
+    // Renderizar productos
+    function renderProducts(products, append = false) {
+        const html = products.map(product => createProductCard(product)).join('');
+        
+        if (append) {
+            grid.insertAdjacentHTML('beforeend', html);
+        } else {
+            grid.innerHTML = html;
+        }
+        
+        // Lazy loading de imágenes
+        const images = grid.querySelectorAll('img[data-src]');
+        images.forEach(img => lazyLoadImage(img));
+        
+        hideEmptyState();
+    }
+    
+    // Crear tarjeta de producto optimizada
+    function createProductCard(product) {
+        return `
+            <a href="/productos/${product.id}/" class="product-card" data-product-id="${product.id}">
+                <div class="product-image">
+                    <div class="image-placeholder">📦</div>
+                    <img data-src="${product.image}" alt="${product.name}" class="product-img" loading="lazy">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">${product.name}</h3>
+                    <div class="product-rating">
+                        <span class="stars">${generateStars(product.rating)}</span>
+                        <span class="rating-value">${product.rating}</span>
+                    </div>
+                    <div class="product-price">$${product.price}</div>
+                </div>
+                <div class="product-actions">
+                    <button class="btn-quick-add" onclick="quickAdd(${product.id}, event)" aria-label="Añadir rápido">
+                        🛒
+                    </button>
+                </div>
+            </a>
+        `;
+    }
+    
+    // Generar estrellas simples
+    function generateStars(rating) {
+        const full = Math.floor(rating);
+        const half = rating % 1 >= 0.5 ? 1 : 0;
+        const empty = 5 - full - half;
+        return '★'.repeat(full) + (half ? '☆' : '') + '☆'.repeat(empty - half);
+    }
+    
+    // Lazy loading de imágenes
+    function lazyLoadImage(img) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const image = entry.target;
+                    image.src = image.dataset.src;
+                    image.onload = () => {
+                        image.classList.add('loaded');
+                        image.previousElementSibling.style.display = 'none';
+                    };
+                    observer.unobserve(image);
+                }
+            });
+        });
+        observer.observe(img);
+    }
+    
+    // Estados de UI
+    function showLoading() {
+        if (loadingState) loadingState.style.display = 'flex';
+    }
+    
+    function hideLoading() {
+        if (loadingState) loadingState.style.display = 'none';
+    }
+    
+    function showEmptyState() {
+        if (emptyState) emptyState.style.display = 'flex';
+        if (loadMoreContainer) loadMoreContainer.style.display = 'none';
+    }
+    
+    function hideEmptyState() {
+        if (emptyState) emptyState.style.display = 'none';
+    }
+    
+    function updateLoadMoreState(shown, total) {
+        if (shown >= total) {
+            loadMoreContainer.style.display = 'none';
+        } else {
+            loadMoreContainer.style.display = 'block';
+            loadMoreInfo.textContent = `Mostrando ${shown} de ${total} productos`;
+        }
+    }
+    
+    function updateResultsCount(count) {
+        if (resultsCount) {
+            resultsCount.textContent = `${count} productos encontrados`;
+        }
+    }
+    
+    // Filtros móviles
+    function openFiltersModal() {
+        filtersModal.classList.add('active');
+        filtersOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeFiltersModal() {
+        filtersModal.classList.remove('active');
+        filtersOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    function applyCurrentFilters() {
+        // Aplicar filtros y recargar productos
+        loadProducts(true);
+        closeFiltersModal();
+    }
+    
+    // Funciones globales
+    window.clearAllFilters = function() {
+        // Limpiar todos los filtros
+        const checkboxes = filtersModal.querySelectorAll('input[type="checkbox"]');
+        const radios = filtersModal.querySelectorAll('input[type="radio"]');
+        const inputs = filtersModal.querySelectorAll('input[type="number"]');
+        
+        checkboxes.forEach(cb => cb.checked = cb.value === 'all');
+        radios.forEach(radio => radio.checked = false);
+        inputs.forEach(input => input.value = '');
+        
+        applyCurrentFilters();
+    };
+    
+    window.quickAdd = function(productId, event) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        // Simular añadir al carrito
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✓';
+        btn.style.background = '#dc2626';
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.style.background = '';
+        }, 1000);
+        
+        // Actualizar contador del carrito
+        const cartCount = document.getElementById('cart-count');
+        if (cartCount) {
+            const current = parseInt(cartCount.textContent || '0');
+            cartCount.textContent = current + 1;
+            cartCount.style.display = 'inline';
+            localStorage.setItem('cartCount', current + 1);
+        }
+    };
+    
+    function loadMoreProducts() {
+        currentPage++;
+        loadProducts(false);
+    }
+    
+    function handleSortChange() {
+        loadProducts(true);
+    }
+    
+    function toggleView(view) {
+        viewBtns.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        grid.dataset.view = view;
+    }
+    
+    // Inicializar aplicación
+    init();
+});
 </script>
 
 {% endblock %}

@@ -1,65 +1,142 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Inicio | Kitaluro{% endblock %}
+{% block title %}Kitaluro - Compras Seguras en Cuba{% endblock %}
 
 {% block content %}
-<section class="hero">
-    <h1 class="hero-title">Bienvenido a Kitaluro</h1>
-    <p class="hero-subtitle">
-        Catálogo moderno, productos confiables. Calidad sin complicaciones.
-    </p>
-    <div class="flex justify-center gap-md mt-xl">
-        <a href="{% url 'productos:index' %}" class="btn btn-primary btn-lg">Ver Productos</a>
-        <a href="#" class="btn btn-outline btn-lg">Conocer Más</a>
+<!-- Banner promocional estático -->
+<section class="hero-banner">
+    <div class="banner-content">
+        <h1 class="banner-title">Productos de Calidad para Cuba</h1>
+        <p class="banner-subtitle">Envíos seguros • Pagos internacionales • Garantía real</p>
+        <a href="{% url 'productos:index' %}" class="cta-primary">Comprar Ahora</a>
+    </div>
+    <div class="banner-image" style="background-color: #1e40af; min-height: 200px; border-radius: 8px;"></div>
+</section>
+
+<!-- Acceso directo a categorías -->
+<section class="categories-quick">
+    <div class="container">
+        <div class="categories-grid">
+            <a href="{% url 'productos:index' %}" class="category-card">
+                <div class="category-icon">🔨</div>
+                <span class="category-name">Ferramenta</span>
+            </a>
+            <a href="{% url 'productos:index' %}" class="category-card">
+                <div class="category-icon">🔧</div>
+                <span class="category-name">Instrumenta</span>
+            </a>
+            <a href="{% url 'productos:index' %}" class="category-card">
+                <div class="category-icon">⚙️</div>
+                <span class="category-name">Mechanica</span>
+            </a>
+            <a href="{% url 'productos:index' %}" class="category-card">
+                <div class="category-icon">🪚</div>
+                <span class="category-name">Constructio</span>
+            </a>
+        </div>
     </div>
 </section>
 
-<section class="section container">
-    <h2 class="section-title">Artículos Destacados</h2>
-    <p class="section-subtitle">Descubre nuestra selección de productos de calidad</p>
-    
-    <div class="card-grid">
-        <!-- Ejemplo de tarjetas -->
-        <div class="card">
-            <div class="card-image">
-                <img src="{% static 'img/producto-1.jpg' %}" alt="Producto 1" onerror="this.style.display='none'">
-            </div>
-            <div class="card-body">
-                <h4 class="card-title">Producto Premium</h4>
-                <p class="card-text">Descripción breve del producto destacado con las mejores características.</p>
-                <div class="card-price">$299.99</div>
-                <a href="{% url 'productos:index' %}" class="btn btn-primary">Ver Detalles</a>
+<!-- Productos destacados minimalistas -->
+<section class="featured-products">
+    <div class="container">
+        <h2 class="section-title-minimal">Productos Destacados</h2>
+        
+        <div class="products-minimal" id="featured-products">
+            <!-- Las tarjetas se cargarán con lazy loading -->
+            <div class="product-placeholder">
+                <div class="placeholder-content">
+                    <h3>Cargando productos...</h3>
+                    <p>Optimizando para conexión lenta</p>
+                </div>
             </div>
         </div>
-
-        <div class="card">
-            <div class="card-image">
-                <img src="{% static 'img/producto-2.jpg' %}" alt="Producto 2" onerror="this.style.display='none'">
-            </div>
-            <div class="card-body">
-                <h4 class="card-title">Producto Especial</h4>
-                <p class="card-text">Calidad excepcional y diseño moderno para usuarios exigentes.</p>
-                <div class="card-price">$449.99</div>
-                <a href="{% url 'productos:index' %}" class="btn btn-primary">Ver Detalles</a>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-image">
-                <img src="{% static 'img/producto-3.jpg' %}" alt="Producto 3" onerror="this.style.display='none'">
-            </div>
-            <div class="card-body">
-                <h4 class="card-title">Edición Limitada</h4>
-                <p class="card-text">Exclusividad y rendimiento en un solo producto increíble.</p>
-                <div class="card-price">$599.99</div>
-                <a href="{% url 'productos:index' %}" class="btn btn-primary">Ver Detalles</a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="text-center mt-2xl">
-        <a href="{% url 'productos:index' %}" class="btn btn-outline btn-lg">Ver Todos los Productos</a>
     </div>
 </section>
+
+<!-- Prueba social concisa -->
+<section class="trust-section">
+    <div class="container">
+        <div class="trust-stats">
+            <div class="trust-item">
+                <strong class="trust-number">500+</strong>
+                <span class="trust-label">Pedidos entregados</span>
+            </div>
+            <div class="trust-item">
+                <strong class="trust-number">4.8★</strong>
+                <span class="trust-label">Valoración promedio</span>
+            </div>
+            <div class="trust-item">
+                <strong class="trust-number">100%</strong>
+                <span class="trust-label">Envíos seguros</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- Enlaces de soporte repetidos -->
+<section class="support-links">
+    <div class="container">
+        <div class="support-grid">
+            <a href="#" class="support-item">
+                <span class="support-icon">🚀</span>
+                <span class="support-text">Envíos Rápidos</span>
+            </a>
+            
+            <a href="#" class="support-item">
+                <span class="support-icon">❓</span>
+                <span class="support-text">Preguntas Frecuentes</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<script>
+// Lazy loading de productos destacados
+document.addEventListener('DOMContentLoaded', function() {
+    // Simular carga de productos con delay para conexión lenta
+    setTimeout(function() {
+        const container = document.getElementById('featured-products');
+        const placeholder = container.querySelector('.product-placeholder');
+        
+        // Productos minimalistas (sin imágenes pesadas)
+        const products = [
+            { name: 'Malleus Ferrum', price: '299', category: '🔨 ferramenta', icon: '🔨' },
+            { name: 'Clavis Torquens', price: '25', category: '🔧 instrumenta', icon: '🔧' },
+            { name: 'Serra Manualis', price: '89', category: '🪚 constructio', icon: '🪚' }
+        ];
+        
+        let html = '';
+        products.forEach(product => {
+            html += `
+                <div class="product-minimal">
+                    <div class="product-icon">${product.icon}</div>
+                    <div class="product-category">${product.category}</div>
+                    <h4 class="product-title">${product.name}</h4>
+                    <div class="product-price">$${product.price}</div>
+                    <button class="product-btn">Lorem Ipsum</button>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }, 1500); // Delay para simular carga optimizada
+    
+    // Newsletter form
+    const form = document.getElementById('newsletter-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const input = form.querySelector('input');
+            if (input.value) {
+                alert('¡Gracias! Te contactaremos pronto via WhatsApp.');
+                input.value = '';
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

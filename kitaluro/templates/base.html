@@ -4,69 +4,472 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Compras seguras con pagos internacionales. Visa, Mastercard, PayPal. Envíos garantizados.">
     <title>{% block title %}Kitaluro{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    
+    <!-- Preload critical CSS inline para primera carga -->
+    <style>
+        /* CSS crítico inline para primera carga */
+        body{font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;color:#111;background:#fff;margin:0;padding:0}
+        .header{background:#0066cc;color:white;position:sticky;top:0;z-index:1000;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
+        .header-content{display:flex;justify-content:space-between;align-items:center;padding:16px;max-width:1200px;margin:0 auto}
+        .logo{font-size:20px;font-weight:bold;color:white;text-decoration:none}
+        .container{max-width:1200px;margin:0 auto;padding:0 16px}
+    </style>
+    
+    <!-- Cargar CSS completo de forma asíncrona -->
+    <link rel="preload" href="{% static 'css/styles.css' %}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{% static 'css/styles.css' %}"></noscript>
 </head>
 <body>
 
     <header class="header">
         <div class="container header-content">
-            <h1 class="logo">KITALURO</h1>
-            <button class="mobile-menu-toggle" aria-label="Abrir menú">
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-            </button>
-            <nav class="nav" id="main-nav">
-                <a href="{% url 'home' %}" class="nav-item">Inicio</a>
-                <a href="{% url 'productos:index' %}" class="nav-item">Productos</a>
-                <a href="#" class="nav-item">Nosotros</a>
-                <a href="#" class="nav-item">Contacto</a>
+            <div class="logo-section">
+                <!-- Botón explorar (móvil) -->
+                <button class="categories-toggle" aria-label="Explorar" id="categories-toggle">
+                    Explorar
+                </button>
+                <a href="{% url 'home' %}" class="logo" aria-label="Ir al inicio">KITALURO</a>
+            </div>
+            
+            <div class="header-actions">
+                <!-- Carrito (solo móvil) -->
+                <a href="#" class="cart-icon mobile-only" aria-label="Carrito de compras">
+                    🛒
+                    <span class="cart-count" id="cart-count">0</span>
+                </a>
+                
+                <!-- Login (solo móvil) -->
+                <a href="#" class="login-btn mobile-only" aria-label="Iniciar sesión">
+                    Login
+                </a>
+            </div>
+            
+            <!-- Navegación principal (solo desktop) -->
+            <nav class="header-nav desktop-only" id="header-nav">
+                <a href="{% url 'home' %}" class="header-nav-item">Inicio</a>
+                <a href="{% url 'productos:index' %}" class="header-nav-item">Productos</a>
+                <a href="#" class="header-nav-item">Contacto</a>
+                <a href="#" class="header-nav-item cart-desktop" aria-label="Carrito de compras">
+                    🛒
+                    <span class="cart-count" id="cart-count-desktop">0</span>
+                </a>
+                <a href="#" class="header-nav-item login-desktop">Login</a>
             </nav>
+
         </div>
     </header>
+
+    <!-- Barra de categorías horizontal (desktop) -->
+    <nav class="horizontal-nav desktop-only" id="horizontal-nav">
+        <div class="container">
+            <div class="categories-horizontal">
+                    <div class="category-dropdown" data-category="ferramenta">
+                        <button class="category-btn">🔨 Ferramenta</button>
+                        <div class="dropdown-content">
+                            <a href="#">Malleus</a>
+                            <a href="#">Clavis</a>
+                            <a href="#">Lima</a>
+                            <a href="#">Securis</a>
+                        </div>
+                    </div>
+                    
+                    <div class="category-dropdown" data-category="instrumenta">
+                        <button class="category-btn">🔧 Instrumenta</button>
+                        <div class="dropdown-content">
+                            <a href="#">Torquens</a>
+                            <a href="#">Pliers</a>
+                            <a href="#">Mensura</a>
+                            <a href="#">Nivellum</a>
+                        </div>
+                    </div>
+                    
+                    <div class="category-dropdown" data-category="mechanica">
+                        <button class="category-btn">⚙️ Mechanica</button>
+                        <div class="dropdown-content">
+                            <a href="#">Rota</a>
+                            <a href="#">Axis</a>
+                            <a href="#">Cochlea</a>
+                            <a href="#">Clavus</a>
+                        </div>
+                    </div>
+                    
+                    <div class="category-dropdown" data-category="constructio">
+                        <button class="category-btn">🪚 Constructio</button>
+                        <div class="dropdown-content">
+                            <a href="#">Serra</a>
+                            <a href="#">Terebratio</a>
+                            <a href="#">Planum</a>
+                            <a href="#">Circinus</a>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar móvil -->
+    <aside class="sidebar mobile-only" id="categories-sidebar">
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+        <div class="sidebar-content">
+            <div class="sidebar-header">
+                <h3>Explorar</h3>
+                <button class="sidebar-close" id="sidebar-close">×</button>
+            </div>
+            
+            <div class="sidebar-body">
+                <!-- Navegación principal -->
+                <div class="sidebar-section navigation-section">
+                    <h4>Navegación</h4>
+                    <a href="{% url 'home' %}" class="nav-option">
+                        🏠 Inicio
+                    </a>
+                    <a href="{% url 'productos:index' %}" class="nav-option">
+                        📦 Productos
+                    </a>
+                    <a href="#" class="nav-option">
+                        📞 Contacto
+                    </a>
+                </div>
+                
+                <!-- Categorías principales -->
+                <div class="sidebar-section categories-section">
+                    <h4>Categorías de Productos</h4>
+                    <div class="category-group">
+                        <button class="category-toggle" data-category="ferramenta">
+                            🔨 Ferramenta
+                            <span class="toggle-arrow">▼</span>
+                        </button>
+                        <div class="subcategory-list" id="ferramenta">
+                            <a href="#" class="subcategory-item">Malleus</a>
+                            <a href="#" class="subcategory-item">Clavis</a>
+                            <a href="#" class="subcategory-item">Lima</a>
+                            <a href="#" class="subcategory-item">Securis</a>
+                        </div>
+                    </div>
+                    
+                    <div class="category-group">
+                        <button class="category-toggle" data-category="instrumenta">
+                            🔧 Instrumenta
+                            <span class="toggle-arrow">▼</span>
+                        </button>
+                        <div class="subcategory-list" id="instrumenta">
+                            <a href="#" class="subcategory-item">Torquens</a>
+                            <a href="#" class="subcategory-item">Pliers</a>
+                            <a href="#" class="subcategory-item">Mensura</a>
+                            <a href="#" class="subcategory-item">Nivellum</a>
+                        </div>
+                    </div>
+                    
+                    <div class="category-group">
+                        <button class="category-toggle" data-category="mechanica">
+                            🔨 Mechanica
+                            <span class="toggle-arrow">▼</span>
+                        </button>
+                        <div class="subcategory-list" id="mechanica">
+                            <a href="#" class="subcategory-item">Rota</a>
+                            <a href="#" class="subcategory-item">Axis</a>
+                            <a href="#" class="subcategory-item">Cochlea</a>
+                            <a href="#" class="subcategory-item">Clavus</a>
+                        </div>
+                    </div>
+                    
+                    <div class="category-group">
+                        <button class="category-toggle" data-category="constructio">
+                            🪚 Constructio
+                            <span class="toggle-arrow">▼</span>
+                        </button>
+                        <div class="subcategory-list" id="constructio">
+                            <a href="#" class="subcategory-item">Serra</a>
+                            <a href="#" class="subcategory-item">Terebratio</a>
+                            <a href="#" class="subcategory-item">Planum</a>
+                            <a href="#" class="subcategory-item">Circinus</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Opciones adicionales -->
+                <div class="sidebar-section sidebar-options">
+                    <a href="#" class="option-item user-only" style="display: none;">📋 Historial de Pedidos</a>
+                    <a href="#" class="option-item">❓ FAQ / Ayuda</a>
+                    <a href="#" class="option-item">📞 Contacto</a>
+                </div>
+            </div>
+        </div>
+    </aside>
 
     <main class="main-content container">
         {% block content %}{% endblock %}
     </main>
 
     <footer class="footer">
-        <p>M&C Dev Studio {{ now|date:"Y" }}. Todos los derechos reservados.</p>
+        <div class="container footer-content">
+            <!-- Enlaces de confianza -->
+            <div class="footer-trust">
+                <a href="#" class="trust-link">❓ FAQ</a>
+                <a href="#" class="trust-link">📞 Contacto</a>
+            </div>
+            
+            <!-- Métodos de pago -->
+            <div class="payment-methods">
+                <span class="payment-title">Pagos internacionales seguros:</span>
+                <span class="payment-icon">Visa</span>
+                <span class="payment-icon">Mastercard</span>
+                <span class="payment-icon">PayPal</span>
+                <span class="ssl-badge">🔒 SSL</span>
+            </div>
+            
+            <!-- Contacto de soporte -->
+            <div class="support-contact">
+                <a href="https://wa.me/5353000000" class="whatsapp-support">
+                    📱 Soporte WhatsApp
+                </a>
+            </div>
+            
+            <div class="footer-copy">
+                <p>M&C Dev Studio {{ now|date:"Y" }}. Compras seguras en Cuba.</p>
+            </div>
+        </div>
     </footer>
 
     <script>
-        // Menú móvil
+        // Funcionalidad ultraligera del header
         document.addEventListener('DOMContentLoaded', function() {
-            const mobileToggle = document.querySelector('.mobile-menu-toggle');
-            const nav = document.querySelector('#main-nav');
             const body = document.body;
-
-            if (mobileToggle && nav) {
-                mobileToggle.addEventListener('click', function() {
-                    nav.classList.toggle('nav-open');
-                    mobileToggle.classList.toggle('active');
-                    body.classList.toggle('nav-open');
+            
+            // Sidebar de categorías (diferido)
+            const categoriesToggle = document.getElementById('categories-toggle');
+            const sidebar = document.getElementById('categories-sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const sidebarClose = document.getElementById('sidebar-close');
+            
+            if (categoriesToggle && sidebar) {
+                // Abrir sidebar
+                categoriesToggle.addEventListener('click', function() {
+                    sidebar.classList.add('sidebar-open');
+                    body.classList.add('sidebar-active');
                 });
-
-                // Cerrar menú al hacer clic en un enlace
-                const navItems = nav.querySelectorAll('.nav-item');
-                navItems.forEach(item => {
-                    item.addEventListener('click', function() {
-                        nav.classList.remove('nav-open');
-                        mobileToggle.classList.remove('active');
-                        body.classList.remove('nav-open');
+                
+                // Cerrar sidebar
+                function closeSidebar() {
+                    sidebar.classList.remove('sidebar-open');
+                    body.classList.remove('sidebar-active');
+                }
+                
+                if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+                if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+                
+                // Expandir/colapsar categorías
+                const categoryToggles = document.querySelectorAll('.category-toggle');
+                categoryToggles.forEach(toggle => {
+                    toggle.addEventListener('click', function() {
+                        const categoryId = this.getAttribute('data-category');
+                        const subcategoryList = document.getElementById(categoryId);
+                        const arrow = this.querySelector('.toggle-arrow');
+                        
+                        if (subcategoryList) {
+                            const isOpen = subcategoryList.classList.contains('open');
+                            
+                            // Cerrar todas las categorías primero
+                            document.querySelectorAll('.subcategory-list.open').forEach(list => {
+                                list.classList.remove('open');
+                            });
+                            document.querySelectorAll('.toggle-arrow').forEach(arr => {
+                                arr.textContent = '▼';
+                            });
+                            
+                            // Abrir la actual si estaba cerrada
+                            if (!isOpen) {
+                                subcategoryList.classList.add('open');
+                                arrow.textContent = '▲';
+                            }
+                        }
                     });
                 });
-
-                // Cerrar menú al hacer clic fuera
-                document.addEventListener('click', function(e) {
-                    if (!nav.contains(e.target) && !mobileToggle.contains(e.target)) {
-                        nav.classList.remove('nav-open');
-                        mobileToggle.classList.remove('active');
-                        body.classList.remove('nav-open');
-                    }
+                
+                // Cerrar sidebar al seleccionar subcategoría
+                const subcategoryItems = document.querySelectorAll('.subcategory-item');
+                subcategoryItems.forEach(item => {
+                    item.addEventListener('click', function() {
+                        closeSidebar();
+                    });
                 });
             }
+
+            // Actualizar contador del carrito (simulado)
+            function updateCartCount() {
+                const cartCountMobile = document.getElementById('cart-count');
+                const cartCountDesktop = document.getElementById('cart-count-desktop');
+                const count = localStorage.getItem('cartCount') || '0';
+                
+                if (cartCountMobile) {
+                    cartCountMobile.textContent = count;
+                    cartCountMobile.style.display = count === '0' ? 'none' : 'inline';
+                }
+                
+                if (cartCountDesktop) {
+                    cartCountDesktop.textContent = count;
+                    cartCountDesktop.style.display = count === '0' ? 'none' : 'inline';
+                }
+            }
+            
+            updateCartCount();
+        });
+    </script>
+
+    <!-- Sidebar JavaScript - Carga diferida para no bloquear contenido crítico -->
+    <script defer>
+        // Funcionalidad del sidebar (diferida)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Solo cargar si los elementos existen
+            const categoriesToggle = document.getElementById('categories-toggle');
+            const sidebar = document.getElementById('categories-sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const sidebarClose = document.getElementById('sidebar-close');
+            const body = document.body;
+            
+            if (!categoriesToggle || !sidebar) return;
+            
+            // Funciones del sidebar
+            function openSidebar() {
+                // Solo funcionar en móvil
+                if (window.innerWidth < 1024) {
+                    sidebar.classList.add('sidebar-open');
+                    body.classList.add('sidebar-active');
+                }
+            }
+            
+            function closeSidebar() {
+                sidebar.classList.remove('sidebar-open');
+                body.classList.remove('sidebar-active');
+            }
+            
+            // Event listeners con verificación de viewport
+            categoriesToggle.addEventListener('click', function() {
+                if (window.innerWidth < 1024) {
+                    openSidebar();
+                }
+            });
+            if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
+            if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+            
+            // Cerrar con ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && sidebar.classList.contains('sidebar-open')) {
+                    closeSidebar();
+                }
+            });
+            
+            // Expandir/colapsar categorías (solo en móvil)
+            const categoryToggles = document.querySelectorAll('.category-toggle');
+            categoryToggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    if (window.innerWidth >= 1024) return; // Solo en móvil
+                    
+                    const categoryId = this.getAttribute('data-category');
+                    const subcategoryList = document.getElementById(categoryId);
+                    const arrow = this.querySelector('.toggle-arrow');
+                    
+                    if (subcategoryList && arrow) {
+                        const isOpen = subcategoryList.classList.contains('open');
+                        
+                        // Cerrar todas las categorías
+                        document.querySelectorAll('.subcategory-list.open').forEach(list => {
+                            list.classList.remove('open');
+                        });
+                        document.querySelectorAll('.toggle-arrow').forEach(arr => {
+                            arr.textContent = '▼';
+                        });
+                        
+                        // Abrir la actual si estaba cerrada
+                        if (!isOpen) {
+                            subcategoryList.classList.add('open');
+                            arrow.textContent = '▲';
+                        }
+                    }
+                });
+            });
+            
+            // Cerrar sidebar al seleccionar subcategoría (solo móvil)
+            const subcategoryItems = document.querySelectorAll('.subcategory-item');
+            subcategoryItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    if (window.innerWidth < 1024) {
+                        closeSidebar();
+                    }
+                });
+            });
+            
+            // Mostrar/ocultar historial para usuarios logueados
+            // Este sería reemplazado por lógica de Django cuando se implemente autenticación
+            const userOnlyElements = document.querySelectorAll('.user-only');
+            const isUserLoggedIn = false; // Placeholder - conectar con Django auth
+            
+            if (isUserLoggedIn) {
+                userOnlyElements.forEach(el => el.style.display = 'block');
+            }
+            
+            // Detectar cambios de viewport y cerrar sidebar si cambia a desktop
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 1024) {
+                    closeSidebar();
+                    // Forzar ocultación del sidebar en desktop
+                    if (sidebar) {
+                        sidebar.style.display = 'none';
+                        sidebar.style.visibility = 'hidden';
+                        sidebar.style.opacity = '0';
+                        sidebar.style.left = '-100%';
+                    }
+                } else {
+                    // Restaurar visibilidad en móvil
+                    if (sidebar) {
+                        sidebar.style.display = '';
+                        sidebar.style.visibility = '';
+                        sidebar.style.opacity = '';
+                        sidebar.style.left = '';
+                    }
+                }
+            });
+            
+            // Verificar viewport inicial
+            if (window.innerWidth >= 1024 && sidebar) {
+                sidebar.style.display = 'none';
+                sidebar.style.visibility = 'hidden';
+                sidebar.style.opacity = '0';
+                sidebar.style.left = '-100%';
+            }
+
+            // Manejo de dropdowns horizontales (desktop)
+            const categoryDropdowns = document.querySelectorAll('.category-dropdown');
+            let activeDropdown = null;
+            
+            categoryDropdowns.forEach(dropdown => {
+                const btn = dropdown.querySelector('.category-btn');
+                const content = dropdown.querySelector('.dropdown-content');
+                
+                if (btn && content) {
+                    // Mostrar dropdown al pasar el mouse
+                    dropdown.addEventListener('mouseenter', function() {
+                        if (window.innerWidth >= 1024) {
+                            activeDropdown = dropdown;
+                        }
+                    });
+                    
+                    // Ocultar dropdown al salir
+                    dropdown.addEventListener('mouseleave', function() {
+                        if (window.innerWidth >= 1024) {
+                            activeDropdown = null;
+                        }
+                    });
+                    
+                    // Cerrar dropdowns al hacer clic fuera
+                    document.addEventListener('click', function(e) {
+                        if (window.innerWidth >= 1024 && !dropdown.contains(e.target)) {
+                            // Los dropdowns se manejan con CSS hover
+                        }
+                    });
+                }
+            });
         });
     </script>
 
