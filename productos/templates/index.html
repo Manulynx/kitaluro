@@ -10,10 +10,10 @@
         <div class="productos-filters">
             {% block productos_filters %}
             <!-- Filtros y barra de búsqueda -->
-            <div class="search-bar">
-                <input type="text" placeholder="Buscar productos..." class="search-input">
-                <button type="button" class="search-btn">Buscar</button>
-            </div>
+            <form method="get" action="{% url 'productos:index' %}" class="search-bar">
+                <input type="text" name="q" placeholder="Buscar productos..." class="search-input" value="{{ busqueda|default:'' }}">
+                <button type="submit" class="search-btn">Buscar</button>
+            </form>
             {% endblock %}
         </div>
     </header>
@@ -31,11 +31,19 @@
             <div class="sidebar-section">
                 <h3>Categorías</h3>
                 <ul class="category-list">
-                    <li><a href="#" class="category-item active">Todas</a></li>
-                    <li><a href="#" class="category-item">Electrónicos</a></li>
-                    <li><a href="#" class="category-item">Ropa</a></li>
-                    <li><a href="#" class="category-item">Hogar</a></li>
-                    <li><a href="#" class="category-item">Deportes</a></li>
+                    <li><a href="{% url 'productos:index' %}" class="category-item {% if not categoria_actual %}active{% endif %}">Todas</a></li>
+                    {% for categoria in categorias %}
+                    <li><a href="?categoria={{ categoria.slug }}" class="category-item {% if categoria_actual == categoria.slug %}active{% endif %}">{{ categoria.nombre }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3>Marcas</h3>
+                <ul class="category-list">
+                    {% for marca in marcas %}
+                    <li><a href="?marca={{ marca.id }}" class="category-item">{{ marca.nombre }}</a></li>
+                    {% endfor %}
                 </ul>
             </div>
             {% endblock %}
@@ -44,47 +52,80 @@
         <main class="productos-content">
             {% block productos_content %}
             <div class="productos-grid">
-                <!-- Los productos se mostrarán aquí dinámicamente -->
-                {% comment %}
-                Ejemplo de estructura para cuando se agreguen productos reales:
                 {% for producto in productos %}
                 <div class="card">
                     <div class="card-image">
-                        {% if producto.imagen %}
-                            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+                        {% with producto.medias.first as media %}
+                            {% if media and media.imagen %}
+                                <img src="{{ media.imagen.url }}" alt="{{ media.alt_text|default:producto.nombre }}">
+                            {% else %}
+                                <div style="background: #f0f0f0; height: 200px; display: flex; align-items: center; justify-content: center; color: #999;">
+                                    Sin imagen
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                        {% if producto.tiene_descuento %}
+                        <span class="badge badge-sale">-{{ producto.porcentaje_descuento }}%</span>
+                        {% endif %}
+                        {% if producto.destacado %}
+                        <span class="badge badge-featured">Destacado</span>
                         {% endif %}
                     </div>
                     <div class="card-body">
                         <h4 class="card-title">{{ producto.nombre }}</h4>
-                        <p class="card-text">{{ producto.descripcion }}</p>
-                        <div class="card-price">${{ producto.precio }}</div>
-                        <a href="{% url 'productos:detalle' producto.id %}" class="btn btn-primary">Ver Detalles</a>
+                        <p class="card-text">{{ producto.descripcion_corta }}</p>
+                        <div class="card-footer">
+                            <div class="price-container">
+                                {% if producto.tiene_descuento %}
+                                <span class="price-old">${{ producto.precio }}</span>
+                                <span class="price-current">${{ producto.precio_oferta }}</span>
+                                {% else %}
+                                <span class="price-current">${{ producto.precio }}</span>
+                                {% endif %}
+                            </div>
+                            {% if producto.stock > 0 %}
+                            <a href="#" class="btn btn-primary">Ver Detalles</a>
+                            {% else %}
+                            <span class="badge badge-out-stock">Agotado</span>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 {% empty %}
-                <div class="text-center">
-                    <p>No hay productos disponibles en este momento.</p>
+                <div class="text-center p-2xl" style="grid-column: 1 / -1;">
+                    <h3>No hay productos disponibles</h3>
+                    <p class="text-secondary">{% if busqueda %}No se encontraron productos para "{{ busqueda }}".{% else %}Los productos se mostrarán aquí cuando estén disponibles.{% endif %}</p>
                 </div>
                 {% endfor %}
-                {% endcomment %}
-                
-                <div class="text-center p-2xl">
-                    <h3>No hay productos disponibles</h3>
-                    <p class="text-secondary">Los productos se mostrarán aquí cuando estén disponibles.</p>
-                </div>
             </div>
 
             <!-- Paginación -->
             {% block productos_pagination %}
+            {% if productos.has_other_pages %}
             <div class="pagination-container">
                 <nav class="pagination">
-                    <a href="#" class="page-link disabled">« Anterior</a>
-                    <a href="#" class="page-link active">1</a>
-                    <a href="#" class="page-link">2</a>
-                    <a href="#" class="page-link">3</a>
-                    <a href="#" class="page-link">Siguiente »</a>
+                    {% if productos.has_previous %}
+                    <a href="?page={{ productos.previous_page_number }}{% if categoria_actual %}&categoria={{ categoria_actual }}{% endif %}{% if busqueda %}&q={{ busqueda }}{% endif %}" class="page-link">« Anterior</a>
+                    {% else %}
+                    <span class="page-link disabled">« Anterior</span>
+                    {% endif %}
+                    
+                    {% for num in productos.paginator.page_range %}
+                        {% if productos.number == num %}
+                        <span class="page-link active">{{ num }}</span>
+                        {% elif num > productos.number|add:'-3' and num < productos.number|add:'3' %}
+                        <a href="?page={{ num }}{% if categoria_actual %}&categoria={{ categoria_actual }}{% endif %}{% if busqueda %}&q={{ busqueda }}{% endif %}" class="page-link">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if productos.has_next %}
+                    <a href="?page={{ productos.next_page_number }}{% if categoria_actual %}&categoria={{ categoria_actual }}{% endif %}{% if busqueda %}&q={{ busqueda }}{% endif %}" class="page-link">Siguiente »</a>
+                    {% else %}
+                    <span class="page-link disabled">Siguiente »</span>
+                    {% endif %}
                 </nav>
             </div>
+            {% endif %}
             {% endblock %}
             {% endblock %}
         </main>
