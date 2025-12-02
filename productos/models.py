@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from decimal import Decimal
+import random
+import string
 
 # Create your models here.
 
@@ -51,7 +53,7 @@ class Producto(models.Model):
     precio = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
     precio_oferta = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, validators=[MinValueValidator(Decimal('0.01'))])
     stock = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    sku = models.CharField(max_length=100, unique=True, help_text="Código único del producto")
+    sku = models.CharField(max_length=100, unique=True, blank=True, help_text="Código único del producto (se genera automáticamente)")
     
     # Características del producto
     peso = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True, help_text="Peso en kg")
@@ -78,6 +80,33 @@ class Producto(models.Model):
     
     def __str__(self):
         return self.nombre
+    
+    def save(self, *args, **kwargs):
+        """Generar SKU automáticamente si no existe"""
+        if not self.sku:
+            self.sku = self.generar_sku()
+        super().save(*args, **kwargs)
+    
+    def generar_sku(self):
+        """Genera un SKU único basado en el nombre del producto"""
+        # Obtener las primeras letras del nombre (sin espacios ni caracteres especiales)
+        nombre_limpio = ''.join(c for c in self.nombre if c.isalnum())
+        
+        # Tomar las primeras 3-4 letras del nombre
+        prefijo = nombre_limpio[:4].upper() if len(nombre_limpio) >= 4 else nombre_limpio.upper()
+        
+        # Generar 6 dígitos aleatorios
+        numeros = ''.join(random.choices(string.digits, k=6))
+        
+        # Combinar prefijo + números
+        sku = f"{prefijo}-{numeros}"
+        
+        # Verificar que sea único, si no lo es, generar otro
+        while Producto.objects.filter(sku=sku).exists():
+            numeros = ''.join(random.choices(string.digits, k=6))
+            sku = f"{prefijo}-{numeros}"
+        
+        return sku
     
     @property
     def precio_final(self):
