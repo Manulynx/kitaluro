@@ -21,11 +21,13 @@
             <div class="sort-container">
                 <label for="sort-select" class="sort-label">Ordenar:</label>
                 <select id="sort-select" class="sort-select">
-                    <option value="relevance">Relevancia</option>
-                    <option value="price-asc">Precio: Menor a Mayor</option>
-                    <option value="price-desc">Precio: Mayor a Menor</option>
-                    <option value="rating">Mejor Valorados</option>
-                    <option value="newest">Más Nuevos</option>
+                    <option value="">Relevancia</option>
+                    <option value="precio_asc">Precio: Menor a Mayor</option>
+                    <option value="precio_desc">Precio: Mayor a Menor</option>
+                    <option value="nombre_asc">Nombre: A-Z</option>
+                    <option value="nombre_desc">Nombre: Z-A</option>
+                    <option value="recientes">Más Recientes</option>
+                    <option value="antiguos">Más Antiguos</option>
                 </select>
             </div>
             
@@ -51,25 +53,65 @@
             <div class="filter-group">
                 <h4>Categorías</h4>
                 <div class="filter-options">
+                    {% for categoria in categorias %}
                     <label class="filter-option">
-                        <input type="checkbox" name="category" value="all" checked>
-                        <span>Todas (125)</span>
+                        <input type="radio" name="categoria" value="{{ categoria.slug }}">
+                        <span>{{ categoria.nombre }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Subcategorías -->
+            <div class="filter-group">
+                <h4>Subcategorías</h4>
+                <div class="filter-options">
+                    {% for subcategoria in subcategorias %}
+                    <label class="filter-option">
+                        <input type="radio" name="subcategoria" value="{{ subcategoria.slug }}">
+                        <span>{{ subcategoria.nombre }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Marcas -->
+            <div class="filter-group">
+                <h4>Marcas</h4>
+                <div class="filter-options">
+                    {% for marca in marcas %}
+                    <label class="filter-option">
+                        <input type="checkbox" name="marca" value="{{ marca.id }}">
+                        <span>{{ marca.nombre }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Proveedores -->
+            <div class="filter-group">
+                <h4>Proveedores</h4>
+                <div class="filter-options">
+                    {% for proveedor in proveedores %}
+                    <label class="filter-option">
+                        <input type="checkbox" name="proveedor" value="{{ proveedor.id }}">
+                        <span>{{ proveedor.nombre }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Estado -->
+            <div class="filter-group">
+                <h4>Estado</h4>
+                <div class="filter-options">
+                    <label class="filter-option">
+                        <input type="checkbox" name="destacado" value="true">
+                        <span>⭐ Destacados</span>
                     </label>
                     <label class="filter-option">
-                        <input type="checkbox" name="category" value="electronics">
-                        <span>Electrónicos (45)</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="category" value="clothing">
-                        <span>Ropa (32)</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="category" value="home">
-                        <span>Hogar (28)</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" name="category" value="sports">
-                        <span>Deportes (20)</span>
+                        <input type="checkbox" name="en_oferta" value="true">
+                        <span>🔥 En Oferta</span>
                     </label>
                 </div>
             </div>
@@ -226,9 +268,40 @@ document.addEventListener('DOMContentLoaded', function() {
         showLoading();
         
         try {
-            // Obtener URL actual con parámetros
+            // Construir parámetros de filtrado
+            const params = new URLSearchParams();
+            
+            // Agregar orden si existe
+            const orden = sortSelect?.value;
+            if (orden) params.append('orden', orden);
+            
+            // Agregar filtros activos
+            const categoriaChecked = document.querySelector('input[name="categoria"]:checked');
+            if (categoriaChecked) params.append('categoria', categoriaChecked.value);
+            
+            const subcategoriaChecked = document.querySelector('input[name="subcategoria"]:checked');
+            if (subcategoriaChecked) params.append('subcategoria', subcategoriaChecked.value);
+            
+            document.querySelectorAll('input[name="marca"]:checked').forEach(cb => {
+                params.append('marca', cb.value);
+            });
+            
+            document.querySelectorAll('input[name="proveedor"]:checked').forEach(cb => {
+                params.append('proveedor', cb.value);
+            });
+            
+            const destacadoChecked = document.querySelector('input[name="destacado"]:checked');
+            if (destacadoChecked) params.append('destacado', 'true');
+            
+            const enOfertaChecked = document.querySelector('input[name="en_oferta"]:checked');
+            if (enOfertaChecked) params.append('en_oferta', 'true');
+            
+            // Búsqueda
             const urlParams = new URLSearchParams(window.location.search);
-            const response = await fetch(window.location.pathname + '?' + urlParams.toString(), {
+            const busqueda = urlParams.get('q');
+            if (busqueda) params.append('q', busqueda);
+            
+            const response = await fetch('/productos/api/productos/?' + params.toString(), {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -292,29 +365,67 @@ document.addEventListener('DOMContentLoaded', function() {
     // Crear tarjeta de producto optimizada
     function createProductCard(product) {
         const imageUrl = product.imagen_principal || '';
-        const precioHtml = product.precio_oferta ? 
-            `<span class="price-original">$${product.precio}</span>
-             <span class="price-sale">$${product.precio_oferta}</span>` :
-            `$${product.precio}`;
+        
+        // Precio con manejo de null
+        let precioHtml = '';
+        if (product.precio) {
+            if (product.precio_oferta) {
+                precioHtml = `
+                    <span class="price-original">$${product.precio}</span>
+                    <span class="price-sale">$${product.precio_oferta}</span>
+                `;
+            } else {
+                precioHtml = `<span class="price-regular">$${product.precio}</span>`;
+            }
+        } else {
+            precioHtml = '<span class="price-contact">Consultar</span>';
+        }
+        
+        // Badges dinámicos
+        let badgesHtml = '';
+        if (product.badges && product.badges.length > 0) {
+            badgesHtml = product.badges.map(badge => 
+                `<span class="badge ${badge.class}">${badge.text}</span>`
+            ).join('');
+        } else {
+            // Fallback a badges manuales
+            if (product.en_oferta) badgesHtml += '<span class="badge badge-discount">OFERTA</span>';
+            if (product.destacado) badgesHtml += '<span class="badge badge-featured">DESTACADO</span>';
+            if (!product.en_stock) badgesHtml += '<span class="badge badge-soldout">AGOTADO</span>';
+        }
+        
+        // Rating con número de valoraciones
+        const ratingText = product.total_valoraciones > 0 ? 
+            `(${product.total_valoraciones})` : '';
         
         return `
-            <a href="/productos/${product.slug}/" class="product-card" data-product-id="${product.id}">
+            <a href="${product.url || '/productos/' + product.slug + '/'}" class="product-card" data-product-id="${product.id}">
                 <div class="product-image">
-                    <div class="image-placeholder">🔧</div>
+                    ${badgesHtml ? `<div class="product-badges">${badgesHtml}</div>` : ''}
+                    <div class="image-placeholder">📦</div>
                     ${imageUrl ? `<img src="${imageUrl}" alt="${product.nombre}" class="product-img" loading="lazy">` : ''}
                 </div>
                 <div class="product-info">
+                    <div class="product-meta">
+                        ${product.categoria ? `<span class="product-category">${product.categoria}</span>` : ''}
+                        ${product.marca ? `<span class="product-brand">${product.marca}</span>` : ''}
+                    </div>
                     <h3 class="product-name">${product.nombre}</h3>
+                    ${product.descripcion_corta ? `<p class="product-description">${product.descripcion_corta.substring(0, 80)}${product.descripcion_corta.length > 80 ? '...' : ''}</p>` : ''}
                     <div class="product-rating">
                         <span class="stars">${generateStars(product.rating || 0)}</span>
-                        <span class="rating-value">${product.rating || 0}</span>
+                        <span class="rating-value">${(product.rating || 0).toFixed(1)} ${ratingText}</span>
                     </div>
                     <div class="product-price">${precioHtml}</div>
+                    ${product.porcentaje_descuento > 0 ? `<div class="discount-badge">-${product.porcentaje_descuento}%</div>` : ''}
                 </div>
                 <div class="product-actions">
-                    <button class="btn-quick-add" data-product-id="${product.id}" aria-label="Añadir rápido">
-                        🛒
-                    </button>
+                    ${product.en_stock ? 
+                        `<button class="btn-quick-add" data-product-id="${product.id}" aria-label="Añadir rápido">
+                            🛒 Añadir
+                        </button>` :
+                        `<button class="btn-notify" disabled>Agotado</button>`
+                    }
                 </div>
             </a>
         `;
@@ -403,13 +514,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Funciones globales
     window.clearAllFilters = function() {
         // Limpiar todos los filtros
-        const checkboxes = filtersModal.querySelectorAll('input[type="checkbox"]');
-        const radios = filtersModal.querySelectorAll('input[type="radio"]');
-        const inputs = filtersModal.querySelectorAll('input[type="number"]');
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        const radios = document.querySelectorAll('input[type="radio"]');
+        const inputs = document.querySelectorAll('input[type="number"]');
         
-        checkboxes.forEach(cb => cb.checked = cb.value === 'all');
+        checkboxes.forEach(cb => cb.checked = false);
         radios.forEach(radio => radio.checked = false);
         inputs.forEach(input => input.value = '');
+        
+        // Reset ordenamiento
+        if (sortSelect) sortSelect.value = '';
         
         applyCurrentFilters();
     };

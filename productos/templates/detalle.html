@@ -561,6 +561,13 @@ function renderBreadcrumb(producto) {
         `;
     }
     
+    if (producto.subcategoria) {
+        html += `
+            <a href="/productos/?subcategoria=${producto.subcategoria_slug}">${producto.subcategoria}</a>
+            <span>/</span>
+        `;
+    }
+    
     html += `<span class="current">${producto.nombre}</span>`;
     breadcrumb.innerHTML = html;
 }
@@ -582,24 +589,48 @@ function renderGaleria(producto) {
         `;
     }
     
-    // Badges
-    if (producto.tiene_descuento) {
-        imagenHtml += `<div class="badge badge-descuento">-${producto.porcentaje_descuento}%</div>`;
-    }
-    if (producto.destacado) {
-        imagenHtml += `<div class="badge badge-destacado">Destacado</div>`;
+    // Badges dinámicos del producto
+    if (producto.badges && producto.badges.length > 0) {
+        producto.badges.forEach(badge => {
+            imagenHtml += `<div class="badge ${badge.class}">${badge.text}</div>`;
+        });
+    } else {
+        // Fallback a badges manuales
+        if (producto.tiene_descuento) {
+            imagenHtml += `<div class="badge badge-descuento">-${producto.porcentaje_descuento}%</div>`;
+        }
+        if (producto.destacado) {
+            imagenHtml += `<div class="badge badge-destacado">Destacado</div>`;
+        }
+        if (producto.en_oferta) {
+            imagenHtml += `<div class="badge badge-oferta">🔥 OFERTA</div>`;
+        }
     }
     
     imagenPrincipal.innerHTML = imagenHtml;
     
-    // Miniaturas
+    // Miniaturas (imágenes + videos)
+    let miniaturasHtml = '';
+    
     if (producto.imagenes && producto.imagenes.length > 0) {
-        miniaturas.innerHTML = producto.imagenes.map((img, index) => `
+        miniaturasHtml += producto.imagenes.map((img, index) => `
             <div class="miniatura ${index === 0 ? 'active' : ''}" onclick="cambiarImagen('${img.url}', '${producto.nombre}')">
                 <img src="${img.url}" alt="${producto.nombre}">
             </div>
         `).join('');
     }
+    
+    // Agregar miniaturas de videos
+    if (producto.videos && producto.videos.length > 0) {
+        miniaturasHtml += producto.videos.map((video, index) => `
+            <div class="miniatura miniatura-video" onclick="mostrarVideo('${video.url}', '${video.title || 'Video del producto'}')">
+                <div class="video-icon">▶️</div>
+                <span class="video-label">Video</span>
+            </div>
+        `).join('');
+    }
+    
+    miniaturas.innerHTML = miniaturasHtml;
 }
 
 function renderInfo(producto) {
@@ -609,32 +640,38 @@ function renderInfo(producto) {
     if (producto.marca) {
         marcaHtml = `
             <div class="producto-marca">
-                <span>Marca:</span> <strong>${producto.marca}</strong>
+                <span>Marca:</span> <a href="/productos/?marca=${producto.marca}" class="marca-link"><strong>${producto.marca}</strong></a>
             </div>
         `;
     }
     
+    // Rating real con promedio
+    const ratingStars = producto.rating_promedio > 0 ? '★'.repeat(Math.round(producto.rating_promedio)) + '☆'.repeat(5 - Math.round(producto.rating_promedio)) : '☆☆☆☆☆';
     const ratingHtml = `
         <div class="producto-rating">
             <div class="stars ${producto.total_valoraciones === 0 ? 'empty' : ''}">
-                ${producto.total_valoraciones > 0 ? '★★★★☆' : '☆☆☆☆☆'}
+                ${ratingStars}
             </div>
-            <span class="rating-count">(${producto.total_valoraciones} valoracion${producto.total_valoraciones !== 1 ? 'es' : ''})</span>
+            <span class="rating-count">${producto.rating_promedio.toFixed(1)} (${producto.total_valoraciones} valoracion${producto.total_valoraciones !== 1 ? 'es' : ''})</span>
         </div>
     `;
     
     let precioHtml = '';
-    if (producto.tiene_descuento) {
-        const ahorro = (parseFloat(producto.precio) - parseFloat(producto.precio_oferta)).toFixed(2);
-        precioHtml = `
-            <div class="precio-descuento">
-                <span class="precio-original">$${producto.precio}</span>
-                <span class="precio-actual">$${producto.precio_oferta}</span>
-            </div>
-            <div class="ahorro">Ahorras $${ahorro}</div>
-        `;
+    if (producto.precio) {
+        if (producto.tiene_descuento) {
+            const ahorro = (parseFloat(producto.precio) - parseFloat(producto.precio_oferta)).toFixed(2);
+            precioHtml = `
+                <div class="precio-descuento">
+                    <span class="precio-original">$${producto.precio}</span>
+                    <span class="precio-actual">$${producto.precio_oferta}</span>
+                </div>
+                <div class="ahorro">🎉 Ahorras $${ahorro} (${producto.porcentaje_descuento}%)</div>
+            `;
+        } else {
+            precioHtml = `<span class="precio-actual">$${producto.precio}</span>`;
+        }
     } else {
-        precioHtml = `<span class="precio-actual">$${producto.precio}</span>`;
+        precioHtml = `<span class="precio-contacto">Consultar precio</span>`;
     }
     
     let stockHtml = '';
@@ -648,8 +685,10 @@ function renderInfo(producto) {
         stockHtml = `<span class="stock-agotado">✗ Agotado</span>`;
     }
     
+    // Características expandidas
     let caracteristicasHtml = '';
-    if (producto.peso || producto.dimensiones) {
+    const hasCaracteristicas = producto.peso || producto.dimensiones || producto.origen;
+    if (hasCaracteristicas) {
         caracteristicasHtml = '<div class="producto-caracteristicas">';
         if (producto.peso) {
             caracteristicasHtml += `
@@ -667,6 +706,14 @@ function renderInfo(producto) {
                 </div>
             `;
         }
+        if (producto.origen) {
+            caracteristicasHtml += `
+                <div class="caracteristica">
+                    <span class="caracteristica-icono">🌍</span>
+                    <span>Origen: ${producto.origen}</span>
+                </div>
+            `;
+        }
         caracteristicasHtml += '</div>';
     }
     
@@ -679,7 +726,20 @@ function renderInfo(producto) {
         </button>
     ` : `
         <button class="btn btn-disabled" disabled>Producto Agotado</button>
+        <button class="btn btn-notify" onclick="notificarDisponibilidad(${producto.id})">Notificarme</button>
     `;
+    
+    // Ficha técnica PDF
+    let fichaTecnicaHtml = '';
+    if (producto.ficha_tecnica) {
+        fichaTecnicaHtml = `
+            <div class="ficha-tecnica-link">
+                <a href="${producto.ficha_tecnica}" target="_blank" class="btn btn-outline">
+                    📎 Descargar Ficha Técnica (PDF)
+                </a>
+            </div>
+        `;
+    }
     
     infoContainer.innerHTML = `
         <h1 class="producto-titulo">${producto.nombre}</h1>
@@ -699,8 +759,27 @@ function renderInfo(producto) {
                     <a href="/productos/?categoria=${producto.categoria_slug}" class="meta-value">${producto.categoria}</a>
                 </div>
             ` : ''}
+            ${producto.subcategoria ? `
+                <div class="meta-item">
+                    <span class="meta-label">Subcategoría:</span>
+                    <a href="/productos/?subcategoria=${producto.subcategoria_slug}" class="meta-value">${producto.subcategoria}</a>
+                </div>
+            ` : ''}
+            ${producto.proveedor ? `
+                <div class="meta-item">
+                    <span class="meta-label">Proveedor:</span>
+                    <a href="/productos/?proveedor=${producto.proveedor}" class="meta-value">${producto.proveedor}</a>
+                </div>
+            ` : ''}
+            ${producto.estatus ? `
+                <div class="meta-item">
+                    <span class="meta-label">Estatus:</span>
+                    <span class="meta-value">${producto.estatus}</span>
+                </div>
+            ` : ''}
         </div>
         ${caracteristicasHtml}
+        ${fichaTecnicaHtml}
         <div class="producto-acciones">${accionesHtml}</div>
     `;
 }
@@ -708,13 +787,36 @@ function renderInfo(producto) {
 function renderTabs(producto) {
     const tabsContainer = document.getElementById('producto-tabs');
     
+    // Distribución de rating
+    let distribucionHtml = '';
+    if (producto.distribucion_rating && producto.total_valoraciones > 0) {
+        distribucionHtml = `
+            <div class="rating-distribucion">
+                <h4>Distribución de calificaciones</h4>
+                ${[5,4,3,2,1].map(stars => {
+                    const count = producto.distribucion_rating[stars.toString()] || 0;
+                    const percent = producto.total_valoraciones > 0 ? (count / producto.total_valoraciones * 100).toFixed(0) : 0;
+                    return `
+                        <div class="rating-bar">
+                            <span class="rating-stars">${stars} ★</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="width: ${percent}%"></div>
+                            </div>
+                            <span class="rating-count">${count}</span>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
+    
     let valoracionesHtml = '';
     if (producto.valoraciones && producto.valoraciones.length > 0) {
         valoracionesHtml = producto.valoraciones.map(val => `
             <div class="valoracion-item">
                 <div class="valoracion-header">
                     <div class="valoracion-autor">
-                        <strong>${val.usuario || 'Anónimo'}</strong>
+                        <strong>${val.usuario}</strong>
                         ${val.verificado ? '<span class="badge-verificado">✓ Compra verificada</span>' : ''}
                     </div>
                     <div class="valoracion-fecha">${val.fecha}</div>
@@ -738,9 +840,14 @@ function renderTabs(producto) {
     let especificacionesHtml = `
         <tr><td><strong>SKU</strong></td><td>${producto.sku}</td></tr>
         ${producto.marca ? `<tr><td><strong>Marca</strong></td><td>${producto.marca}</td></tr>` : ''}
+        ${producto.categoria ? `<tr><td><strong>Categoría</strong></td><td>${producto.categoria}</td></tr>` : ''}
+        ${producto.subcategoria ? `<tr><td><strong>Subcategoría</strong></td><td>${producto.subcategoria}</td></tr>` : ''}
+        ${producto.proveedor ? `<tr><td><strong>Proveedor</strong></td><td>${producto.proveedor}</td></tr>` : ''}
+        ${producto.estatus ? `<tr><td><strong>Estatus</strong></td><td>${producto.estatus}</td></tr>` : ''}
         ${producto.peso ? `<tr><td><strong>Peso</strong></td><td>${producto.peso} kg</td></tr>` : ''}
         ${producto.dimensiones ? `<tr><td><strong>Dimensiones</strong></td><td>${producto.dimensiones} cm</td></tr>` : ''}
-        ${producto.categoria ? `<tr><td><strong>Categoría</strong></td><td>${producto.categoria}</td></tr>` : ''}
+        ${producto.origen ? `<tr><td><strong>País de Origen</strong></td><td>${producto.origen}</td></tr>` : ''}
+        ${producto.fecha_creacion ? `<tr><td><strong>Fecha de Creación</strong></td><td>${producto.fecha_creacion}</td></tr>` : ''}
     `;
     
     tabsContainer.innerHTML = `
@@ -760,6 +867,7 @@ function renderTabs(producto) {
             </div>
             <div class="tab-panel" id="tab-valoraciones">
                 <h3>Valoraciones de Clientes</h3>
+                ${distribucionHtml}
                 <div class="valoraciones-lista">${valoracionesHtml}</div>
             </div>
         </div>
@@ -771,20 +879,36 @@ function renderRelacionados(productos) {
     const grid = document.getElementById('relacionados-grid');
     
     grid.innerHTML = productos.map(prod => {
-        const precioHtml = prod.precio_oferta ? `
-            <span class="price-original">$${prod.precio}</span>
-            <span class="price-sale">$${prod.precio_oferta}</span>
-        ` : `$${prod.precio}`;
+        let precioHtml = '';
+        if (prod.precio) {
+            if (prod.precio_oferta) {
+                precioHtml = `
+                    <span class="price-original">$${prod.precio}</span>
+                    <span class="price-sale">$${prod.precio_oferta}</span>
+                `;
+            } else {
+                precioHtml = `$${prod.precio}`;
+            }
+        } else {
+            precioHtml = '<span class="price-contact">Consultar</span>';
+        }
+        
+        // Badges
+        let badgesHtml = '';
+        if (prod.destacado) badgesHtml += '<span class="badge badge-featured">⭐</span>';
+        if (prod.en_oferta) badgesHtml += '<span class="badge badge-oferta">🔥</span>';
         
         return `
-            <a href="/productos/${prod.slug}/" class="product-card">
+            <a href="${prod.url}" class="product-card">
                 <div class="product-image">
+                    ${badgesHtml ? `<div class="product-badges">${badgesHtml}</div>` : ''}
                     ${prod.imagen_principal ? `
                         <img src="${prod.imagen_principal}" alt="${prod.nombre}" loading="lazy">
                     ` : '<div class="no-image-small">📦</div>'}
                 </div>
                 <div class="product-info">
                     <h3 class="product-name">${prod.nombre}</h3>
+                    ${prod.rating ? `<div class="product-rating"><span>★ ${prod.rating.toFixed(1)}</span></div>` : ''}
                     <div class="product-price">${precioHtml}</div>
                 </div>
             </a>
@@ -800,6 +924,19 @@ function cambiarImagen(url, alt) {
         imgPrincipal.src = url;
         imgPrincipal.alt = alt;
     }
+    
+    document.querySelectorAll('.miniatura').forEach(m => m.classList.remove('active'));
+    event.target.closest('.miniatura').classList.add('active');
+}
+
+function mostrarVideo(url, title) {
+    const imagenPrincipal = document.getElementById('imagen-principal');
+    imagenPrincipal.innerHTML = `
+        <video controls style="width: 100%; height: 100%; object-fit: contain;">
+            <source src="${url}" type="video/mp4">
+            Tu navegador no soporta la reproducción de video.
+        </video>
+    `;
     
     document.querySelectorAll('.miniatura').forEach(m => m.classList.remove('active'));
     event.target.closest('.miniatura').classList.add('active');
@@ -835,6 +972,13 @@ function agregarAlCarrito(productoId) {
 
 function toggleFavorito(productoId) {
     alert('Agregado a favoritos (funcionalidad pendiente)');
+}
+
+function notificarDisponibilidad(productoId) {
+    const email = prompt('¿Qué correo deseas usar para la notificación?');
+    if (email) {
+        alert(`Te notificaremos a ${email} cuando el producto esté disponible (funcionalidad pendiente)`);
+    }
 }
 </script>
 
