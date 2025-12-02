@@ -1,0 +1,841 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ producto.nombre }} | Kitaluro{% endblock %}
+
+{% block content %}
+<div class="producto-detalle-container">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" id="breadcrumb">
+        <span>Cargando...</span>
+    </nav>
+
+    <div class="producto-detalle">
+        <!-- Galería de imágenes y videos -->
+        <div class="producto-galeria" id="producto-galeria">
+            <div class="galeria-principal">
+                <div class="imagen-principal" id="imagen-principal">
+                    <div class="loading-placeholder">Cargando...</div>
+                </div>
+                <div class="galeria-miniaturas" id="galeria-miniaturas">
+                    <!-- Miniaturas se cargarán con JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Información del producto -->
+        <div class="producto-info" id="producto-info">
+            <div class="loading-placeholder">Cargando información...</div>
+        </div>
+    </div>
+
+    <!-- Tabs de información detallada -->
+    <div class="producto-tabs" id="producto-tabs">
+        <div class="loading-placeholder">Cargando detalles...</div>
+    </div>
+
+    <!-- Productos relacionados -->
+    <div class="productos-relacionados" id="productos-relacionados" style="display: none;">
+        <h2>Productos Relacionados</h2>
+        <div class="productos-grid" id="relacionados-grid">
+            <!-- Se cargarán con JavaScript -->
+        </div>
+    </div>
+</div>
+
+<style>
+/* Estilos específicos para la página de detalle */
+.producto-detalle-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xl);
+    font-size: var(--font-sm);
+    color: var(--color-gray-600);
+}
+
+.breadcrumb a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb .current {
+    color: var(--color-gray-900);
+    font-weight: 500;
+}
+
+.producto-detalle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-3xl);
+    margin-bottom: var(--spacing-3xl);
+}
+
+/* Galería */
+.producto-galeria {
+    position: sticky;
+    top: var(--spacing-xl);
+    height: fit-content;
+}
+
+.galeria-principal {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.imagen-principal {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    background: var(--color-gray-50);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-lg);
+    overflow: hidden;
+}
+
+.imagen-principal img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.no-image-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--color-gray-400);
+}
+
+.no-image-placeholder span {
+    font-size: 4rem;
+}
+
+.badge {
+    position: absolute;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-sm);
+    font-weight: 600;
+    color: white;
+}
+
+.badge-descuento {
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    background: #dc2626;
+}
+
+.badge-destacado {
+    top: 3.5rem;
+    right: var(--spacing-md);
+    background: #f59e0b;
+}
+
+.galeria-miniaturas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: var(--spacing-sm);
+}
+
+.miniatura {
+    position: relative;
+    width: 100%;
+    height: 80px;
+    background: var(--color-gray-50);
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    overflow: hidden;
+    transition: var(--transition-base);
+}
+
+.miniatura:hover,
+.miniatura.active {
+    border-color: var(--color-primary);
+}
+
+.miniatura img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.miniatura-video {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-icon {
+    font-size: 2rem;
+}
+
+.play-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: var(--spacing-xs);
+    border-radius: 50%;
+}
+
+/* Información del producto */
+.producto-info {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.producto-titulo {
+    font-size: var(--font-3xl);
+    margin-bottom: var(--spacing-md);
+    color: var(--color-gray-900);
+}
+
+.producto-marca {
+    margin-bottom: var(--spacing-md);
+    color: var(--color-gray-600);
+}
+
+.producto-rating {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+.stars {
+    color: #fbbf24;
+    font-size: var(--font-lg);
+}
+
+.stars.empty {
+    color: var(--color-gray-300);
+}
+
+.rating-count {
+    color: var(--color-gray-600);
+    font-size: var(--font-sm);
+}
+
+.producto-descripcion-corta {
+    font-size: var(--font-lg);
+    color: var(--color-gray-700);
+    margin-bottom: var(--spacing-xl);
+    line-height: 1.6;
+}
+
+.producto-precio {
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    background: var(--color-gray-50);
+    border-radius: var(--radius-md);
+}
+
+.precio-descuento {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.precio-original {
+    font-size: var(--font-xl);
+    color: var(--color-gray-400);
+    text-decoration: line-through;
+}
+
+.precio-actual {
+    font-size: var(--font-4xl);
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.ahorro {
+    margin-top: var(--spacing-sm);
+    color: #16a34a;
+    font-weight: 600;
+}
+
+.producto-stock {
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+}
+
+.stock-disponible {
+    color: #16a34a;
+}
+
+.stock-bajo {
+    color: #f59e0b;
+}
+
+.stock-agotado {
+    color: #dc2626;
+}
+
+.producto-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background: var(--color-gray-50);
+    border-radius: var(--radius-md);
+}
+
+.meta-item {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.meta-label {
+    color: var(--color-gray-600);
+    font-weight: 600;
+}
+
+.meta-value {
+    color: var(--color-gray-900);
+}
+
+.producto-caracteristicas {
+    display: flex;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.caracteristica {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--color-gray-700);
+}
+
+.producto-acciones {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.btn-agregar,
+.btn-favorito {
+    flex: 1;
+    padding: var(--spacing-lg);
+    font-size: var(--font-lg);
+    font-weight: 600;
+}
+
+/* Tabs */
+.producto-tabs {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    margin-bottom: var(--spacing-3xl);
+}
+
+.tabs-header {
+    display: flex;
+    border-bottom: 2px solid var(--color-gray-200);
+}
+
+.tab-btn {
+    flex: 1;
+    padding: var(--spacing-lg);
+    background: none;
+    border: none;
+    font-size: var(--font-lg);
+    font-weight: 600;
+    color: var(--color-gray-600);
+    cursor: pointer;
+    transition: var(--transition-base);
+    border-bottom: 3px solid transparent;
+}
+
+.tab-btn:hover {
+    color: var(--color-primary);
+    background: var(--color-gray-50);
+}
+
+.tab-btn.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+}
+
+.tabs-content {
+    padding: var(--spacing-xl);
+}
+
+.tab-panel {
+    display: none;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+.tabla-especificaciones {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla-especificaciones tr {
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.tabla-especificaciones td {
+    padding: var(--spacing-md);
+}
+
+.tabla-especificaciones td:first-child {
+    width: 200px;
+    color: var(--color-gray-600);
+}
+
+.valoraciones-lista {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+}
+
+.valoracion-item {
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+}
+
+.valoracion-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-sm);
+}
+
+.badge-verificado {
+    margin-left: var(--spacing-sm);
+    padding: 2px var(--spacing-sm);
+    background: #16a34a;
+    color: white;
+    font-size: var(--font-xs);
+    border-radius: var(--radius-sm);
+}
+
+.valoracion-estrellas {
+    color: #fbbf24;
+    margin-bottom: var(--spacing-sm);
+}
+
+.sin-valoraciones {
+    text-align: center;
+    padding: var(--spacing-3xl);
+    color: var(--color-gray-600);
+}
+
+/* Productos relacionados */
+.productos-relacionados {
+    margin-top: var(--spacing-3xl);
+}
+
+.productos-relacionados h2 {
+    margin-bottom: var(--spacing-xl);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .producto-detalle {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-xl);
+    }
+    
+    .producto-galeria {
+        position: static;
+    }
+    
+    .imagen-principal {
+        height: 300px;
+    }
+    
+    .producto-acciones {
+        flex-direction: column;
+    }
+    
+    .tabs-header {
+        overflow-x: auto;
+    }
+    
+    .tab-btn {
+        white-space: nowrap;
+    }
+}
+</style>
+
+<script>
+// @ts-nocheck
+let productoData = null;
+
+// Cargar datos del producto
+document.addEventListener('DOMContentLoaded', async function() {
+    const slug = window.location.pathname.split('/').filter(Boolean).pop();
+    await loadProducto(slug);
+});
+
+async function loadProducto(slug) {
+    try {
+        const response = await fetch(`/productos/${slug}/json/`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Error al cargar producto');
+        
+        productoData = await response.json();
+        renderProducto(productoData);
+    } catch (error) {
+        console.error('Error:', error);
+        document.querySelector('.producto-detalle-container').innerHTML = `
+            <div style="text-align: center; padding: 3rem;">
+                <h2>Error al cargar el producto</h2>
+                <p>El producto no existe o hubo un error.</p>
+                <a href="/productos/" class="btn btn-primary">Volver al catálogo</a>
+            </div>
+        `;
+    }
+}
+
+function renderProducto(producto) {
+    // Actualizar título de la página
+    document.title = `${producto.nombre} | Kitaluro`;
+    
+    // Renderizar breadcrumb
+    renderBreadcrumb(producto);
+    
+    // Renderizar galería
+    renderGaleria(producto);
+    
+    // Renderizar información
+    renderInfo(producto);
+    
+    // Renderizar tabs
+    renderTabs(producto);
+    
+    // Renderizar productos relacionados
+    if (producto.productos_relacionados && producto.productos_relacionados.length > 0) {
+        renderRelacionados(producto.productos_relacionados);
+    }
+    
+    // Inicializar tabs
+    setupTabs();
+}
+
+function renderBreadcrumb(producto) {
+    const breadcrumb = document.getElementById('breadcrumb');
+    let html = `
+        <a href="/">Inicio</a>
+        <span>/</span>
+        <a href="/productos/">Productos</a>
+        <span>/</span>
+    `;
+    
+    if (producto.categoria) {
+        html += `
+            <a href="/productos/?categoria=${producto.categoria_slug}">${producto.categoria}</a>
+            <span>/</span>
+        `;
+    }
+    
+    html += `<span class="current">${producto.nombre}</span>`;
+    breadcrumb.innerHTML = html;
+}
+
+function renderGaleria(producto) {
+    const imagenPrincipal = document.getElementById('imagen-principal');
+    const miniaturas = document.getElementById('galeria-miniaturas');
+    
+    // Imagen principal
+    let imagenHtml = '';
+    if (producto.imagenes && producto.imagenes.length > 0) {
+        imagenHtml = `<img src="${producto.imagenes[0].url}" alt="${producto.nombre}" id="img-principal">`;
+    } else {
+        imagenHtml = `
+            <div class="no-image-placeholder">
+                <span>📦</span>
+                <p>Sin imagen disponible</p>
+            </div>
+        `;
+    }
+    
+    // Badges
+    if (producto.tiene_descuento) {
+        imagenHtml += `<div class="badge badge-descuento">-${producto.porcentaje_descuento}%</div>`;
+    }
+    if (producto.destacado) {
+        imagenHtml += `<div class="badge badge-destacado">Destacado</div>`;
+    }
+    
+    imagenPrincipal.innerHTML = imagenHtml;
+    
+    // Miniaturas
+    if (producto.imagenes && producto.imagenes.length > 0) {
+        miniaturas.innerHTML = producto.imagenes.map((img, index) => `
+            <div class="miniatura ${index === 0 ? 'active' : ''}" onclick="cambiarImagen('${img.url}', '${producto.nombre}')">
+                <img src="${img.url}" alt="${producto.nombre}">
+            </div>
+        `).join('');
+    }
+}
+
+function renderInfo(producto) {
+    const infoContainer = document.getElementById('producto-info');
+    
+    let marcaHtml = '';
+    if (producto.marca) {
+        marcaHtml = `
+            <div class="producto-marca">
+                <span>Marca:</span> <strong>${producto.marca}</strong>
+            </div>
+        `;
+    }
+    
+    const ratingHtml = `
+        <div class="producto-rating">
+            <div class="stars ${producto.total_valoraciones === 0 ? 'empty' : ''}">
+                ${producto.total_valoraciones > 0 ? '★★★★☆' : '☆☆☆☆☆'}
+            </div>
+            <span class="rating-count">(${producto.total_valoraciones} valoracion${producto.total_valoraciones !== 1 ? 'es' : ''})</span>
+        </div>
+    `;
+    
+    let precioHtml = '';
+    if (producto.tiene_descuento) {
+        const ahorro = (parseFloat(producto.precio) - parseFloat(producto.precio_oferta)).toFixed(2);
+        precioHtml = `
+            <div class="precio-descuento">
+                <span class="precio-original">$${producto.precio}</span>
+                <span class="precio-actual">$${producto.precio_oferta}</span>
+            </div>
+            <div class="ahorro">Ahorras $${ahorro}</div>
+        `;
+    } else {
+        precioHtml = `<span class="precio-actual">$${producto.precio}</span>`;
+    }
+    
+    let stockHtml = '';
+    if (producto.en_stock) {
+        if (producto.stock <= 5) {
+            stockHtml = `<span class="stock-bajo">⚠️ ¡Solo quedan ${producto.stock}!</span>`;
+        } else {
+            stockHtml = `<span class="stock-disponible">✓ En stock (${producto.stock} disponibles)</span>`;
+        }
+    } else {
+        stockHtml = `<span class="stock-agotado">✗ Agotado</span>`;
+    }
+    
+    let caracteristicasHtml = '';
+    if (producto.peso || producto.dimensiones) {
+        caracteristicasHtml = '<div class="producto-caracteristicas">';
+        if (producto.peso) {
+            caracteristicasHtml += `
+                <div class="caracteristica">
+                    <span class="caracteristica-icono">⚖️</span>
+                    <span>Peso: ${producto.peso} kg</span>
+                </div>
+            `;
+        }
+        if (producto.dimensiones) {
+            caracteristicasHtml += `
+                <div class="caracteristica">
+                    <span class="caracteristica-icono">📏</span>
+                    <span>Dimensiones: ${producto.dimensiones} cm</span>
+                </div>
+            `;
+        }
+        caracteristicasHtml += '</div>';
+    }
+    
+    const accionesHtml = producto.en_stock ? `
+        <button class="btn btn-primary btn-agregar" onclick="agregarAlCarrito(${producto.id})">
+            🛒 Agregar al Carrito
+        </button>
+        <button class="btn btn-secondary btn-favorito" onclick="toggleFavorito(${producto.id})">
+            ♡ Favoritos
+        </button>
+    ` : `
+        <button class="btn btn-disabled" disabled>Producto Agotado</button>
+    `;
+    
+    infoContainer.innerHTML = `
+        <h1 class="producto-titulo">${producto.nombre}</h1>
+        ${marcaHtml}
+        ${ratingHtml}
+        <p class="producto-descripcion-corta">${producto.descripcion_corta}</p>
+        <div class="producto-precio">${precioHtml}</div>
+        <div class="producto-stock">${stockHtml}</div>
+        <div class="producto-meta">
+            <div class="meta-item">
+                <span class="meta-label">SKU:</span>
+                <span class="meta-value">${producto.sku}</span>
+            </div>
+            ${producto.categoria ? `
+                <div class="meta-item">
+                    <span class="meta-label">Categoría:</span>
+                    <a href="/productos/?categoria=${producto.categoria_slug}" class="meta-value">${producto.categoria}</a>
+                </div>
+            ` : ''}
+        </div>
+        ${caracteristicasHtml}
+        <div class="producto-acciones">${accionesHtml}</div>
+    `;
+}
+
+function renderTabs(producto) {
+    const tabsContainer = document.getElementById('producto-tabs');
+    
+    let valoracionesHtml = '';
+    if (producto.valoraciones && producto.valoraciones.length > 0) {
+        valoracionesHtml = producto.valoraciones.map(val => `
+            <div class="valoracion-item">
+                <div class="valoracion-header">
+                    <div class="valoracion-autor">
+                        <strong>${val.usuario || 'Anónimo'}</strong>
+                        ${val.verificado ? '<span class="badge-verificado">✓ Compra verificada</span>' : ''}
+                    </div>
+                    <div class="valoracion-fecha">${val.fecha}</div>
+                </div>
+                <div class="valoracion-estrellas">
+                    ${'★'.repeat(val.puntuacion)}${'☆'.repeat(5 - val.puntuacion)}
+                </div>
+                ${val.titulo ? `<h4 class="valoracion-titulo">${val.titulo}</h4>` : ''}
+                ${val.comentario ? `<p class="valoracion-comentario">${val.comentario}</p>` : ''}
+            </div>
+        `).join('');
+    } else {
+        valoracionesHtml = `
+            <div class="sin-valoraciones">
+                <p>Este producto aún no tiene valoraciones.</p>
+                <p>¡Sé el primero en valorarlo!</p>
+            </div>
+        `;
+    }
+    
+    let especificacionesHtml = `
+        <tr><td><strong>SKU</strong></td><td>${producto.sku}</td></tr>
+        ${producto.marca ? `<tr><td><strong>Marca</strong></td><td>${producto.marca}</td></tr>` : ''}
+        ${producto.peso ? `<tr><td><strong>Peso</strong></td><td>${producto.peso} kg</td></tr>` : ''}
+        ${producto.dimensiones ? `<tr><td><strong>Dimensiones</strong></td><td>${producto.dimensiones} cm</td></tr>` : ''}
+        ${producto.categoria ? `<tr><td><strong>Categoría</strong></td><td>${producto.categoria}</td></tr>` : ''}
+    `;
+    
+    tabsContainer.innerHTML = `
+        <div class="tabs-header">
+            <button class="tab-btn active" data-tab="descripcion">Descripción</button>
+            <button class="tab-btn" data-tab="especificaciones">Especificaciones</button>
+            <button class="tab-btn" data-tab="valoraciones">Valoraciones (${producto.total_valoraciones})</button>
+        </div>
+        <div class="tabs-content">
+            <div class="tab-panel active" id="tab-descripcion">
+                <h3>Descripción del Producto</h3>
+                <div class="descripcion-completa">${producto.descripcion.replace(/\n/g, '<br>')}</div>
+            </div>
+            <div class="tab-panel" id="tab-especificaciones">
+                <h3>Especificaciones Técnicas</h3>
+                <table class="tabla-especificaciones">${especificacionesHtml}</table>
+            </div>
+            <div class="tab-panel" id="tab-valoraciones">
+                <h3>Valoraciones de Clientes</h3>
+                <div class="valoraciones-lista">${valoracionesHtml}</div>
+            </div>
+        </div>
+    `;
+}
+
+function renderRelacionados(productos) {
+    const container = document.getElementById('productos-relacionados');
+    const grid = document.getElementById('relacionados-grid');
+    
+    grid.innerHTML = productos.map(prod => {
+        const precioHtml = prod.precio_oferta ? `
+            <span class="price-original">$${prod.precio}</span>
+            <span class="price-sale">$${prod.precio_oferta}</span>
+        ` : `$${prod.precio}`;
+        
+        return `
+            <a href="/productos/${prod.slug}/" class="product-card">
+                <div class="product-image">
+                    ${prod.imagen_principal ? `
+                        <img src="${prod.imagen_principal}" alt="${prod.nombre}" loading="lazy">
+                    ` : '<div class="no-image-small">📦</div>'}
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">${prod.nombre}</h3>
+                    <div class="product-price">${precioHtml}</div>
+                </div>
+            </a>
+        `;
+    }).join('');
+    
+    container.style.display = 'block';
+}
+
+function cambiarImagen(url, alt) {
+    const imgPrincipal = document.getElementById('img-principal');
+    if (imgPrincipal) {
+        imgPrincipal.src = url;
+        imgPrincipal.alt = alt;
+    }
+    
+    document.querySelectorAll('.miniatura').forEach(m => m.classList.remove('active'));
+    event.target.closest('.miniatura').classList.add('active');
+}
+
+function setupTabs() {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+    
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
+            
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabPanels.forEach(p => p.classList.remove('active'));
+            
+            this.classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
+        });
+    });
+}
+
+function agregarAlCarrito(productoId) {
+    alert('Producto agregado al carrito (funcionalidad pendiente)');
+    const cartCount = document.getElementById('cart-count');
+    if (cartCount) {
+        const current = parseInt(cartCount.textContent || '0');
+        cartCount.textContent = current + 1;
+        cartCount.style.display = 'inline';
+        localStorage.setItem('cartCount', current + 1);
+    }
+}
+
+function toggleFavorito(productoId) {
+    alert('Agregado a favoritos (funcionalidad pendiente)');
+}
+</script>
+
+{% endblock %}
