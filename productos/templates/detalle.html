@@ -7,61 +7,68 @@
 <div class="producto-detalle-container">
     <!-- Breadcrumb -->
     <nav class="breadcrumb" id="breadcrumb">
-        <span>Cargando...</span>
+        <span>🔧 Cargando...</span>
     </nav>
 
     <div class="producto-detalle">
-        <!-- Galería de imágenes y videos -->
-        <div class="producto-galeria" id="producto-galeria">
+        <!-- Galería de imágenes -->
+        <div class="producto-galeria">
             <div class="galeria-principal">
                 <div class="imagen-principal" id="imagen-principal">
-                    <div class="loading-placeholder">Cargando...</div>
+                    <div class="loading-placeholder">🔧 Cargando imagen...</div>
                 </div>
-                <div class="galeria-miniaturas" id="galeria-miniaturas">
-                    <!-- Miniaturas se cargarán con JavaScript -->
-                </div>
+            </div>
+            <div class="galeria-miniaturas" id="galeria-miniaturas">
+                <!-- Miniaturas se cargarán dinámicamente -->
             </div>
         </div>
 
         <!-- Información del producto -->
         <div class="producto-info" id="producto-info">
-            <div class="loading-placeholder">Cargando información...</div>
+            <div class="loading-placeholder">🔧 Cargando información...</div>
         </div>
     </div>
 
     <!-- Tabs de información detallada -->
     <div class="producto-tabs" id="producto-tabs">
-        <div class="loading-placeholder">Cargando detalles...</div>
+        <div class="loading-placeholder">🔧 Cargando detalles...</div>
     </div>
 
     <!-- Productos relacionados -->
     <div class="productos-relacionados" id="productos-relacionados" style="display: none;">
-        <h2>Productos Relacionados</h2>
+        <h2>🔍 Productos Relacionados</h2>
         <div class="productos-grid" id="relacionados-grid">
-            <!-- Se cargarán con JavaScript -->
+            <!-- Se cargarán dinámicamente -->
         </div>
     </div>
 </div>
 
 <style>
-/* Estilos específicos para la página de detalle */
+/* Estilos para página de detalle usando variables del tema principal */
 .producto-detalle-container {
-    max-width: 1400px;
+    max-width: var(--max-width);
     margin: 0 auto;
-    padding: var(--spacing-xl);
+    padding: 1rem;
+    background: var(--background);
+    min-height: calc(100vh - var(--header-height));
 }
 
+/* Breadcrumb simplificado */
 .breadcrumb {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-xl);
-    font-size: var(--font-sm);
-    color: var(--color-gray-600);
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    padding: 0.75rem;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
 }
 
 .breadcrumb a {
-    color: var(--color-primary);
+    color: var(--primary);
     text-decoration: none;
 }
 
@@ -70,39 +77,42 @@
 }
 
 .breadcrumb .current {
-    color: var(--color-gray-900);
+    color: var(--text-primary);
     font-weight: 500;
 }
 
+/* Layout principal */
 .producto-detalle {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-3xl);
-    margin-bottom: var(--spacing-3xl);
+    gap: 2rem;
+    margin-bottom: 2rem;
 }
 
-/* Galería */
+/* Galería optimizada */
 .producto-galeria {
-    position: sticky;
-    top: var(--spacing-xl);
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    box-shadow: var(--shadow-sm);
     height: fit-content;
 }
 
 .galeria-principal {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-xl);
-    box-shadow: var(--shadow-md);
+    margin-bottom: 1rem;
 }
 
 .imagen-principal {
     position: relative;
     width: 100%;
-    height: 500px;
-    background: var(--color-gray-50);
-    border-radius: var(--radius-md);
-    margin-bottom: var(--spacing-lg);
+    height: 400px;
+    background: var(--background);
+    border-radius: var(--border-radius);
     overflow: hidden;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .imagen-principal img {
@@ -117,55 +127,58 @@
     align-items: center;
     justify-content: center;
     height: 100%;
-    color: var(--color-gray-400);
+    color: var(--text-muted);
+    background: var(--background);
+    border-radius: var(--border-radius);
 }
 
 .no-image-placeholder span {
-    font-size: 4rem;
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
 }
 
 .badge {
     position: absolute;
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-sm);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
     font-weight: 600;
     color: white;
+    z-index: 1;
 }
 
 .badge-descuento {
-    top: var(--spacing-md);
-    right: var(--spacing-md);
-    background: #dc2626;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: var(--accent);
 }
 
 .badge-destacado {
-    top: 3.5rem;
-    right: var(--spacing-md);
-    background: #f59e0b;
+    top: 2.5rem;
+    right: 0.5rem;
+    background: var(--warning, #f59e0b);
 }
 
 .galeria-miniaturas {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: var(--spacing-sm);
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 0.5rem;
 }
 
 .miniatura {
-    position: relative;
     width: 100%;
-    height: 80px;
-    background: var(--color-gray-50);
+    height: 60px;
+    background: var(--background);
     border: 2px solid transparent;
-    border-radius: var(--radius-sm);
+    border-radius: var(--border-radius);
     cursor: pointer;
     overflow: hidden;
-    transition: var(--transition-base);
+    transition: all 0.2s ease;
 }
 
 .miniatura:hover,
 .miniatura.active {
-    border-color: var(--color-primary);
+    border-color: var(--primary);
 }
 
 .miniatura img {
@@ -178,210 +191,245 @@
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.video-icon {
-    font-size: 2rem;
-}
-
-.play-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.5rem;
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    padding: var(--spacing-xs);
-    border-radius: 50%;
+    background: var(--background);
 }
 
 /* Información del producto */
 .producto-info {
     background: white;
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-xl);
-    box-shadow: var(--shadow-md);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
 }
 
 .producto-titulo {
-    font-size: var(--font-3xl);
-    margin-bottom: var(--spacing-md);
-    color: var(--color-gray-900);
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+    line-height: 1.2;
 }
 
 .producto-marca {
-    margin-bottom: var(--spacing-md);
-    color: var(--color-gray-600);
+    margin-bottom: 0.75rem;
+    color: var(--text-muted);
+}
+
+.producto-marca a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
 }
 
 .producto-rating {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-lg);
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .stars {
     color: #fbbf24;
-    font-size: var(--font-lg);
+    font-size: 1.1rem;
 }
 
 .stars.empty {
-    color: var(--color-gray-300);
+    color: var(--text-muted);
 }
 
 .rating-count {
-    color: var(--color-gray-600);
-    font-size: var(--font-sm);
+    color: var(--text-muted);
+    font-size: 0.875rem;
 }
 
 .producto-descripcion-corta {
-    font-size: var(--font-lg);
-    color: var(--color-gray-700);
-    margin-bottom: var(--spacing-xl);
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
     line-height: 1.6;
 }
 
 .producto-precio {
-    margin-bottom: var(--spacing-xl);
-    padding: var(--spacing-lg);
-    background: var(--color-gray-50);
-    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: var(--background);
+    border-radius: var(--border-radius);
 }
 
 .precio-descuento {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
+    gap: 0.75rem;
+    flex-wrap: wrap;
 }
 
 .precio-original {
-    font-size: var(--font-xl);
-    color: var(--color-gray-400);
+    font-size: 1.125rem;
+    color: var(--text-muted);
     text-decoration: line-through;
 }
 
 .precio-actual {
-    font-size: var(--font-4xl);
+    font-size: 2rem;
     font-weight: 700;
-    color: var(--color-primary);
+    color: var(--primary);
 }
 
 .ahorro {
-    margin-top: var(--spacing-sm);
-    color: #16a34a;
+    margin-top: 0.5rem;
+    color: var(--success, #16a34a);
     font-weight: 600;
+    font-size: 0.875rem;
 }
 
 .producto-stock {
-    margin-bottom: var(--spacing-lg);
-    padding: var(--spacing-md);
-    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
     font-weight: 600;
+    font-size: 0.875rem;
 }
 
 .stock-disponible {
-    color: #16a34a;
+    color: var(--success, #16a34a);
+    background: rgba(22, 163, 74, 0.1);
 }
 
 .stock-bajo {
-    color: #f59e0b;
+    color: var(--warning, #f59e0b);
+    background: rgba(245, 158, 11, 0.1);
 }
 
 .stock-agotado {
-    color: #dc2626;
+    color: var(--accent);
+    background: rgba(220, 38, 38, 0.1);
 }
 
 .producto-meta {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-lg);
-    padding: var(--spacing-lg);
-    background: var(--color-gray-50);
-    border-radius: var(--radius-md);
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--background);
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
 }
 
 .meta-item {
     display: flex;
-    gap: var(--spacing-sm);
+    gap: 0.5rem;
 }
 
 .meta-label {
-    color: var(--color-gray-600);
+    color: var(--text-muted);
     font-weight: 600;
+    min-width: 80px;
 }
 
 .meta-value {
-    color: var(--color-gray-900);
+    color: var(--text-primary);
+}
+
+.meta-value a {
+    color: var(--primary);
+    text-decoration: none;
 }
 
 .producto-caracteristicas {
     display: flex;
-    gap: var(--spacing-lg);
-    margin-bottom: var(--spacing-xl);
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .caracteristica {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
-    color: var(--color-gray-700);
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
 }
 
 .producto-acciones {
     display: flex;
-    gap: var(--spacing-md);
+    gap: 0.75rem;
 }
 
 .btn-agregar,
 .btn-favorito {
     flex: 1;
-    padding: var(--spacing-lg);
-    font-size: var(--font-lg);
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
     font-weight: 600;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
 }
 
-/* Tabs */
+.btn-agregar {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-agregar:hover {
+    background: var(--primary-dark, #0056b3);
+}
+
+.btn-favorito {
+    background: var(--background);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+}
+
+.btn-favorito:hover {
+    background: var(--text-muted);
+    color: white;
+}
+
+/* Tabs optimizados */
 .producto-tabs {
     background: white;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
-    margin-bottom: var(--spacing-3xl);
+    margin-bottom: 2rem;
 }
 
 .tabs-header {
     display: flex;
-    border-bottom: 2px solid var(--color-gray-200);
+    border-bottom: 1px solid var(--border);
+    background: var(--background);
 }
 
 .tab-btn {
     flex: 1;
-    padding: var(--spacing-lg);
+    padding: 1rem;
     background: none;
     border: none;
-    font-size: var(--font-lg);
+    font-size: 0.9rem;
     font-weight: 600;
-    color: var(--color-gray-600);
+    color: var(--text-muted);
     cursor: pointer;
-    transition: var(--transition-base);
-    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
 }
 
 .tab-btn:hover {
-    color: var(--color-primary);
-    background: var(--color-gray-50);
+    color: var(--primary);
+    background: rgba(var(--primary-rgb), 0.05);
 }
 
 .tab-btn.active {
-    color: var(--color-primary);
-    border-bottom-color: var(--color-primary);
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: white;
 }
 
 .tabs-content {
-    padding: var(--spacing-xl);
+    padding: 1.5rem;
 }
 
 .tab-panel {
@@ -395,81 +443,206 @@
 .tabla-especificaciones {
     width: 100%;
     border-collapse: collapse;
+    font-size: 0.875rem;
 }
 
 .tabla-especificaciones tr {
-    border-bottom: 1px solid var(--color-gray-200);
+    border-bottom: 1px solid var(--border);
 }
 
 .tabla-especificaciones td {
-    padding: var(--spacing-md);
+    padding: 0.75rem;
+    vertical-align: top;
 }
 
 .tabla-especificaciones td:first-child {
-    width: 200px;
-    color: var(--color-gray-600);
+    width: 150px;
+    color: var(--text-muted);
+    font-weight: 600;
 }
 
 .valoraciones-lista {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xl);
+    gap: 1rem;
 }
 
 .valoracion-item {
-    padding: var(--spacing-lg);
-    border: 1px solid var(--color-gray-200);
-    border-radius: var(--radius-md);
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    background: var(--background);
 }
 
 .valoracion-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: var(--spacing-sm);
+    align-items: center;
+    margin-bottom: 0.5rem;
 }
 
 .badge-verificado {
-    margin-left: var(--spacing-sm);
-    padding: 2px var(--spacing-sm);
-    background: #16a34a;
+    margin-left: 0.5rem;
+    padding: 2px 6px;
+    background: var(--success, #16a34a);
     color: white;
-    font-size: var(--font-xs);
-    border-radius: var(--radius-sm);
+    font-size: 0.7rem;
+    border-radius: 3px;
 }
 
 .valoracion-estrellas {
     color: #fbbf24;
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: 0.5rem;
 }
 
 .sin-valoraciones {
     text-align: center;
-    padding: var(--spacing-3xl);
-    color: var(--color-gray-600);
+    padding: 2rem;
+    color: var(--text-muted);
 }
 
 /* Productos relacionados */
 .productos-relacionados {
-    margin-top: var(--spacing-3xl);
+    margin-top: 2rem;
 }
 
 .productos-relacionados h2 {
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+/* Loading placeholder */
+.loading-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: var(--text-muted);
+    background: var(--background);
+    border-radius: var(--border-radius);
+}
+
+/* Grid de productos relacionados - usar mismo estilo que productos principales */
+#relacionados-grid.productos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+#relacionados-grid .product-card {
+    background: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+}
+
+#relacionados-grid .product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+#relacionados-grid .product-image {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--background);
+}
+
+#relacionados-grid .product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#relacionados-grid .product-info {
+    padding: 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#relacionados-grid .product-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+#relacionados-grid .product-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.8rem;
+}
+
+#relacionados-grid .product-price {
+    font-weight: 700;
+    color: var(--primary);
+    margin-top: auto;
+}
+
+#relacionados-grid .product-actions {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+#relacionados-grid .product-card:hover .product-actions {
+    opacity: 1;
+}
+
+#relacionados-grid .btn-quick-add {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.8rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+}
+
+#relacionados-grid .btn-quick-add:hover {
+    background: var(--primary-dark, #0056b3);
+    transform: scale(1.1);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .producto-detalle {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-xl);
+    .producto-detalle-container {
+        padding: 0.5rem;
     }
     
-    .producto-galeria {
-        position: static;
+    .producto-detalle {
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
     
     .imagen-principal {
-        height: 300px;
+        height: 280px;
+    }
+    
+    .producto-titulo {
+        font-size: 1.5rem;
+    }
+    
+    .precio-actual {
+        font-size: 1.75rem;
     }
     
     .producto-acciones {
@@ -478,10 +651,25 @@
     
     .tabs-header {
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
     
     .tab-btn {
         white-space: nowrap;
+        min-width: 120px;
+    }
+    
+    .galeria-miniaturas {
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    }
+    
+    .miniatura {
+        height: 50px;
+    }
+    
+    #relacionados-grid.productos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 0.75rem;
     }
 }
 </style>
@@ -511,10 +699,11 @@ async function loadProducto(slug) {
     } catch (error) {
         console.error('Error:', error);
         document.querySelector('.producto-detalle-container').innerHTML = `
-            <div style="text-align: center; padding: 3rem;">
-                <h2>Error al cargar el producto</h2>
-                <p>El producto no existe o hubo un error.</p>
-                <a href="/productos/" class="btn btn-primary">Volver al catálogo</a>
+            <div style="text-align: center; padding: 3rem; background: white; border-radius: var(--border-radius); box-shadow: var(--shadow-sm);">
+                <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--text-muted);">⚠️</div>
+                <h2 style="color: var(--text-primary); margin-bottom: 1rem;">Error al cargar el producto</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">El producto no existe o hubo un error al cargarlo.</p>
+                <a href="/productos/" style="background: var(--primary); color: white; padding: 0.75rem 1.5rem; text-decoration: none; border-radius: var(--border-radius); font-weight: 600;">🔙 Volver al Catálogo</a>
             </div>
         `;
     }
@@ -583,7 +772,7 @@ function renderGaleria(producto) {
     } else {
         imagenHtml = `
             <div class="no-image-placeholder">
-                <span>📦</span>
+                <span>🔧</span>
                 <p>Sin imagen disponible</p>
             </div>
         `;
@@ -718,12 +907,12 @@ function renderInfo(producto) {
     }
     
     const accionesHtml = producto.en_stock ? `
-        <button class="btn btn-primary btn-agregar" onclick="agregarAlCarrito(${producto.id})">
+        <!--<button class="btn btn-primary btn-agregar" onclick="agregarAlCarrito(${producto.id})">
             🛒 Agregar al Carrito
-        </button>
-        <button class="btn btn-secondary btn-favorito" onclick="toggleFavorito(${producto.id})">
+        </button>-->
+        <!--<button class="btn btn-secondary btn-favorito" onclick="toggleFavorito(${producto.id})">
             ♡ Favoritos
-        </button>
+        </button>-->
     ` : `
         <button class="btn btn-disabled" disabled>Producto Agotado</button>
         <button class="btn btn-notify" onclick="notificarDisponibilidad(${producto.id})">Notificarme</button>
@@ -878,13 +1067,17 @@ function renderRelacionados(productos) {
     const container = document.getElementById('productos-relacionados');
     const grid = document.getElementById('relacionados-grid');
     
+    // Usar la misma estructura que el grid de productos principal
+    grid.className = 'productos-grid';
+    grid.setAttribute('data-view', 'grid');
+    
     grid.innerHTML = productos.map(prod => {
         let precioHtml = '';
         if (prod.precio) {
             if (prod.precio_oferta) {
                 precioHtml = `
-                    <span class="price-original">$${prod.precio}</span>
-                    <span class="price-sale">$${prod.precio_oferta}</span>
+                    <span class="price-original">${prod.precio}</span>
+                    <span class="price-sale">${prod.precio_oferta}</span>
                 `;
             } else {
                 precioHtml = `$${prod.precio}`;
@@ -893,23 +1086,28 @@ function renderRelacionados(productos) {
             precioHtml = '<span class="price-contact">Consultar</span>';
         }
         
-        // Badges
-        let badgesHtml = '';
-        if (prod.destacado) badgesHtml += '<span class="badge badge-featured">⭐</span>';
-        if (prod.en_oferta) badgesHtml += '<span class="badge badge-oferta">🔥</span>';
-        
         return `
-            <a href="${prod.url}" class="product-card">
+            <a href="${prod.url}" class="product-card" data-product-id="${prod.id}">
                 <div class="product-image">
-                    ${badgesHtml ? `<div class="product-badges">${badgesHtml}</div>` : ''}
+                    <div class="image-placeholder">🔧</div>
                     ${prod.imagen_principal ? `
-                        <img src="${prod.imagen_principal}" alt="${prod.nombre}" loading="lazy">
-                    ` : '<div class="no-image-small">📦</div>'}
+                        <img src="${prod.imagen_principal}" alt="${prod.nombre}" class="product-img" loading="lazy" onload="this.previousElementSibling.style.display='none';">
+                    ` : `
+                        <div class="product-img no-image" style="background: #f8f9fa; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #6c757d; aspect-ratio: 1; border-radius: 8px;">🔧</div>
+                    `}
                 </div>
                 <div class="product-info">
                     <h3 class="product-name">${prod.nombre}</h3>
-                    ${prod.rating ? `<div class="product-rating"><span>★ ${prod.rating.toFixed(1)}</span></div>` : ''}
+                    <div class="product-rating">
+                        <span class="stars">${prod.rating ? '★'.repeat(Math.round(prod.rating)) + '☆'.repeat(5 - Math.round(prod.rating)) : '☆☆☆☆☆'}</span>
+                        <span class="rating-value">${prod.rating ? prod.rating.toFixed(1) : '0.0'}</span>
+                    </div>
                     <div class="product-price">${precioHtml}</div>
+                </div>
+                <div class="product-actions">
+                    <button class="btn-quick-add" onclick="quickAdd(${prod.id}, event)" aria-label="Añadir rápido">
+                        🛒
+                    </button>
                 </div>
             </a>
         `;
@@ -959,8 +1157,19 @@ function setupTabs() {
     });
 }
 
-function agregarAlCarrito(productoId) {
-    alert('Producto agregado al carrito (funcionalidad pendiente)');
+/*function agregarAlCarrito(productoId) {
+    // Simular animación de agregar al carrito
+    const btn = document.querySelector('.btn-agregar');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '✓ Agregado';
+    btn.style.background = 'var(--success, #16a34a)';
+    
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.style.background = '';
+    }, 2000);
+    
+    // Actualizar contador del carrito
     const cartCount = document.getElementById('cart-count');
     if (cartCount) {
         const current = parseInt(cartCount.textContent || '0');
@@ -968,18 +1177,56 @@ function agregarAlCarrito(productoId) {
         cartCount.style.display = 'inline';
         localStorage.setItem('cartCount', current + 1);
     }
-}
+}*/
 
-function toggleFavorito(productoId) {
-    alert('Agregado a favoritos (funcionalidad pendiente)');
-}
+/*function toggleFavorito(productoId) {
+    const btn = document.querySelector('.btn-favorito');
+    if (btn.innerHTML.includes('♡')) {
+        btn.innerHTML = '♥ En Favoritos';
+        btn.style.background = 'var(--accent)';
+        btn.style.color = 'white';
+    } else {
+        btn.innerHTML = '♡ Favoritos';
+        btn.style.background = '';
+        btn.style.color = '';
+    }
+}*/
 
 function notificarDisponibilidad(productoId) {
-    const email = prompt('¿Qué correo deseas usar para la notificación?');
-    if (email) {
-        alert(`Te notificaremos a ${email} cuando el producto esté disponible (funcionalidad pendiente)`);
+    const email = prompt('¿Qué correo deseas usar para recibir la notificación?');
+    if (email && email.includes('@')) {
+        const btn = document.querySelector('.btn-notify');
+        btn.innerHTML = '✓ Te notificaremos';
+        btn.disabled = true;
+        btn.style.background = 'var(--success, #16a34a)';
+        btn.style.color = 'white';
     }
 }
+
+// Función para manejar quick add desde productos relacionados
+window.quickAdd = function(productId, event) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '✓';
+    btn.style.background = 'var(--accent)';
+    
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.style.background = '';
+    }, 1500);
+    
+    /*// Actualizar contador del carrito
+    const cartCount = document.getElementById('cart-count');
+    if (cartCount) {
+        const current = parseInt(cartCount.textContent || '0');
+        cartCount.textContent = current + 1;
+        cartCount.style.display = 'inline';
+        localStorage.setItem('cartCount', current + 1);
+    }*/
+};
 </script>
 
 {% endblock %}

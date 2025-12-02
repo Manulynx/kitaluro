@@ -18,12 +18,28 @@ def index(request):
     proveedores = Proveedor.objects.filter(activo=True)
     estatus_list = Estatus.objects.filter(activo=True)
     
+    # Obtener todos los productos activos y disponibles con optimización
+    productos = Producto.objects.filter(
+        activo=True, 
+        disponible=True
+    ).select_related(
+        'categoria', 
+        'subcategoria', 
+        'marca', 
+        'proveedor', 
+        'estatus'
+    ).prefetch_related(
+        'imagenes_galeria',
+        'valoraciones'
+    ).order_by('-destacado', '-en_oferta', '-fecha_creacion')
+    
     # Productos destacados y en oferta para destacar en la UI
     productos_destacados = Producto.get_featured_products()[:8]
     productos_oferta = Producto.get_on_sale_products()[:8]
     
     context = {
         'page_title': 'Catálogo de Productos',
+        'productos': productos,  # Agregar todos los productos
         'categorias': categorias,
         'subcategorias': subcategorias,
         'marcas': marcas,
@@ -169,8 +185,25 @@ def detalle(request, slug):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return get_producto_detalle_json(request, slug)
     
-    # Si es petición normal, devolver template vacío que JavaScript llenará
-    return render(request, 'detalle.html', {})
+    # Obtener el producto
+    producto = get_object_or_404(Producto, slug=slug, activo=True)
+    
+    # Productos relacionados (misma categoría o subcategoría)
+    productos_relacionados = Producto.objects.filter(
+        activo=True,
+        disponible=True
+    ).filter(
+        Q(categoria=producto.categoria) | 
+        Q(subcategoria=producto.subcategoria) |
+        Q(marca=producto.marca)
+    ).exclude(id=producto.id).distinct()[:6]
+    
+    context = {
+        'producto': producto,
+        'productos_relacionados': productos_relacionados,
+    }
+    
+    return render(request, 'detalle.html', context)
 
 
 def get_producto_detalle_json(request, slug):

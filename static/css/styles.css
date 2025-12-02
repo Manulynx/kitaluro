@@ -1782,8 +1782,12 @@ body.sidebar-active {
 
 .product-actions {
     position: absolute;
-    top: var(--space-sm);
+    bottom: var(--space-sm);
+    left: var(--space-sm);
     right: var(--space-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
     opacity: 0;
     transition: opacity 0.2s;
 }
@@ -1793,24 +1797,79 @@ body.sidebar-active {
 }
 
 .btn-quick-add {
-    background: rgba(255,255,255,0.9);
+    background: var(--primary);
+    color: white;
     border: none;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    font-size: 14px;
+    font-size: var(--font-sm);
+    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .btn-quick-add:hover {
     background: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.btn-view-detail {
+    background: rgba(255,255,255,0.95);
+    color: var(--neutral);
+    border: 1px solid var(--primary);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    font-size: var(--font-sm);
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.btn-view-detail:hover {
+    background: var(--primary);
     color: white;
-    transform: scale(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.btn-notify {
+    background: var(--color-gray-500);
+    color: white;
+    border: none;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-sm);
+    font-weight: 600;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Producto sin imagen */
+.product-img.no-image {
+    transition: all 0.3s ease;
+}
+
+.product-card:hover .product-img.no-image {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%) !important;
+    color: var(--primary) !important;
+    transform: scale(1.05);
+}
+
+.image-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.5rem;
+    color: var(--color-gray-400);
+    z-index: 1;
 }
 
 /* Estados de carga */

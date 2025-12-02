@@ -35,10 +35,10 @@
             
             <div class="header-actions">
                 <!-- Carrito (solo móvil) -->
-                <a href="#" class="cart-icon mobile-only" aria-label="Carrito de compras">
+                <!-- <a href="#" class="cart-icon mobile-only" aria-label="Carrito de compras">
                     🛒
                     <span class="cart-count" id="cart-count">0</span>
-                </a>
+                </a> -->
                 
                 <!-- Login (solo móvil) -->
                 <a href="#" class="login-btn mobile-only" aria-label="Iniciar sesión">
@@ -51,10 +51,10 @@
                 <a href="{% url 'home' %}" class="header-nav-item">Inicio</a>
                 <a href="{% url 'productos:index' %}" class="header-nav-item">Productos</a>
                 <a href="#" class="header-nav-item">Contacto</a>
-                <a href="#" class="header-nav-item cart-desktop" aria-label="Carrito de compras">
+                <!-- <a href="#" class="header-nav-item cart-desktop" aria-label="Carrito de compras">
                     🛒
                     <span class="cart-count" id="cart-count-desktop">0</span>
-                </a>
+                </a> -->
                 <a href="#" class="header-nav-item login-desktop">Login</a>
             </nav>
 
@@ -297,23 +297,23 @@
             }
 
             // Actualizar contador del carrito (simulado)
-            function updateCartCount() {
-                const cartCountMobile = document.getElementById('cart-count');
-                const cartCountDesktop = document.getElementById('cart-count-desktop');
-                const count = localStorage.getItem('cartCount') || '0';
-                
-                if (cartCountMobile) {
-                    cartCountMobile.textContent = count;
-                    cartCountMobile.style.display = count === '0' ? 'none' : 'inline';
-                }
-                
-                if (cartCountDesktop) {
-                    cartCountDesktop.textContent = count;
-                    cartCountDesktop.style.display = count === '0' ? 'none' : 'inline';
-                }
-            }
-            
-            updateCartCount();
+            // function updateCartCount() {
+            //     const cartCountMobile = document.getElementById('cart-count');
+            //     const cartCountDesktop = document.getElementById('cart-count-desktop');
+            //     const count = localStorage.getItem('cartCount') || '0';
+            //     
+            //     if (cartCountMobile) {
+            //         cartCountMobile.textContent = count;
+            //         cartCountMobile.style.display = count === '0' ? 'none' : 'inline';
+            //     }
+            //     
+            //     if (cartCountDesktop) {
+            //         cartCountDesktop.textContent = count;
+            //         cartCountDesktop.style.display = count === '0' ? 'none' : 'inline';
+            //     }
+            // }
+            // 
+            // updateCartCount();
         });
     </script>
 

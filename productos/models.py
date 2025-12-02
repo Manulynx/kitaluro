@@ -337,6 +337,17 @@ class Producto(models.Model):
             return first_image.image
         return self.imagen  # Fallback a la imagen original del modelo
     
+    @property
+    def imagen_principal(self):
+        """Property para acceso directo a la imagen principal desde templates"""
+        main_image = self.get_main_image()
+        if main_image:
+            try:
+                return main_image.url
+            except (ValueError, AttributeError):
+                return None
+        return None
+    
     def get_all_images(self):
         """Retorna todas las imágenes del producto ordenadas"""
         return self.imagenes_galeria.all()
