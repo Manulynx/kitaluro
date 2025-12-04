@@ -1,477 +1,237 @@
-{% load static %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Compras seguras con pagos internacionales. Visa, Mastercard, PayPal. Envíos garantizados.">
-    <title>{% block title %}Kitaluro{% endblock %}</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
-    <!-- Preload critical CSS inline para primera carga -->
-    <style>
-        /* CSS crítico inline para primera carga */
-        body{font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;color:#111;background:#fff;margin:0;padding:0}
-        .header{background:#0066cc;color:white;position:sticky;top:0;z-index:1000;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
-        .header-content{display:flex;justify-content:space-between;align-items:center;padding:16px;max-width:1200px;margin:0 auto}
-        .logo{font-size:20px;font-weight:bold;color:white;text-decoration:none}
-        .container{max-width:1200px;margin:0 auto;padding:0 16px}
-    </style>
+    <title>{% block title %}Kitaluro | Productos de Lujo{% endblock %}</title>
+    <meta name="description" content="{% block description %}Kitaluro - Tu tienda de productos premium y de lujo{% endblock %}">
     
-    <!-- Cargar CSS completo de forma asíncrona -->
-    <link rel="preload" href="{% static 'css/styles.css' %}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{% static 'css/styles.css' %}"></noscript>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        gold: {
+                            50: '#fefce8',
+                            100: '#fef9c3',
+                            200: '#fef08a',
+                            300: '#fde047',
+                            400: '#facc15',
+                            500: '#eab308',
+                            600: '#ca8a04',
+                            700: '#a16207',
+                            800: '#854d0e',
+                            900: '#713f12',
+                        },
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <!-- External CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    
+    {% block extra_css %}{% endblock %}
 </head>
-<body>
-
-    <header class="header">
-        <div class="container header-content">
-            <div class="logo-section">
-                <!-- Botón explorar (móvil) -->
-                <button class="categories-toggle" aria-label="Explorar" id="categories-toggle">
-                    Explorar
+<body class="bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-200 antialiased transition-colors duration-300 selection:bg-yellow-500 selection:text-black font-sans">
+    
+    <!-- Header -->
+    <header id="main-header" class="sticky top-0 z-50">
+        {% block header %}
+        <!-- Mobile Priority Navigation -->
+        <nav class="backdrop-blur-md bg-neutral-950/90 border-b border-neutral-800/50">
+            <!-- Nivel 1: Logo + Search -->
+            <div class="px-4 py-4 flex items-center justify-between">
+                <!-- Hamburger Menu Button (Mobile Only) -->
+                <button id="menu-toggle" class="lg:hidden text-white hover:text-blue-400 transition-colors" aria-label="Abrir menú">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
                 </button>
-                <a href="{% url 'home' %}" class="logo" aria-label="Ir al inicio">KITALURO</a>
-            </div>
-            
-            <div class="header-actions">
-                <!-- Carrito (solo móvil) -->
-                <!-- <a href="#" class="cart-icon mobile-only" aria-label="Carrito de compras">
-                    🛒
-                    <span class="cart-count" id="cart-count">0</span>
-                </a> -->
-                
-                <!-- Login (solo móvil) -->
-                <a href="#" class="login-btn mobile-only" aria-label="Iniciar sesión">
-                    Login
+
+                <!-- Spacer for desktop (mantiene espacio del hamburger) -->
+                <div class="hidden lg:block w-6"></div>
+
+                <!-- Logo Centrado -->
+                <a href="{% url 'home' %}" class="absolute left-1/2 transform -translate-x-1/2 font-serif text-2xl font-bold text-white tracking-tight hover:text-blue-400 transition-colors">
+                    Kitaluro
                 </a>
-            </div>
-            
-            <!-- Navegación principal (solo desktop) -->
-            <nav class="header-nav desktop-only" id="header-nav">
-                <a href="{% url 'home' %}" class="header-nav-item">Inicio</a>
-                <a href="{% url 'productos:index' %}" class="header-nav-item">Productos</a>
-                <a href="#" class="header-nav-item">Contacto</a>
-                <!-- <a href="#" class="header-nav-item cart-desktop" aria-label="Carrito de compras">
-                    🛒
-                    <span class="cart-count" id="cart-count-desktop">0</span>
-                </a> -->
-                <a href="#" class="header-nav-item login-desktop">Login</a>
-            </nav>
 
+                <!-- Search Icon (siempre a la derecha) -->
+                <button class="text-white hover:text-blue-400 transition-colors tech-glow-subtle ml-auto" aria-label="Buscar">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Nivel 2: Navigation Links (Desktop Centered) -->
+            <div class="hidden lg:flex items-center justify-center pb-4 px-4">
+                <div class="flex items-center gap-8">
+                    <a href="{% url 'home' %}" class="text-neutral-300 hover:text-white font-medium transition-colors duration-300 relative group">
+                        Inicio
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-400 group-hover:w-full transition-all duration-300"></span>
+                    </a>
+                    <a href="{% url 'productos:index' %}" class="text-neutral-300 hover:text-white font-medium transition-colors duration-300 relative group">
+                        Productos
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-400 group-hover:w-full transition-all duration-300"></span>
+                    </a>
+                    <a href="{% url 'contacto' %}" class="text-neutral-300 hover:text-white font-medium transition-colors duration-300 relative group">
+                        Contacto
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-400 group-hover:w-full transition-all duration-300"></span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Sidebar Menu (Hamburger Lateral Lujoso) -->
+        <div id="mobile-menu" class="fixed inset-0 z-[100] pointer-events-none">
+            <!-- Overlay -->
+            <div id="menu-overlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+            
+            <!-- Sidebar -->
+            <div id="menu-sidebar" class="absolute left-0 top-0 h-full w-80 max-w-[85vw] glass-panel transform -translate-x-full transition-transform duration-300 ease-out">
+                <!-- Header del Sidebar -->
+                <div class="p-6 border-b border-neutral-800/50">
+                    <div class="flex items-center justify-between">
+                        <h2 class="font-serif text-2xl font-bold text-white">Kitaluro</h2>
+                        <button id="menu-close" class="text-neutral-400 hover:text-white transition-colors" aria-label="Cerrar menú">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-neutral-400 text-sm mt-2">Premium Home Technology</p>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="p-6">
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="{% url 'home' %}" class="flex items-center gap-4 px-4 py-3 rounded-lg text-neutral-300 hover:text-white hover:bg-neutral-800/50 transition-all duration-300 group">
+                                <svg class="w-5 h-5 text-blue-400 group-hover:tech-glow-subtle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                                </svg>
+                                <span class="font-medium">Inicio</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'productos:index' %}" class="flex items-center gap-4 px-4 py-3 rounded-lg text-neutral-300 hover:text-white hover:bg-neutral-800/50 transition-all duration-300 group">
+                                <svg class="w-5 h-5 text-blue-400 group-hover:tech-glow-subtle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                </svg>
+                                <span class="font-medium">Productos</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'contacto' %}" class="flex items-center gap-4 px-4 py-3 rounded-lg text-neutral-300 hover:text-white hover:bg-neutral-800/50 transition-all duration-300 group">
+                                <svg class="w-5 h-5 text-blue-400 group-hover:tech-glow-subtle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                <span class="font-medium">Contacto</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Footer del Sidebar -->
+                <div class="absolute bottom-0 left-0 right-0 p-6 border-t border-neutral-800/50">
+                    <div class="flex items-center gap-2 text-neutral-500 text-xs">
+                        <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                        <span>Conectado</span>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <!-- JavaScript para el menú -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const menuToggle = document.getElementById('menu-toggle');
+                const menuClose = document.getElementById('menu-close');
+                const mobileMenu = document.getElementById('mobile-menu');
+                const menuOverlay = document.getElementById('menu-overlay');
+                const menuSidebar = document.getElementById('menu-sidebar');
+
+                function openMenu() {
+                    mobileMenu.classList.remove('pointer-events-none');
+                    mobileMenu.classList.add('pointer-events-auto');
+                    setTimeout(() => {
+                        menuOverlay.style.opacity = '1';
+                        menuSidebar.style.transform = 'translateX(0)';
+                    }, 10);
+                    document.body.style.overflow = 'hidden';
+                }
+
+                function closeMenu() {
+                    menuOverlay.style.opacity = '0';
+                    menuSidebar.style.transform = 'translateX(-100%)';
+                    setTimeout(() => {
+                        mobileMenu.classList.remove('pointer-events-auto');
+                        mobileMenu.classList.add('pointer-events-none');
+                    }, 300);
+                    document.body.style.overflow = '';
+                }
+
+                menuToggle.addEventListener('click', openMenu);
+                menuClose.addEventListener('click', closeMenu);
+                menuOverlay.addEventListener('click', closeMenu);
+
+                // Cerrar menú al hacer clic en un enlace
+                const menuLinks = menuSidebar.querySelectorAll('a');
+                menuLinks.forEach(link => {
+                    link.addEventListener('click', closeMenu);
+                });
+
+                // Cerrar con tecla Escape
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && !mobileMenu.classList.contains('pointer-events-none')) {
+                        closeMenu();
+                    }
+                });
+            });
+        </script>
+        {% endblock %}
     </header>
-
-    <!-- Barra de categorías horizontal (desktop) -->
-    <nav class="horizontal-nav desktop-only" id="horizontal-nav">
-        <div class="container">
-            <div class="categories-horizontal">
-                    <div class="category-dropdown" data-category="ferramenta">
-                        <button class="category-btn">🔨 Ferramenta</button>
-                        <div class="dropdown-content">
-                            <a href="#">Malleus</a>
-                            <a href="#">Clavis</a>
-                            <a href="#">Lima</a>
-                            <a href="#">Securis</a>
-                        </div>
-                    </div>
-                    
-                    <div class="category-dropdown" data-category="instrumenta">
-                        <button class="category-btn">🔧 Instrumenta</button>
-                        <div class="dropdown-content">
-                            <a href="#">Torquens</a>
-                            <a href="#">Pliers</a>
-                            <a href="#">Mensura</a>
-                            <a href="#">Nivellum</a>
-                        </div>
-                    </div>
-                    
-                    <div class="category-dropdown" data-category="mechanica">
-                        <button class="category-btn">⚙️ Mechanica</button>
-                        <div class="dropdown-content">
-                            <a href="#">Rota</a>
-                            <a href="#">Axis</a>
-                            <a href="#">Cochlea</a>
-                            <a href="#">Clavus</a>
-                        </div>
-                    </div>
-                    
-                    <div class="category-dropdown" data-category="constructio">
-                        <button class="category-btn">🪚 Constructio</button>
-                        <div class="dropdown-content">
-                            <a href="#">Serra</a>
-                            <a href="#">Terebratio</a>
-                            <a href="#">Planum</a>
-                            <a href="#">Circinus</a>
-                        </div>
-                    </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Sidebar móvil -->
-    <aside class="sidebar mobile-only" id="categories-sidebar">
-        <div class="sidebar-overlay" id="sidebar-overlay"></div>
-        <div class="sidebar-content">
-            <div class="sidebar-header">
-                <h3>Explorar</h3>
-                <button class="sidebar-close" id="sidebar-close">×</button>
-            </div>
-            
-            <div class="sidebar-body">
-                <!-- Navegación principal -->
-                <div class="sidebar-section navigation-section">
-                    <h4>Navegación</h4>
-                    <a href="{% url 'home' %}" class="nav-option">
-                        🏠 Inicio
-                    </a>
-                    <a href="{% url 'productos:index' %}" class="nav-option">
-                        📦 Productos
-                    </a>
-                    <a href="#" class="nav-option">
-                        📞 Contacto
-                    </a>
-                </div>
-                
-                <!-- Categorías principales -->
-                <div class="sidebar-section categories-section">
-                    <h4>Categorías de Productos</h4>
-                    <div class="category-group">
-                        <button class="category-toggle" data-category="ferramenta">
-                            🔨 Ferramenta
-                            <span class="toggle-arrow">▼</span>
-                        </button>
-                        <div class="subcategory-list" id="ferramenta">
-                            <a href="#" class="subcategory-item">Malleus</a>
-                            <a href="#" class="subcategory-item">Clavis</a>
-                            <a href="#" class="subcategory-item">Lima</a>
-                            <a href="#" class="subcategory-item">Securis</a>
-                        </div>
-                    </div>
-                    
-                    <div class="category-group">
-                        <button class="category-toggle" data-category="instrumenta">
-                            🔧 Instrumenta
-                            <span class="toggle-arrow">▼</span>
-                        </button>
-                        <div class="subcategory-list" id="instrumenta">
-                            <a href="#" class="subcategory-item">Torquens</a>
-                            <a href="#" class="subcategory-item">Pliers</a>
-                            <a href="#" class="subcategory-item">Mensura</a>
-                            <a href="#" class="subcategory-item">Nivellum</a>
-                        </div>
-                    </div>
-                    
-                    <div class="category-group">
-                        <button class="category-toggle" data-category="mechanica">
-                            🔨 Mechanica
-                            <span class="toggle-arrow">▼</span>
-                        </button>
-                        <div class="subcategory-list" id="mechanica">
-                            <a href="#" class="subcategory-item">Rota</a>
-                            <a href="#" class="subcategory-item">Axis</a>
-                            <a href="#" class="subcategory-item">Cochlea</a>
-                            <a href="#" class="subcategory-item">Clavus</a>
-                        </div>
-                    </div>
-                    
-                    <div class="category-group">
-                        <button class="category-toggle" data-category="constructio">
-                            🪚 Constructio
-                            <span class="toggle-arrow">▼</span>
-                        </button>
-                        <div class="subcategory-list" id="constructio">
-                            <a href="#" class="subcategory-item">Serra</a>
-                            <a href="#" class="subcategory-item">Terebratio</a>
-                            <a href="#" class="subcategory-item">Planum</a>
-                            <a href="#" class="subcategory-item">Circinus</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Opciones adicionales -->
-                <div class="sidebar-section sidebar-options">
-                    <a href="#" class="option-item user-only" style="display: none;">📋 Historial de Pedidos</a>
-                    <a href="#" class="option-item">❓ FAQ / Ayuda</a>
-                    <a href="#" class="option-item">📞 Contacto</a>
-                </div>
-            </div>
-        </div>
-    </aside>
-
-    <main class="main-content container">
+    
+    <!-- Main Content -->
+    <main id="content" class="min-h-screen">
         {% block content %}{% endblock %}
     </main>
-
-    <footer class="footer">
-        <div class="container footer-content">
-            <!-- Enlaces de confianza -->
-            <div class="footer-trust">
-                <a href="#" class="trust-link">❓ FAQ</a>
-                <a href="#" class="trust-link">📞 Contacto</a>
-            </div>
-            
-            <!-- Métodos de pago -->
-            <div class="payment-methods">
-                <span class="payment-title">Pagos internacionales seguros:</span>
-                <span class="payment-icon">Visa</span>
-                <span class="payment-icon">Mastercard</span>
-                <span class="payment-icon">PayPal</span>
-                <span class="ssl-badge">🔒 SSL</span>
-            </div>
-            
-            <!-- Contacto de soporte -->
-            <div class="support-contact">
-                <a href="https://wa.me/5353000000" class="whatsapp-support">
-                    📱 Soporte WhatsApp
-                </a>
-            </div>
-            
-            <div class="footer-copy">
-                <p>M&C Dev Studio {{ now|date:"Y" }}. Compras seguras en Cuba.</p>
+    
+    <!-- Footer -->
+    <footer id="main-footer" class="bg-neutral-950 border-t border-neutral-800">
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <div class="text-center">
+                <p class="text-neutral-400 text-sm">
+                    Creado por 
+                    <a href="https://manulynx.github.io/M-C-Dev-Studio/" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 transition-colors font-medium tech-glow-subtle">
+                        M&C Dev Studio
+                    </a>
+                </p>
             </div>
         </div>
+        {% block footer %}{% endblock %}
     </footer>
-
-    <script>
-        // Funcionalidad ultraligera del header
-        document.addEventListener('DOMContentLoaded', function() {
-            const body = document.body;
-            
-            // Sidebar de categorías (diferido)
-            const categoriesToggle = document.getElementById('categories-toggle');
-            const sidebar = document.getElementById('categories-sidebar');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
-            const sidebarClose = document.getElementById('sidebar-close');
-            
-            if (categoriesToggle && sidebar) {
-                // Abrir sidebar
-                categoriesToggle.addEventListener('click', function() {
-                    sidebar.classList.add('sidebar-open');
-                    body.classList.add('sidebar-active');
-                });
-                
-                // Cerrar sidebar
-                function closeSidebar() {
-                    sidebar.classList.remove('sidebar-open');
-                    body.classList.remove('sidebar-active');
-                }
-                
-                if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
-                if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
-                
-                // Expandir/colapsar categorías
-                const categoryToggles = document.querySelectorAll('.category-toggle');
-                categoryToggles.forEach(toggle => {
-                    toggle.addEventListener('click', function() {
-                        const categoryId = this.getAttribute('data-category');
-                        const subcategoryList = document.getElementById(categoryId);
-                        const arrow = this.querySelector('.toggle-arrow');
-                        
-                        if (subcategoryList) {
-                            const isOpen = subcategoryList.classList.contains('open');
-                            
-                            // Cerrar todas las categorías primero
-                            document.querySelectorAll('.subcategory-list.open').forEach(list => {
-                                list.classList.remove('open');
-                            });
-                            document.querySelectorAll('.toggle-arrow').forEach(arr => {
-                                arr.textContent = '▼';
-                            });
-                            
-                            // Abrir la actual si estaba cerrada
-                            if (!isOpen) {
-                                subcategoryList.classList.add('open');
-                                arrow.textContent = '▲';
-                            }
-                        }
-                    });
-                });
-                
-                // Cerrar sidebar al seleccionar subcategoría
-                const subcategoryItems = document.querySelectorAll('.subcategory-item');
-                subcategoryItems.forEach(item => {
-                    item.addEventListener('click', function() {
-                        closeSidebar();
-                    });
-                });
-            }
-
-            // Actualizar contador del carrito (simulado)
-            // function updateCartCount() {
-            //     const cartCountMobile = document.getElementById('cart-count');
-            //     const cartCountDesktop = document.getElementById('cart-count-desktop');
-            //     const count = localStorage.getItem('cartCount') || '0';
-            //     
-            //     if (cartCountMobile) {
-            //         cartCountMobile.textContent = count;
-            //         cartCountMobile.style.display = count === '0' ? 'none' : 'inline';
-            //     }
-            //     
-            //     if (cartCountDesktop) {
-            //         cartCountDesktop.textContent = count;
-            //         cartCountDesktop.style.display = count === '0' ? 'none' : 'inline';
-            //     }
-            // }
-            // 
-            // updateCartCount();
-        });
-    </script>
-
-    <!-- Sidebar JavaScript - Carga diferida para no bloquear contenido crítico -->
-    <script defer>
-        // Funcionalidad del sidebar (diferida)
-        document.addEventListener('DOMContentLoaded', function() {
-            // Solo cargar si los elementos existen
-            const categoriesToggle = document.getElementById('categories-toggle');
-            const sidebar = document.getElementById('categories-sidebar');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
-            const sidebarClose = document.getElementById('sidebar-close');
-            const body = document.body;
-            
-            if (!categoriesToggle || !sidebar) return;
-            
-            // Funciones del sidebar
-            function openSidebar() {
-                // Solo funcionar en móvil
-                if (window.innerWidth < 1024) {
-                    sidebar.classList.add('sidebar-open');
-                    body.classList.add('sidebar-active');
-                }
-            }
-            
-            function closeSidebar() {
-                sidebar.classList.remove('sidebar-open');
-                body.classList.remove('sidebar-active');
-            }
-            
-            // Event listeners con verificación de viewport
-            categoriesToggle.addEventListener('click', function() {
-                if (window.innerWidth < 1024) {
-                    openSidebar();
-                }
-            });
-            if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
-            if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
-            
-            // Cerrar con ESC
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && sidebar.classList.contains('sidebar-open')) {
-                    closeSidebar();
-                }
-            });
-            
-            // Expandir/colapsar categorías (solo en móvil)
-            const categoryToggles = document.querySelectorAll('.category-toggle');
-            categoryToggles.forEach(toggle => {
-                toggle.addEventListener('click', function() {
-                    if (window.innerWidth >= 1024) return; // Solo en móvil
-                    
-                    const categoryId = this.getAttribute('data-category');
-                    const subcategoryList = document.getElementById(categoryId);
-                    const arrow = this.querySelector('.toggle-arrow');
-                    
-                    if (subcategoryList && arrow) {
-                        const isOpen = subcategoryList.classList.contains('open');
-                        
-                        // Cerrar todas las categorías
-                        document.querySelectorAll('.subcategory-list.open').forEach(list => {
-                            list.classList.remove('open');
-                        });
-                        document.querySelectorAll('.toggle-arrow').forEach(arr => {
-                            arr.textContent = '▼';
-                        });
-                        
-                        // Abrir la actual si estaba cerrada
-                        if (!isOpen) {
-                            subcategoryList.classList.add('open');
-                            arrow.textContent = '▲';
-                        }
-                    }
-                });
-            });
-            
-            // Cerrar sidebar al seleccionar subcategoría (solo móvil)
-            const subcategoryItems = document.querySelectorAll('.subcategory-item');
-            subcategoryItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    if (window.innerWidth < 1024) {
-                        closeSidebar();
-                    }
-                });
-            });
-            
-            // Mostrar/ocultar historial para usuarios logueados
-            // Este sería reemplazado por lógica de Django cuando se implemente autenticación
-            const userOnlyElements = document.querySelectorAll('.user-only');
-            const isUserLoggedIn = false; // Placeholder - conectar con Django auth
-            
-            if (isUserLoggedIn) {
-                userOnlyElements.forEach(el => el.style.display = 'block');
-            }
-            
-            // Detectar cambios de viewport y cerrar sidebar si cambia a desktop
-            window.addEventListener('resize', function() {
-                if (window.innerWidth >= 1024) {
-                    closeSidebar();
-                    // Forzar ocultación del sidebar en desktop
-                    if (sidebar) {
-                        sidebar.style.display = 'none';
-                        sidebar.style.visibility = 'hidden';
-                        sidebar.style.opacity = '0';
-                        sidebar.style.left = '-100%';
-                    }
-                } else {
-                    // Restaurar visibilidad en móvil
-                    if (sidebar) {
-                        sidebar.style.display = '';
-                        sidebar.style.visibility = '';
-                        sidebar.style.opacity = '';
-                        sidebar.style.left = '';
-                    }
-                }
-            });
-            
-            // Verificar viewport inicial
-            if (window.innerWidth >= 1024 && sidebar) {
-                sidebar.style.display = 'none';
-                sidebar.style.visibility = 'hidden';
-                sidebar.style.opacity = '0';
-                sidebar.style.left = '-100%';
-            }
-
-            // Manejo de dropdowns horizontales (desktop)
-            const categoryDropdowns = document.querySelectorAll('.category-dropdown');
-            let activeDropdown = null;
-            
-            categoryDropdowns.forEach(dropdown => {
-                const btn = dropdown.querySelector('.category-btn');
-                const content = dropdown.querySelector('.dropdown-content');
-                
-                if (btn && content) {
-                    // Mostrar dropdown al pasar el mouse
-                    dropdown.addEventListener('mouseenter', function() {
-                        if (window.innerWidth >= 1024) {
-                            activeDropdown = dropdown;
-                        }
-                    });
-                    
-                    // Ocultar dropdown al salir
-                    dropdown.addEventListener('mouseleave', function() {
-                        if (window.innerWidth >= 1024) {
-                            activeDropdown = null;
-                        }
-                    });
-                    
-                    // Cerrar dropdowns al hacer clic fuera
-                    document.addEventListener('click', function(e) {
-                        if (window.innerWidth >= 1024 && !dropdown.contains(e.target)) {
-                            // Los dropdowns se manejan con CSS hover
-                        }
-                    });
-                }
-            });
-        });
-    </script>
-
+    
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

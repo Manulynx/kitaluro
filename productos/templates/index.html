@@ -1,919 +1,210 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Productos - Kitaluro Ferretería{% endblock %}
+{% block title %}Productos - Kitaluro{% endblock %}
+
+{% block description %}Explora nuestra colección de electrodomésticos premium con tecnología de vanguardia{% endblock %}
 
 {% block content %}
-<div class="plp-container">
-    <!-- Header Ultra-Ligero -->
-    <div class="plp-header">
-        <div class="container">
-            <div class="header-row">
-                <h1 class="plp-title">Productos</h1>
-                <span class="results-count" id="results-count">{{ productos|length }} producto{{ productos|length|pluralize }}</span>
-            </div>
-            <div class="header-actions">
-                <button class="btn-filters" id="btn-filters" type="button" aria-label="Abrir filtros">
-                    🔍 Filtros
-                </button>
-                <select id="sort-select" class="sort-select" aria-label="Ordenar productos">
-                    <option value="">Ordenar</option>
-                    <option value="precio_asc">Precio ↑</option>
-                    <option value="precio_desc">Precio ↓</option>
-                    <option value="nombre_asc">A-Z</option>
-                    <option value="rating_desc">Mejor valorados</option>
-                    <option value="recientes">Nuevos</option>
-                </select>
+<!-- Hero Section -->
+<section class="relative h-[40vh] lg:h-[50vh] flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-950/50 via-black to-black"></div>
+    <div class="absolute inset-0 bg-[url('{% static 'img/productos-hero.jpg' %}')] bg-cover bg-center opacity-20"></div>
+    
+    <div class="relative z-10 text-center px-4 animate-fade-in">
+        <h1 class="text-5xl lg:text-7xl font-serif mb-6 text-glow">
+            Catálogo
+        </h1>
+        
+    </div>
+</section>
+
+<!-- Search Section -->
+<section class="py-8 bg-neutral-900/50 border-b border-neutral-800">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-center">
+            <!-- Search -->
+            <div class="w-full max-w-2xl">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="searchInput"
+                        placeholder="Buscar productos..."
+                        class="w-full bg-neutral-800/50 border border-neutral-700 rounded-lg px-4 py-3 pl-12 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400/50 tech-border-hover transition-all"
+                    >
+                    <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
             </div>
         </div>
     </div>
+</section>
 
-    <!-- Modal de Filtros (Oculto por defecto) -->
-    <div class="filters-backdrop" id="filters-backdrop"></div>
-    <aside class="filters-drawer" id="filters-drawer">
-        <div class="drawer-header">
-            <h2>Filtros</h2>
-            <button class="btn-close" id="btn-close-filters" type="button" aria-label="Cerrar filtros">✕</button>
+<!-- Products Grid -->
+<section class="py-16 px-4">
+    <div class="max-w-7xl mx-auto">
+        <!-- Results Counter -->
+        <div class="mb-8">
+            <p class="text-gray-400 text-lg">
+                Mostrando <span id="resultsCount" class="text-blue-400 font-semibold">{{ productos.count }}</span> productos
+            </p>
         </div>
-        <div class="drawer-content">
-            <!-- Categorías -->
-            {% if categorias %}
-            <fieldset class="filter-section">
-                <legend>Categorías</legend>
-                {% for categoria in categorias %}
-                <label class="filter-item">
-                    <input type="radio" name="categoria" value="{{ categoria.slug }}">
-                    <span>{{ categoria.nombre }}</span>
-                </label>
-                {% endfor %}
-            </fieldset>
-            {% endif %}
 
-            <!-- Marcas -->
-            {% if marcas %}
-            <fieldset class="filter-section">
-                <legend>Marcas</legend>
-                {% for marca in marcas %}
-                <label class="filter-item">
-                    <input type="checkbox" name="marca" value="{{ marca.id }}">
-                    <span>{{ marca.nombre }}</span>
-                </label>
-                {% endfor %}
-            </fieldset>
-            {% endif %}
-
-            <!-- Precio -->
-            <fieldset class="filter-section">
-                <legend>Rango de Precio</legend>
-                <div class="price-range">
-                    <input type="number" id="price-min" placeholder="Mín" min="0" step="0.01">
-                    <span>-</span>
-                    <input type="number" id="price-max" placeholder="Máx" min="0" step="0.01">
+        <!-- Grid -->
+        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for producto in productos %}
+            <!-- Product Card: {{ producto.nombre }} -->
+            <a href="{% url 'productos:detalle' producto.slug %}" class="product-card group block relative overflow-hidden rounded-xl h-[400px] sm:h-[450px] cursor-pointer" data-category="{{ producto.categoria.slug|default:'general' }}" data-name="{{ producto.nombre }}" data-price="{{ producto.precio_final }}">
+                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black/90"></div>
+                
+                {% if producto.imagen %}
+                    <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="w-full h-full object-cover">
+                {% elif producto.get_main_image %}
+                    <img src="{{ producto.get_main_image.url }}" alt="{{ producto.nombre }}" class="w-full h-full object-cover">
+                {% else %}
+                    <img src="{% static 'img/placeholder-product.jpg' %}" alt="{{ producto.nombre }}" class="w-full h-full object-cover">
+                {% endif %}
+                
+                <!-- Badge -->
+                {% if producto.en_oferta or producto.destacado %}
+                <div class="absolute top-4 right-4 z-10">
+                    {% if producto.en_oferta %}
+                    <span class="badge-offer">Oferta</span>
+                    {% elif producto.destacado %}
+                    <span class="badge-offer">Destacado</span>
+                    {% endif %}
                 </div>
-            </fieldset>
+                {% endif %}
 
-            <!-- Especiales -->
-            <fieldset class="filter-section">
-                <legend>Destacados</legend>
-                <label class="filter-item">
-                    <input type="checkbox" name="destacado" value="true">
-                    <span>⭐ Destacados</span>
-                </label>
-                <label class="filter-item">
-                    <input type="checkbox" name="en_oferta" value="true">
-                    <span>🔥 En Oferta</span>
-                </label>
-            </fieldset>
-        </div>
-        <div class="drawer-actions">
-            <button class="btn btn-secondary" id="btn-clear" type="button">Limpiar</button>
-            <button class="btn btn-primary" id="btn-apply" type="button">Aplicar</button>
-        </div>
-    </aside>
-
-    <!-- Grid de Productos -->
-    <main class="plp-main">
-        <div class="container">
-            <div class="products-grid" id="products-grid">
-                {% for producto in productos %}
-                <a href="{{ producto.get_absolute_url }}" class="product-card" data-pid="{{ producto.id }}">
-                    <div class="card-image">
-                        {% if producto.imagen_principal %}
-                        <img data-src="{{ producto.imagen_principal }}" alt="{{ producto.nombre }}" class="lazy" width="200" height="200">
-                        {% elif producto.imagen %}
-                        <img data-src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="lazy" width="200" height="200">
-                        {% else %}
-                        <div class="no-image">🔧</div>
+                <!-- Content -->
+                <div class="absolute bottom-0 left-0 right-0 p-6 transform transition-transform duration-300">
+                    {% if producto.categoria or producto.marca %}
+                    <div class="mb-2">
+                        <span class="text-tech text-sm">
+                            {{ producto.marca.nombre|default:producto.categoria.nombre }}
+                        </span>
+                    </div>
+                    {% endif %}
+                    
+                    <h3 class="text-xl sm:text-2xl font-bold mb-2 text-white group-hover:text-glow transition-all">
+                        {{ producto.nombre }}
+                    </h3>
+                    
+                    {% if producto.descripcion_corta %}
+                    <p class="text-gray-300 text-sm mb-4 line-clamp-2">
+                        {{ producto.descripcion_corta }}
+                    </p>
+                    {% endif %}
+                    
+                    <!-- Tech Features -->
+                    <div class="flex gap-2 mb-4 flex-wrap">
+                        {% if producto.categoria %}
+                        <span class="text-xs px-2 py-1 bg-blue-500/20 border border-blue-400/30 rounded text-blue-300">
+                            {{ producto.categoria.nombre }}
+                        </span>
                         {% endif %}
-                        {% if producto.tiene_descuento or producto.destacado %}
-                        <div class="badges">
-                            {% if producto.tiene_descuento %}<span class="badge discount">-{{ producto.porcentaje_descuento }}%</span>{% endif %}
-                            {% if producto.destacado %}<span class="badge featured">★</span>{% endif %}
-                        </div>
+                        {% if producto.origen %}
+                        <span class="text-xs px-2 py-1 bg-blue-500/20 border border-blue-400/30 rounded text-blue-300">
+                            {{ producto.origen }}
+                        </span>
+                        {% endif %}
+                        {% if producto.en_stock %}
+                        <span class="text-xs px-2 py-1 bg-blue-500/20 border border-blue-400/30 rounded text-blue-300">
+                            En Stock
+                        </span>
                         {% endif %}
                     </div>
-                    <div class="card-content">
-                        <h3 class="product-name">{{ producto.nombre|truncatechars:50 }}</h3>
-                        <div class="product-price">
-                            {% if producto.precio_oferta %}
-                            <span class="price-sale">${{ producto.precio_oferta }}</span>
-                            <span class="price-old">${{ producto.precio }}</span>
-                            {% elif producto.precio %}
-                            <span class="price">${{ producto.precio }}</span>
+
+                    <!-- Price & CTA -->
+                    <div class="flex items-center justify-between">
+                        <div>
+                            {% if producto.tiene_descuento %}
+                                <span class="text-xl sm:text-2xl font-bold text-white">${{ producto.precio_oferta }}</span>
+                                <span class="text-xs sm:text-sm text-gray-400 line-through ml-2">${{ producto.precio }}</span>
                             {% else %}
-                            <span class="price-consult">Consultar</span>
+                                <span class="text-2xl sm:text-3xl font-bold text-white">${{ producto.precio_final }}</span>
                             {% endif %}
+                            <span class="text-gray-400 text-xs sm:text-sm ml-1">USD</span>
                         </div>
-                        {% if producto.valoraciones.count > 0 %}
-                        <div class="product-rating">
-                            <span class="stars">{% with avg=producto.valoraciones.all.0.puntuacion|default:0 %}{% for i in "12345" %}{% if forloop.counter <= avg %}★{% else %}☆{% endif %}{% endfor %}{% endwith %}</span>
-                        </div>
-                        {% endif %}
                     </div>
-                </a>
-                {% empty %}
-                <div class="empty-state">
-                    <div class="empty-icon">📦</div>
-                    <p>No hay productos disponibles</p>
-                    <a href="/admin/productos/producto/add/" class="btn btn-primary">Agregar Producto</a>
-                </div>
-                {% endfor %}
-            </div>
 
-            <!-- Cargar Más -->
-            <div class="load-more" id="load-more" style="display: none;">
-                <button class="btn-load" id="btn-load-more" type="button">
-                    <span class="btn-text">Cargar Más</span>
-                    <span class="btn-spinner" style="display: none;">⟳</span>
-                </button>
-                <div class="load-info" id="load-info"></div>
-            </div>
-        </div>
-    </main>
-</div>
-
-<style>
-/* ============================================
-   PLP LOW-DATA OPTIMIZED STYLES
-   ============================================ */
-
-/* Reset mínimo */
-.plp-container * {
-    box-sizing: border-box;
-}
-
-/* Container */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 12px;
-}
-
-/* Header Ultra-Ligero */
-.plp-header {
-    background: #fff;
-    border-bottom: 1px solid #e5e5e5;
-    padding: 12px 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-.header-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.plp-title {
-    font-size: 20px;
-    font-weight: 600;
-    margin: 0;
-    color: #1a1a1a;
-}
-
-.results-count {
-    font-size: 13px;
-    color: #666;
-}
-
-.header-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.btn-filters {
-    flex: 1;
-    padding: 10px 16px;
-    background: var(--primary, #2563eb);
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    min-height: 44px;
-}
-
-.btn-filters:active {
-    background: #1e40af;
-}
-
-.sort-select {
-    flex: 1;
-    padding: 10px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 14px;
-    background: #fff;
-    min-height: 44px;
-    cursor: pointer;
-}
-
-/* Filtros Drawer (Oculto) */
-.filters-backdrop {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 200;
-}
-
-.filters-backdrop.active {
-    display: block;
-}
-
-.filters-drawer {
-    position: fixed;
-    top: 0;
-    left: -100%;
-    width: 280px;
-    height: 100vh;
-    background: #fff;
-    z-index: 201;
-    transition: left 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
-}
-
-.filters-drawer.active {
-    left: 0;
-}
-
-.drawer-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-    border-bottom: 1px solid #e5e5e5;
-}
-
-.drawer-header h2 {
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0;
-}
-
-.btn-close {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #666;
-    padding: 4px;
-    line-height: 1;
-    min-width: 44px;
-    min-height: 44px;
-}
-
-.drawer-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-}
-
-.filter-section {
-    border: none;
-    padding: 0;
-    margin: 0 0 24px 0;
-}
-
-.filter-section legend {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1a1a1a;
-    margin-bottom: 12px;
-    padding: 0;
-}
-
-.filter-item {
-    display: flex;
-    align-items: center;
-    padding: 8px 0;
-    cursor: pointer;
-    min-height: 44px;
-}
-
-.filter-item input {
-    margin: 0 8px 0 0;
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-}
-
-.filter-item span {
-    font-size: 14px;
-    color: #333;
-}
-
-.price-range {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.price-range input {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid #d1d5db;
-    border-radius: 4px;
-    font-size: 14px;
-    min-height: 44px;
-}
-
-.drawer-actions {
-    display: flex;
-    gap: 12px;
-    padding: 16px;
-    border-top: 1px solid #e5e5e5;
-}
-
-.btn {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    min-height: 48px;
-}
-
-.btn-secondary {
-    background: #f3f4f6;
-    color: #374151;
-}
-
-.btn-primary {
-    background: var(--primary, #2563eb);
-    color: #fff;
-}
-
-.btn-primary:active {
-    background: #1e40af;
-}
-
-/* Grid de Productos (Optimizado) */
-.plp-main {
-    padding: 16px 0;
-}
-
-.products-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-}
-
-/* Tarjeta de Producto (Minimalista) */
-.product-card {
-    background: #fff;
-    border: 1px solid #e5e5e5;
-    border-radius: 8px;
-    overflow: hidden;
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    transition: box-shadow 0.2s;
-}
-
-.product-card:active {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.card-image {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1;
-    background: #f9fafb;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.card-image img.lazy {
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-.card-image img.loaded {
-    opacity: 1;
-}
-
-.no-image {
-    font-size: 48px;
-    color: #d1d5db;
-}
-
-.badges {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.badge {
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #fff;
-    line-height: 1;
-}
-
-.badge.discount {
-    background: #dc2626;
-}
-
-.badge.featured {
-    background: #f59e0b;
-}
-
-.card-content {
-    padding: 12px;
-}
-
-.product-name {
-    font-size: 14px;
-    font-weight: 500;
-    margin: 0 0 8px 0;
-    color: #1a1a1a;
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.product-price {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 6px;
-}
-
-.price-sale {
-    font-size: 18px;
-    font-weight: 700;
-    color: #dc2626;
-}
-
-.price-old {
-    font-size: 13px;
-    color: #9ca3af;
-    text-decoration: line-through;
-}
-
-.price {
-    font-size: 18px;
-    font-weight: 600;
-    color: #1a1a1a;
-}
-
-.price-consult {
-    font-size: 13px;
-    color: #6b7280;
-    font-style: italic;
-}
-
-.product-rating {
-    font-size: 14px;
-}
-
-.stars {
-    color: #fbbf24;
-    letter-spacing: 1px;
-}
-
-/* Empty State */
-.empty-state {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 48px 16px;
-}
-
-.empty-icon {
-    font-size: 64px;
-    margin-bottom: 16px;
-    opacity: 0.5;
-}
-
-.empty-state p {
-    color: #6b7280;
-    margin-bottom: 16px;
-}
-
-/* Cargar Más */
-.load-more {
-    text-align: center;
-    padding: 24px 0;
-}
-
-.btn-load {
-    background: var(--primary, #2563eb);
-    color: #fff;
-    border: none;
-    padding: 12px 32px;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 48px;
-}
-
-.btn-load:active {
-    background: #1e40af;
-}
-
-.btn-load:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.btn-spinner {
-    display: inline-block;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-.load-info {
-    margin-top: 12px;
-    font-size: 13px;
-    color: #6b7280;
-}
-
-/* ============================================
-   RESPONSIVE (Mobile First)
-   ============================================ */
-
-/* Tablet */
-@media (min-width: 640px) {
-    .products-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-    }
-    
-    .plp-title {
-        font-size: 24px;
-    }
-}
-
-/* Desktop */
-@media (min-width: 1024px) {
-    .products-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-    
-    .product-card:hover {
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        transform: translateY(-2px);
-        transition: all 0.2s;
-    }
-    
-    .header-actions {
-        width: auto;
-        margin-top: 0;
-    }
-    
-    .btn-filters {
-        flex: none;
-        min-width: 120px;
-    }
-    
-    .sort-select {
-        flex: none;
-        min-width: 180px;
-    }
-}
-
-@media (min-width: 1280px) {
-    .products-grid {
-        grid-template-columns: repeat(5, 1fr);
-    }
-}
-
-/* Print */
-@media print {
-    .plp-header,
-    .filters-drawer,
-    .load-more {
-        display: none;
-    }
-}
-</style>
-
-<script>
-// ============================================
-// PLP LOW-DATA JAVASCRIPT
-// ============================================
-(function() {
-    'use strict';
-    
-    // Estado
-    let currentPage = 1;
-    let isLoading = false;
-    let hasMore = true;
-    
-    // Elementos
-    const els = {
-        filtersBtn: document.getElementById('btn-filters'),
-        filtersDrawer: document.getElementById('filters-drawer'),
-        backdrop: document.getElementById('filters-backdrop'),
-        closeBtn: document.getElementById('btn-close-filters'),
-        applyBtn: document.getElementById('btn-apply'),
-        clearBtn: document.getElementById('btn-clear'),
-        sortSelect: document.getElementById('sort-select'),
-        grid: document.getElementById('products-grid'),
-        loadMore: document.getElementById('load-more'),
-        loadBtn: document.getElementById('btn-load-more'),
-        loadInfo: document.getElementById('load-info'),
-        resultsCount: document.getElementById('results-count')
-    };
-    
-    // Init
-    init();
-    
-    function init() {
-        setupLazyLoading();
-        setupEventListeners();
-        checkLoadMore();
-    }
-    
-    // Event Listeners
-    function setupEventListeners() {
-        if (els.filtersBtn) {
-            els.filtersBtn.addEventListener('click', openFilters);
-        }
-        if (els.closeBtn) {
-            els.closeBtn.addEventListener('click', closeFilters);
-        }
-        if (els.backdrop) {
-            els.backdrop.addEventListener('click', closeFilters);
-        }
-        if (els.applyBtn) {
-            els.applyBtn.addEventListener('click', applyFilters);
-        }
-        if (els.clearBtn) {
-            els.clearBtn.addEventListener('click', clearFilters);
-        }
-        if (els.sortSelect) {
-            els.sortSelect.addEventListener('change', handleSort);
-        }
-        if (els.loadBtn) {
-            els.loadBtn.addEventListener('click', loadMoreProducts);
-        }
-    }
-    
-    // Filtros
-    function openFilters() {
-        els.filtersDrawer.classList.add('active');
-        els.backdrop.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-    
-    function closeFilters() {
-        els.filtersDrawer.classList.remove('active');
-        els.backdrop.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-    
-    function applyFilters() {
-        const params = new URLSearchParams();
-        
-        // Categoría
-        const cat = document.querySelector('input[name="categoria"]:checked');
-        if (cat) params.append('categoria', cat.value);
-        
-        // Marcas
-        document.querySelectorAll('input[name="marca"]:checked').forEach(m => {
-            params.append('marca', m.value);
-        });
-        
-        // Precio
-        const minPrice = document.getElementById('price-min').value;
-        const maxPrice = document.getElementById('price-max').value;
-        if (minPrice) params.append('precio_min', minPrice);
-        if (maxPrice) params.append('precio_max', maxPrice);
-        
-        // Especiales
-        if (document.querySelector('input[name="destacado"]:checked')) {
-            params.append('destacado', 'true');
-        }
-        if (document.querySelector('input[name="en_oferta"]:checked')) {
-            params.append('en_oferta', 'true');
-        }
-        
-        // Ordenación
-        if (els.sortSelect.value) {
-            params.append('orden', els.sortSelect.value);
-        }
-        
-        window.location.href = '/productos/?' + params.toString();
-    }
-    
-    function clearFilters() {
-        document.querySelectorAll('.filter-item input').forEach(input => {
-            input.checked = false;
-        });
-        document.getElementById('price-min').value = '';
-        document.getElementById('price-max').value = '';
-        els.sortSelect.value = '';
-    }
-    
-    function handleSort() {
-        const url = new URL(window.location);
-        if (els.sortSelect.value) {
-            url.searchParams.set('orden', els.sortSelect.value);
-        } else {
-            url.searchParams.delete('orden');
-        }
-        window.location.href = url.toString();
-    }
-    
-    // Lazy Loading (Intersection Observer)
-    function setupLazyLoading() {
-        const images = document.querySelectorAll('img.lazy');
-        
-        if ('IntersectionObserver' in window) {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        img.src = img.dataset.src;
-                        img.classList.remove('lazy');
-                        img.classList.add('loaded');
-                        observer.unobserve(img);
-                    }
-                });
-            }, {
-                rootMargin: '50px'
-            });
-            
-            images.forEach(img => observer.observe(img));
-        } else {
-            // Fallback para navegadores antiguos
-            images.forEach(img => {
-                img.src = img.dataset.src;
-                img.classList.remove('lazy');
-                img.classList.add('loaded');
-            });
-        }
-    }
-    
-    // Cargar Más (Infinite Scroll Manual)
-    function checkLoadMore() {
-        const totalProducts = parseInt(els.resultsCount.textContent);
-        const currentProducts = els.grid.querySelectorAll('.product-card').length;
-        
-        if (currentProducts < totalProducts) {
-            els.loadMore.style.display = 'block';
-            updateLoadInfo(currentProducts, totalProducts);
-        }
-    }
-    
-    function updateLoadInfo(shown, total) {
-        if (els.loadInfo) {
-            els.loadInfo.textContent = `Mostrando ${shown} de ${total}`;
-        }
-    }
-    
-    async function loadMoreProducts() {
-        if (isLoading || !hasMore) return;
-        
-        isLoading = true;
-        els.loadBtn.disabled = true;
-        els.loadBtn.querySelector('.btn-text').style.display = 'none';
-        els.loadBtn.querySelector('.btn-spinner').style.display = 'inline-block';
-        
-        try {
-            currentPage++;
-            const url = new URL(window.location);
-            url.searchParams.set('page', currentPage);
-            
-            const response = await fetch(url.toString(), {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            });
-            
-            if (!response.ok) throw new Error('Error al cargar');
-            
-            const data = await response.json();
-            
-            if (data.productos && data.productos.length > 0) {
-                appendProducts(data.productos);
-                
-                if (!data.has_next) {
-                    hasMore = false;
-                    els.loadMore.style.display = 'none';
-                }
-                
-                const totalLoaded = els.grid.querySelectorAll('.product-card').length;
-                updateLoadInfo(totalLoaded, data.total);
-            } else {
-                hasMore = false;
-                els.loadMore.style.display = 'none';
-            }
-            
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error al cargar productos. Intenta de nuevo.');
-        } finally {
-            isLoading = false;
-            els.loadBtn.disabled = false;
-            els.loadBtn.querySelector('.btn-text').style.display = 'inline';
-            els.loadBtn.querySelector('.btn-spinner').style.display = 'none';
-        }
-    }
-    
-    function appendProducts(products) {
-        const html = products.map(p => createProductCard(p)).join('');
-        els.grid.insertAdjacentHTML('beforeend', html);
-        setupLazyLoading();
-    }
-    
-    function createProductCard(p) {
-        const imgUrl = p.imagen_principal || '';
-        let priceHtml = '';
-        
-        if (p.precio_oferta) {
-            priceHtml = `
-                <span class="price-sale">$${p.precio_oferta}</span>
-                <span class="price-old">$${p.precio}</span>
-            `;
-        } else if (p.precio) {
-            priceHtml = `<span class="price">$${p.precio}</span>`;
-        } else {
-            priceHtml = `<span class="price-consult">Consultar</span>`;
-        }
-        
-        const badges = [];
-        if (p.porcentaje_descuento > 0) {
-            badges.push(`<span class="badge discount">-${p.porcentaje_descuento}%</span>`);
-        }
-        if (p.destacado) {
-            badges.push(`<span class="badge featured">★</span>`);
-        }
-        
-        return `
-            <a href="/productos/${p.slug}/" class="product-card" data-pid="${p.id}">
-                <div class="card-image">
-                    ${imgUrl ? `<img data-src="${imgUrl}" alt="${p.nombre}" class="lazy" width="200" height="200">` : '<div class="no-image">🔧</div>'}
-                    ${badges.length > 0 ? `<div class="badges">${badges.join('')}</div>` : ''}
-                </div>
-                <div class="card-content">
-                    <h3 class="product-name">${p.nombre}</h3>
-                    <div class="product-price">${priceHtml}</div>
-                    ${p.rating > 0 ? `<div class="product-rating"><span class="stars">${generateStars(p.rating)}</span></div>` : ''}
+                    <!-- CTA Button (appears on hover) -->
+                    <div class="product-cta mt-4">
+                        <button class="btn-crimson w-full">
+                            Ver Detalles
+                        </button>
+                    </div>
                 </div>
             </a>
-        `;
-    }
-    
-    function generateStars(rating) {
-        const full = Math.floor(rating);
-        const stars = '★'.repeat(full) + '☆'.repeat(5 - full);
-        return stars;
-    }
-    
-})();
+            {% empty %}
+            <!-- No Products Message -->
+            <div class="col-span-full text-center py-16">
+                <div class="card-premium p-12 max-w-2xl mx-auto">
+                    <svg class="w-24 h-24 mx-auto mb-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                    </svg>
+                    <h3 class="text-2xl font-bold text-white mb-4">No hay productos disponibles</h3>
+                    <p class="text-gray-400 mb-8">Por favor, vuelve más tarde o contacta con nosotros.</p>
+                    <a href="{% url 'contacto' %}" class="btn-crimson inline-block px-8 py-3">
+                        Contactar
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Load More -->
+        <div class="text-center mt-12">
+            <button class="btn-premium px-12 py-4 text-lg">
+                Cargar Más Productos
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Banner -->
+<section class="py-20 px-4 bg-gradient-to-r from-blue-950/50 via-blue-900/30 to-blue-950/50 border-y border-blue-800/30">
+    <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-4xl lg:text-5xl font-serif mb-6 text-glow">
+            ¿No encuentras lo que buscas?
+        </h2>
+        <p class="text-xl text-gray-300 mb-8">
+            Nuestro equipo puede ayudarte a encontrar el producto perfecto para tu hogar
+        </p>
+        <a href="{% url 'contacto' %}" class="btn-crimson inline-block px-10 py-4 text-lg">
+            Contactar Asesor
+        </a>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const productCards = document.querySelectorAll('.product-card');
+    const searchInput = document.getElementById('searchInput');
+    const resultsCount = document.getElementById('resultsCount');
+
+    // Search functionality
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        let visibleCount = 0;
+
+        productCards.forEach(card => {
+            const name = card.dataset.name.toLowerCase();
+            
+            if (name.includes(searchTerm)) {
+                card.style.display = 'block';
+                card.classList.add('animate-fade-in');
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        resultsCount.textContent = visibleCount;
+    });
+});
 </script>
 {% endblock %}

@@ -1,142 +1,183 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Kitaluro - Compras Seguras en Cuba{% endblock %}
+{% block title %}Kitaluro | The Future of Home{% endblock %}
+{% block description %}Descubre la nueva generación de electrodomésticos premium. Diseño minimalista, tecnología avanzada.{% endblock %}
 
 {% block content %}
-<!-- Banner promocional estático -->
-<section class="hero-banner">
-    <div class="banner-content">
-        <h1 class="banner-title">Productos de Calidad para Cuba</h1>
-        <p class="banner-subtitle">Envíos seguros • Pagos internacionales • Garantía real</p>
-        <a href="{% url 'productos:index' %}" class="cta-primary">Comprar Ahora</a>
-    </div>
-    <div class="banner-image" style="background-color: #1e40af; min-height: 200px; border-radius: 8px;"></div>
-</section>
 
-<!-- Acceso directo a categorías -->
-<section class="categories-quick">
-    <div class="container">
-        <div class="categories-grid">
-            <a href="{% url 'productos:index' %}" class="category-card">
-                <div class="category-icon">🔨</div>
-                <span class="category-name">Ferramenta</span>
-            </a>
-            <a href="{% url 'productos:index' %}" class="category-card">
-                <div class="category-icon">🔧</div>
-                <span class="category-name">Instrumenta</span>
-            </a>
-            <a href="{% url 'productos:index' %}" class="category-card">
-                <div class="category-icon">⚙️</div>
-                <span class="category-name">Mechanica</span>
-            </a>
-            <a href="{% url 'productos:index' %}" class="category-card">
-                <div class="category-icon">🪚</div>
-                <span class="category-name">Constructio</span>
+<!-- ========================================================================== -->
+<!-- HERO SECTION - IMPACTO TOTAL -->
+<!-- ========================================================================== -->
+<section class="relative h-screen flex items-center justify-center bg-neutral-950 overflow-hidden mt-0">
+    <!-- Background Image -->
+    <div class="absolute inset-0 z-0">
+        <img 
+            src="{% static 'img/1.png' %}" 
+            alt="Premium Home Appliance" 
+            class="w-full h-full object-cover opacity-40"
+        />
+    </div>
+
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-neutral-950/50 z-10"></div>
+
+    <!-- Hero Content -->
+    <div class="relative z-20 text-center px-6 max-w-5xl mx-auto">
+        <!-- Main Title -->
+        <h1 class="font-serif text-6xl md:text-8xl lg:text-9xl font-bold text-white mb-6 text-glow animate-fade-in">
+            KITALURO
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="text-neutral-400 text-sm md:text-base tracking-[0.5em] uppercase mb-12 animate-fade-in">
+            Redefiniendo el Lujo Doméstico
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in">
+            <button class="btn-crimson">
+                Explorar Productos
+            </button>
+            <a href="#tech" 
+               class="px-10 py-4 border-2 border-blue-400/50 text-white font-medium rounded-full hover:bg-blue-500/10 hover:border-blue-400 transition-all duration-300 transform hover:scale-105 tech-border-hover">
+                Ver Tecnología
             </a>
         </div>
     </div>
-</section>
 
-<!-- Productos destacados minimalistas -->
-<section class="featured-products">
-    <div class="container">
-        <h2 class="section-title-minimal">Productos Destacados</h2>
-        
-        <div class="products-minimal" id="featured-products">
-            <!-- Las tarjetas se cargarán con lazy loading -->
-            <div class="product-placeholder">
-                <div class="placeholder-content">
-                    <h3>Cargando productos...</h3>
-                    <p>Optimizando para conexión lenta</p>
-                </div>
-            </div>
-        </div>
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 animate-bounce">
+        <svg class="w-6 h-6 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+        </svg>
     </div>
 </section>
 
-<!-- Prueba social concisa -->
-<section class="trust-section">
-    <div class="container">
-        <div class="trust-stats">
-            <div class="trust-item">
-                <strong class="trust-number">500+</strong>
-                <span class="trust-label">Pedidos entregados</span>
-            </div>
-            <div class="trust-item">
-                <strong class="trust-number">4.8★</strong>
-                <span class="trust-label">Valoración promedio</span>
-            </div>
-            <div class="trust-item">
-                <strong class="trust-number">100%</strong>
-                <span class="trust-label">Envíos seguros</span>
-            </div>
+<!-- ========================================================================== -->
+<!-- FEATURES GRID - BENTO BOX STYLE -->
+<!-- ========================================================================== -->
+<section id="products" class="py-24 px-6 bg-neutral-900">
+    <div class="max-w-7xl mx-auto">
+        <!-- Section Header -->
+        <div class="text-center mb-16">
+            <h2 class="font-serif text-5xl md:text-6xl font-bold text-white mb-4 text-glow">
+                Destacados
+            </h2>
+            <p class="text-neutral-400 text-lg tracking-wide">
+                
+            </p>
         </div>
-    </div>
-</section>
 
-
-
-<!-- Enlaces de soporte repetidos -->
-<section class="support-links">
-    <div class="container">
-        <div class="support-grid">
-            <a href="#" class="support-item">
-                <span class="support-icon">🚀</span>
-                <span class="support-text">Envíos Rápidos</span>
-            </a>
+        <!-- Bento Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
             
-            <a href="#" class="support-item">
-                <span class="support-icon">❓</span>
-                <span class="support-text">Preguntas Frecuentes</span>
-            </a>
+            {% for producto in productos %}
+            <!-- Product Card: {{ producto.nombre }} -->
+            <div class="group product-card h-[450px] sm:h-[500px]">
+                <a href="{% url 'productos:detalle' producto.slug %}" class="relative h-full block">
+                    {% if producto.imagen %}
+                        <img 
+                            src="{{ producto.imagen.url }}" 
+                            alt="{{ producto.nombre }}" 
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                    {% elif producto.get_main_image %}
+                        <img 
+                            src="{{ producto.get_main_image.url }}" 
+                            alt="{{ producto.nombre }}" 
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                    {% else %}
+                        <img 
+                            src="{% static 'img/placeholder-product.jpg' %}" 
+                            alt="{{ producto.nombre }}" 
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                    {% endif %}
+                    
+                    <!-- Tech Badge -->
+                    {% if producto.en_oferta or producto.destacado %}
+                    <div class="absolute top-4 right-4">
+                        {% if producto.en_oferta %}
+                            {% if producto.porcentaje_descuento %}
+                            <span class="badge-offer">-{{ producto.porcentaje_descuento }}% OFF</span>
+                            {% else %}
+                            <span class="badge-offer">Oferta</span>
+                            {% endif %}
+                        {% elif producto.destacado %}
+                        <span class="badge-offer">Destacado</span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Gradient Overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                    
+                    <!-- Content -->
+                    <div class="absolute bottom-0 left-0 right-0 p-6 sm:p-8 space-y-3 sm:space-y-4">
+                        <!-- Category Tech Label -->
+                        {% if producto.categoria or producto.marca %}
+                        <span class="inline-block text-blue-400 text-xs font-medium tracking-widest uppercase text-tech">
+                            {{ producto.categoria.nombre|default:producto.marca.nombre }}
+                        </span>
+                        {% endif %}
+                        
+                        <h3 class="font-serif text-2xl sm:text-3xl font-bold text-white group-hover:text-glow-gold transition-all duration-500">
+                            {{ producto.nombre }}
+                        </h3>
+                        
+                        {% if producto.descripcion_corta %}
+                        <p class="text-neutral-300 text-sm opacity-90 line-clamp-2">
+                            {{ producto.descripcion_corta }}
+                        </p>
+                        {% endif %}
+                        
+                        <!-- Price -->
+                        <div class="flex items-baseline gap-2">
+                            {% if producto.tiene_descuento %}
+                                <span class="text-xl sm:text-2xl font-bold text-white">${{ producto.precio_oferta }}</span>
+                                <span class="text-sm text-gray-400 line-through">${{ producto.precio }}</span>
+                            {% else %}
+                                <span class="text-xl sm:text-2xl font-bold text-white">${{ producto.precio_final }}</span>
+                            {% endif %}
+                            <span class="text-gray-400 text-xs">USD</span>
+                        </div>
+                        
+                        <!-- CTA Button (appears on hover) -->
+                        <div class="product-cta">
+                            <button class="btn-crimson w-full mt-2">
+                                Ver Detalles
+                            </button>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <!-- No Products Message -->
+            <div class="col-span-full text-center py-16">
+                <div class="card-premium p-12 max-w-2xl mx-auto">
+                    <svg class="w-24 h-24 mx-auto mb-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                    </svg>
+                    <h3 class="text-2xl font-bold text-white mb-4">No hay productos disponibles</h3>
+                    <p class="text-gray-400 mb-8">Agrega productos desde el panel de administración.</p>
+                </div>
+            </div>
+            {% endfor %}
+
         </div>
     </div>
 </section>
 
-<script>
-// Lazy loading de productos destacados
-document.addEventListener('DOMContentLoaded', function() {
-    // Simular carga de productos con delay para conexión lenta
-    setTimeout(function() {
-        const container = document.getElementById('featured-products');
-        const placeholder = container.querySelector('.product-placeholder');
-        
-        // Productos minimalistas (sin imágenes pesadas)
-        const products = [
-            { name: 'Malleus Ferrum', price: '299', category: '🔨 ferramenta', icon: '🔨' },
-            { name: 'Clavis Torquens', price: '25', category: '🔧 instrumenta', icon: '🔧' },
-            { name: 'Serra Manualis', price: '89', category: '🪚 constructio', icon: '🪚' }
-        ];
-        
-        let html = '';
-        products.forEach(product => {
-            html += `
-                <div class="product-minimal">
-                    <div class="product-icon">${product.icon}</div>
-                    <div class="product-category">${product.category}</div>
-                    <h4 class="product-title">${product.name}</h4>
-                    <div class="product-price">$${product.price}</div>
-                    <button class="product-btn">Lorem Ipsum</button>
-                </div>
-            `;
-        });
-        
-        container.innerHTML = html;
-    }, 1500); // Delay para simular carga optimizada
-    
-    // Newsletter form
-    const form = document.getElementById('newsletter-form');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const input = form.querySelector('input');
-            if (input.value) {
-                alert('¡Gracias! Te contactaremos pronto via WhatsApp.');
-                input.value = '';
-            }
-        });
-    }
-});
-</script>
+<!-- ========================================================================== -->
+<!-- TECH SPECS - ESTILO EDITORIAL 50/50 -->
+<!-- ========================================================================== -->
+
+
+<!-- ========================================================================== -->
+<!-- CTA SECTION - NEWSLETTER -->
+<!-- ========================================================================== -->
+
+
 {% endblock %}

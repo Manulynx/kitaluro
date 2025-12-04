@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contacto - Kitaluro{% endblock %}
+
+{% block description %}Contáctanos para consultas sobre nuestros productos premium. Estamos aquí para ayudarte.{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative h-[40vh] lg:h-[50vh] flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-950/50 via-black to-black"></div>
+    <div class="absolute inset-0 bg-[url('{% static 'img/contact-hero.jpg' %}')] bg-cover bg-center opacity-20"></div>
+    
+    <div class="relative z-10 text-center px-4 animate-fade-in">
+        <h1 class="text-4xl sm:text-5xl lg:text-7xl font-serif mb-4 sm:mb-6 text-glow">
+            Contáctanos
+        </h1>
+        <p class="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto">
+            Estamos aquí para ayudarte con cualquier consulta
+        </p>
+    </div>
+</section>
+
+<!-- Contact Info Section -->
+<section class="py-12 sm:py-16 lg:py-20 px-4 bg-neutral-900">
+    <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-12 sm:mb-16">
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-serif mb-4 text-glow">
+                Contactos Rápidos
+            </h2>
+            <p class="text-gray-400 text-base sm:text-lg">
+                Elige tu canal preferido para comunicarte con nosotros
+            </p>
+        </div>
+
+        <!-- Contact Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-16">
+            <!-- WhatsApp Card -->
+            <div class="card-premium p-6 sm:p-8 text-center group hover:scale-105 transition-all duration-300">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 rounded-full bg-green-500/20 flex items-center justify-center border-2 border-green-500/30 group-hover:border-green-400 transition-all">
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-green-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">WhatsApp</h3>
+                <p class="text-gray-400 mb-4 sm:mb-6 text-sm sm:text-base">Respuesta inmediata</p>
+                <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer" class="btn-premium inline-block px-6 py-3 text-sm sm:text-base">
+                    Iniciar Chat
+                </a>
+                <p class="text-gray-500 mt-4 text-sm">+1 (234) 567-890</p>
+            </div>
+
+            <!-- Email Card -->
+            <div class="card-premium p-6 sm:p-8 text-center group hover:scale-105 transition-all duration-300">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 rounded-full bg-blue-500/20 flex items-center justify-center border-2 border-blue-500/30 group-hover:border-blue-400 transition-all">
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">Email</h3>
+                <p class="text-gray-400 mb-4 sm:mb-6 text-sm sm:text-base">Consultas detalladas</p>
+                <a href="mailto:contacto@kitaluro.com" class="btn-premium inline-block px-6 py-3 text-sm sm:text-base">
+                    Enviar Email
+                </a>
+                <p class="text-gray-500 mt-4 text-sm break-all">contacto@kitaluro.com</p>
+            </div>
+
+            <!-- Phone Card -->
+            <div class="card-premium p-6 sm:p-8 text-center group hover:scale-105 transition-all duration-300">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 rounded-full bg-red-500/20 flex items-center justify-center border-2 border-red-500/30 group-hover:border-red-400 transition-all">
+                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">Teléfono</h3>
+                <p class="text-gray-400 mb-4 sm:mb-6 text-sm sm:text-base">Llamada directa</p>
+                <a href="tel:+1234567890" class="btn-premium inline-block px-6 py-3 text-sm sm:text-base">
+                    Llamar Ahora
+                </a>
+                <p class="text-gray-500 mt-4 text-sm">+1 (234) 567-890</p>
+            </div>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="card-premium p-6 sm:p-8 lg:p-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+                <!-- Business Hours -->
+                <div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/30">
+                            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white">Horario de Atención</h3>
+                    </div>
+                    <div class="space-y-3 text-gray-300">
+                        <div class="flex justify-between py-2 border-b border-neutral-800">
+                            <span>Lunes - Viernes</span>
+                            <span class="font-semibold text-white">9:00 AM - 6:00 PM</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-neutral-800">
+                            <span>Sábados</span>
+                            <span class="font-semibold text-white">10:00 AM - 4:00 PM</span>
+                        </div>
+                        <div class="flex justify-between py-2">
+                            <span>Domingos</span>
+                            <span class="font-semibold text-red-400">Cerrado</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location -->
+                <div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/30">
+                            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white">Ubicación</h3>
+                    </div>
+                    <div class="text-gray-300 space-y-2">
+                        <p class="text-base sm:text-lg">Kitaluro Store</p>
+                        <p>123 Premium Avenue</p>
+                        <p>Suite 500</p>
+                        <p>New York, NY 10001</p>
+                        <p class="text-gray-400 text-sm mt-4">Estados Unidos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-16 sm:py-20 px-4 bg-gradient-to-r from-blue-950/50 via-blue-900/30 to-blue-950/50 border-y border-blue-800/30">
+    <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-serif mb-4 sm:mb-6 text-glow">
+            ¿Necesitas Ayuda?
+        </h2>
+        <p class="text-lg sm:text-xl text-gray-300 mb-6 sm:mb-8">
+            Nuestro equipo está listo para asistirte con cualquier consulta sobre nuestros productos premium
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a href="{% url 'productos:index' %}" class="btn-premium px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg w-full sm:w-auto">
+                Ver Productos
+            </a>
+            <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer" class="btn-crimson px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg w-full sm:w-auto">
+                Chat en WhatsApp
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
