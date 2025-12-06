@@ -36,10 +36,12 @@
 
         <!-- CTA Buttons -->
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in">
-            <button class="btn-crimson">
+            <a href="{% url 'productos:index'%}" >
+            <button class="btn-crimson"> 
                 Explorar Productos
             </button>
-            <a href="#tech" 
+            </a>
+            <a href="tech" 
                class="px-10 py-4 border-2 border-blue-400/50 text-white font-medium rounded-full hover:bg-blue-500/10 hover:border-blue-400 transition-all duration-300 transform hover:scale-105 tech-border-hover">
                 Ver Tecnología
             </a>
@@ -119,7 +121,8 @@
                         <!-- Category Tech Label -->
                         {% if producto.categoria or producto.marca %}
                         <span class="inline-block text-blue-400 text-xs font-medium tracking-widest uppercase text-tech">
-                            {{ producto.categoria.nombre|default:producto.marca.nombre }}
+                            {{ producto.categoria.nombre|default_if_none:"" }}
+                            {{ producto.marca.nombre|default_if_none:"" }}
                         </span>
                         {% endif %}
                         

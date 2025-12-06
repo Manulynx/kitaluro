@@ -176,7 +176,7 @@ class Producto(models.Model):
     descripcion = models.TextField(blank=True, verbose_name="Descripción")
     
     # Relaciones
-    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, related_name='productos', verbose_name="Categoría")
+    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True, related_name='productos', verbose_name="Categoría")
     subcategoria = models.ForeignKey(Subcategoria, on_delete=models.SET_NULL, null=True, blank=True, related_name='productos', verbose_name="Subcategoría")
     marca = models.ForeignKey(Marca, on_delete=models.SET_NULL, null=True, blank=True, related_name='productos', verbose_name="Marca")
     proveedor = models.ForeignKey(Proveedor, on_delete=models.SET_NULL, null=True, blank=True, related_name='productos', verbose_name="Proveedor")
