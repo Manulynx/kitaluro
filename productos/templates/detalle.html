@@ -28,7 +28,7 @@
     <div class="max-w-7xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
             <!-- Image Gallery -->
-            <div class="space-y-4">
+            <div class="reveal-left space-y-4">
                 <!-- Main Image -->
                 <div class="bg-white dark:bg-neutral-900 overflow-hidden rounded-xl border border-gray-200 dark:border-neutral-800 shadow-xl dark:shadow-none aspect-square">
                     {% if producto.imagen %}
@@ -72,7 +72,7 @@
             </div>
 
             <!-- Product Info -->
-            <div class="space-y-6">
+            <div class="reveal-right space-y-6" data-delay="200">
                 <!-- Badge & Category -->
                 <div class="flex items-center gap-3">
                     {% if producto.en_oferta %}
@@ -477,13 +477,13 @@
 
         <!-- Related Products -->
         <div>
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-serif mb-6 sm:mb-8 text-neutral-900 dark:text-white drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]">
+            <h2 class="reveal text-2xl sm:text-3xl lg:text-4xl font-serif mb-6 sm:mb-8 text-neutral-900 dark:text-white drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]">
                 Productos Relacionados
             </h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6" data-stagger="100">
                 {% for prod in productos_relacionados %}
                 <!-- Related Product: {{ prod.nombre }} -->
-                <a href="{% url 'productos:detalle' prod.slug %}" class="product-card group block relative overflow-hidden rounded-xl h-[350px] sm:h-[400px] cursor-pointer bg-white dark:bg-neutral-900/50 shadow-xl dark:shadow-none border border-gray-200 dark:border-neutral-800/50 hover:shadow-2xl dark:hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] transition-all duration-500 hover:scale-[1.02]">
+                <a href="{% url 'productos:detalle' prod.slug %}" class="reveal-scale product-card group block relative overflow-hidden rounded-xl h-[350px] sm:h-[400px] cursor-pointer bg-white dark:bg-neutral-900/50 shadow-xl dark:shadow-none border border-gray-200 dark:border-neutral-800/50 hover:shadow-2xl dark:hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] transition-all duration-500 hover:scale-[1.02]">
                     <div class="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/50 to-neutral-900/95 dark:from-transparent dark:via-black/50 dark:to-black/90"></div>
                     
                     {% if prod.imagen %}
@@ -506,10 +506,10 @@
                                 <span class="text-2xl font-bold text-white">${{ prod.precio_final }}</span>
                             {% endif %}
                         </div>
-                        <div class="product-cta mt-4">
+                    <!--<div class="product-cta mt-4">
                             <button class="btn-crimson w-full shadow-lg">Ver Detalles</button>
-                        </div>
-                    </div>
+                        </div>-->
+                    </div> 
                 </a>
                 {% empty %}
                 <div class="col-span-full text-center py-8">

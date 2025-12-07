@@ -35,6 +35,49 @@ html {
 }
 
 /* ==========================================================================
+   HIDE SCROLLBAR UTILITY - Para galería deslizante
+   ========================================================================== */
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari, Opera */
+}
+
+/* ==========================================================================
+   CUSTOM ANIMATIONS - Horizontal Bounce
+   ========================================================================== */
+
+@keyframes bounce-horizontal {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-10px);
+  }
+}
+
+@keyframes bounce-horizontal-reverse {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+}
+
+.animate-bounce-horizontal {
+  animation: bounce-horizontal 2s ease-in-out infinite;
+}
+
+.animate-bounce-horizontal-reverse {
+  animation: bounce-horizontal-reverse 2s ease-in-out infinite;
+}
+
+/* ==========================================================================
    CUSTOM SCROLLBAR - PREMIUM STYLE
    ========================================================================== */
 
@@ -78,6 +121,52 @@ html {
 /* ==========================================================================
    CUSTOM UTILITY CLASSES
    ========================================================================== */
+
+/* Scroll Reveal Animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: all 1000ms ease-out;
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Reveal variants para diferentes direcciones */
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-32px);
+  transition: all 1000ms ease-out;
+}
+
+.reveal-left.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(32px);
+  transition: all 1000ms ease-out;
+}
+
+.reveal-right.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 1000ms ease-out;
+}
+
+.reveal-scale.active {
+  opacity: 1;
+  transform: scale(1);
+}
 
 /* Text Glow Effect - Para títulos premium sobre fondos oscuros */
 .text-glow {

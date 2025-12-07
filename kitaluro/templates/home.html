@@ -12,40 +12,42 @@
     <!-- Background Image con overlay adaptativo -->
     <div class="absolute inset-0 z-0">
         <img 
-            src="{% static 'img/1.png' %}" 
+            src="{% static 'img/logo.png' %}" 
             alt="Premium Home Appliance" 
             class="w-full h-full object-cover opacity-20 dark:opacity-40"
         />
-    </div>
+    </div> 
 
     <!-- ✅ Gradient Overlay diferenciado -->
     <div class="absolute inset-0 bg-gradient-to-t from-white via-white/50 to-white/80 dark:from-neutral-950 dark:via-transparent dark:to-neutral-950/50 z-10"></div>
 
     <!-- Hero Content -->
-    <div class="relative z-20 text-center px-6 max-w-5xl mx-auto">
-        <h1 class="font-serif text-6xl md:text-8xl lg:text-9xl font-bold text-neutral-900 dark:text-white mb-6 
-                   drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]">
+    <div class="relative z-20 text-center px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+        <h1 class="reveal font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-neutral-900 dark:text-white mb-4 sm:mb-6 lg:mb-8 
+                   drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)] 
+                   leading-tight">
             KITALURO
         </h1>
 
-        <p class="text-neutral-600 dark:text-neutral-400 text-sm md:text-base tracking-[0.5em] uppercase mb-12">
+        <p class="reveal text-neutral-600 dark:text-neutral-400 text-xs sm:text-sm md:text-base tracking-[0.3em] sm:tracking-[0.5em] uppercase mb-8 sm:mb-10 lg:mb-12" data-delay="200">
             Redefiniendo el Lujo Doméstico
         </p>
 
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="{% url 'productos:index' %}">
-                <button class="btn-crimson shadow-xl dark:shadow-red-900/50"> 
+        <div class="reveal flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 max-w-md sm:max-w-none mx-auto" data-delay="400">
+            <a href="{% url 'productos:index' %}" class="w-full sm:w-auto">
+                <button class="btn-crimson shadow-xl dark:shadow-red-900/50 w-full sm:w-auto text-sm sm:text-base"> 
                     Explorar Productos
                 </button>
             </a>
             <a href="#tech" 
-               class="px-10 py-4 border-2 border-blue-500/70 dark:border-blue-400/50 
+               class="w-full sm:w-auto text-center px-6 sm:px-10 py-3 sm:py-4 border-2 border-blue-500/70 dark:border-blue-400/50 
                       text-neutral-900 dark:text-white font-medium rounded-full 
                       bg-white/50 dark:bg-transparent
                       hover:bg-blue-50 dark:hover:bg-blue-500/10 
                       hover:border-blue-600 dark:hover:border-blue-400 
                       shadow-lg dark:shadow-none
-                      transition-all duration-300 transform hover:scale-105">
+                      transition-all duration-300 transform hover:scale-105
+                      text-sm sm:text-base">
                 Ver Tecnología
             </a>
         </div>
@@ -55,25 +57,26 @@
 <!-- ========================================================================== -->
 <!-- FEATURES GRID - BENTO BOX STYLE -->
 <!-- ========================================================================== -->
-<section id="products" class="py-24 px-6 bg-gray-50 dark:bg-neutral-900">
+<section id="products" class="py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-neutral-900">
     <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-16">
-            <h2 class="font-serif text-5xl md:text-6xl font-bold text-neutral-900 dark:text-white mb-4 
+        <div class="text-center mb-8 sm:mb-12 lg:mb-16">
+            <h2 class="reveal font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 dark:text-white mb-3 sm:mb-4 
                        drop-shadow-sm dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]">
                 Destacados
             </h2>
-            <p class="text-neutral-600 dark:text-neutral-400 text-lg tracking-wide">
+            <p class="reveal text-neutral-600 dark:text-neutral-400 text-base sm:text-lg tracking-wide" data-delay="150">
                 Selección Premium
             </p>
         </div>
 
-        <!-- ✅ Grid de Productos con Estilos Duales -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+        <!-- ✅ Grid de Productos con Estilos Duales y Stagger Animation -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8" data-stagger="150">
             {% for producto in productos %}
-            <!-- ✅ Product Card Refinada -->
-            <div class="group product-card h-[450px] sm:h-[500px] 
+            {% if producto.destacado %}
+            <!-- ✅ Product Card Refinada con Reveal -->
+            <div class="reveal-scale group product-card h-[420px] sm:h-[480px] lg:h-[500px] 
                         bg-white dark:bg-neutral-900/50 
-                        rounded-2xl overflow-hidden 
+                        rounded-xl sm:rounded-2xl overflow-hidden 
                         shadow-xl dark:shadow-none 
                         border border-gray-200 dark:border-neutral-800/50 
                         hover:shadow-2xl dark:hover:shadow-[0_0_30px_rgba(59,130,246,0.2)]
@@ -102,13 +105,13 @@
                     
                     <!-- ✅ Badge con contraste óptimo -->
                     {% if producto.en_oferta or producto.destacado %}
-                    <div class="absolute top-4 right-4 z-10">
+                    <div class="absolute top-3 sm:top-4 right-3 sm:right-4 z-10">
                         {% if producto.en_oferta %}
-                            <span class="badge-offer shadow-lg">
+                            <span class="badge-offer shadow-lg text-xs sm:text-sm">
                                 {% if producto.porcentaje_descuento %}-{{ producto.porcentaje_descuento }}% OFF{% else %}Oferta{% endif %}
                             </span>
                         {% elif producto.destacado %}
-                            <span class="badge-offer bg-amber-500 shadow-lg">Destacado</span>
+                            <span class="badge-offer bg-amber-500 shadow-lg text-xs sm:text-sm">Destacado</span>
                         {% endif %}
                     </div>
                     {% endif %}
@@ -119,47 +122,50 @@
                                 dark:from-black/90 dark:via-black/30 dark:to-transparent"></div>
                     
                     <!-- ✅ Content con mejor legibilidad -->
-                    <div class="absolute bottom-0 left-0 right-0 p-6 sm:p-8 space-y-3 sm:space-y-4">
+                    <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-6 lg:p-8 space-y-2 sm:space-y-3 lg:space-y-4">
                         {% if producto.categoria or producto.marca %}
-                        <span class="inline-block text-blue-400 dark:text-blue-400 text-xs font-medium tracking-widest uppercase">
+                        <span class="inline-block text-blue-400 dark:text-blue-400 text-[10px] sm:text-xs font-medium tracking-wider sm:tracking-widest uppercase">
                             {{ producto.categoria.nombre|default_if_none:"" }}
                             {{ producto.marca.nombre|default_if_none:"" }}
                         </span>
                         {% endif %}
                         
-                        <h3 class="font-serif text-2xl sm:text-3xl font-bold text-white 
+                        <h3 class="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-white 
                                    group-hover:text-amber-300 dark:group-hover:text-amber-200
                                    transition-all duration-500 
-                                   drop-shadow-lg">
+                                   drop-shadow-lg line-clamp-2">
                             {{ producto.nombre }}
                         </h3>
                         
                         {% if producto.descripcion_corta %}
-                        <p class="text-gray-100 dark:text-neutral-300 text-sm opacity-90 line-clamp-2">
+                        <p class="text-gray-100 dark:text-neutral-300 text-xs sm:text-sm opacity-90 line-clamp-2 hidden sm:block">
                             {{ producto.descripcion_corta }}
                         </p>
                         {% endif %}
                         
                         <!-- ✅ Price -->
-                        <div class="flex items-baseline gap-2">
+                        <div class="flex items-baseline gap-1.5 sm:gap-2">
                             {% if producto.tiene_descuento %}
-                                <span class="text-xl sm:text-2xl font-bold text-white">${{ producto.precio_oferta }}</span>
-                                <span class="text-sm text-gray-300 dark:text-gray-400 line-through">${{ producto.precio }}</span>
+                                <span class="text-lg sm:text-xl lg:text-2xl font-bold text-white">${{ producto.precio_oferta }}</span>
+                                <span class="text-xs sm:text-sm text-gray-300 dark:text-gray-400 line-through">${{ producto.precio }}</span>
                             {% else %}
-                                <span class="text-xl sm:text-2xl font-bold text-white">${{ producto.precio_final }}</span>
+                                <span class="text-lg sm:text-xl lg:text-2xl font-bold text-white">${{ producto.precio_final }}</span>
                             {% endif %}
-                            <span class="text-gray-300 dark:text-gray-400 text-xs">USD</span>
+                            <span class="text-gray-300 dark:text-gray-400 text-[10px] sm:text-xs">USD</span>
                         </div>
                         
                         <!-- ✅ CTA Button -->
+                        {% comment %}
                         <div class="product-cta">
-                            <button class="btn-crimson w-full mt-2 shadow-lg">
+                            <button class="btn-crimson w-full mt-1 sm:mt-2 shadow-lg text-sm sm:text-base py-2.5 sm:py-3">
                                 Ver Detalles
                             </button>
                         </div>
+                        {% endcomment %}
                     </div>
                 </a>
             </div>
+            {% endif %}
             {% empty %}
             <!-- ✅ Empty State -->
             <div class="col-span-full text-center py-16">
@@ -175,6 +181,189 @@
                 </div>
             </div>
             {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================================== -->
+<!-- GALERÍA DESLIZANTE DE PRODUCTOS - LUXURY E-COMMERCE -->
+<!-- ========================================================================== -->
+<section class="reveal py-12 sm:py-16 md:py-20 lg:py-24 px-0 bg-neutral-950 overflow-hidden">
+    <div class="max-w-7xl mx-auto">
+        {% for producto in productos %}
+        {% if productos.destacado %}
+        <!-- Header -->
+        <div class="text-center mb-8 sm:mb-10 lg:mb-12 px-4 sm:px-6">
+            <h2 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-4 
+                       drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]">
+                Colección Exclusiva
+            </h2>
+            <p class="text-neutral-400 text-sm sm:text-base lg:text-lg tracking-wide max-w-2xl mx-auto px-4">
+                Desliza para descubrir nuestra selección premium
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- Scroll Container con Snap -->
+        <div class="relative">
+            <!-- Gradient Fade Left -->
+            <div class="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-neutral-950 to-transparent z-10 pointer-events-none hidden md:block"></div>
+            
+            <!-- Gradient Fade Right -->
+            <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-neutral-950 to-transparent z-10 pointer-events-none hidden md:block"></div>
+
+            <!-- The Track - Contenedor Deslizante -->
+            <div class="flex overflow-x-scroll snap-x snap-mandatory hide-scrollbar gap-4 sm:gap-5 lg:gap-6 px-4 sm:px-6 lg:px-8 pb-4" 
+                 style="scroll-padding: 0 1rem;">
+                
+                
+        {% if not producto.destacado %}
+                <!-- Product Slide Card -->
+                <div class="snap-start snap-always flex-shrink-0 w-[85vw] sm:w-[70vw] md:w-[45vw] lg:w-[350px] xl:w-[380px] group">
+                    <a href="{% url 'productos:detalle' producto.slug %}" 
+                       class="block bg-neutral-900 rounded-xl sm:rounded-2xl overflow-hidden 
+                              shadow-2xl hover:shadow-[0_0_40px_rgba(59,130,246,0.3)]
+                              transition-all duration-500 hover:scale-[1.02]
+                              border border-neutral-800 hover:border-blue-500/30
+                              h-full flex flex-col">
+                        
+                        <!-- Imagen del Producto -->
+                        <div class="relative h-[280px] sm:h-[320px] md:h-[280px] lg:h-[300px] overflow-hidden bg-neutral-800 flex-shrink-0">
+                            {% if producto.imagen %}
+                                <img 
+                                    src="{{ producto.imagen.url }}" 
+                                    alt="{{ producto.nombre }}" 
+                                    class="w-full h-full object-cover transform group-hover:scale-110 
+                                           transition-transform duration-700"
+                                    loading="lazy"
+                                />
+                            {% elif producto.get_main_image %}
+                                <img 
+                                    src="{{ producto.get_main_image.url }}" 
+                                    alt="{{ producto.nombre }}" 
+                                    class="w-full h-full object-cover transform group-hover:scale-110 
+                                           transition-transform duration-700"
+                                    loading="lazy"
+                                />
+                            {% else %}
+                                <img 
+                                    src="{% static 'img/placeholder-product.jpg' %}" 
+                                    alt="{{ producto.nombre }}" 
+                                    class="w-full h-full object-cover transform group-hover:scale-110 
+                                           transition-transform duration-700"
+                                    loading="lazy"
+                                />
+                            {% endif %}
+
+                            <!-- Overlay Gradient -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/40 to-transparent"></div>
+
+                            <!-- Badge -->
+                            {% if producto.en_oferta or producto.destacado %}
+                            <div class="absolute top-3 sm:top-4 right-3 sm:right-4 z-10">
+                                {% if producto.en_oferta %}
+                                    <span class="badge-offer shadow-lg text-xs sm:text-sm">
+                                        {% if producto.porcentaje_descuento %}-{{ producto.porcentaje_descuento }}%{% else %}Oferta{% endif %}
+                                    </span>
+                                {% elif producto.destacado %}
+                                    <span class="badge-offer bg-blue-600 shadow-lg text-xs sm:text-sm">Premium</span>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+
+                            <!-- Marca/Categoría en hover -->
+                            {% if producto.marca or producto.categoria %}
+                            <div class="absolute top-3 sm:top-4 left-3 sm:left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <span class="text-blue-400 text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest font-semibold">
+                                    {{ producto.marca.nombre|default:producto.categoria.nombre }}
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Content Section -->
+                        <div class="p-4 sm:p-5 lg:p-5 space-y-2 sm:space-y-2.5 bg-neutral-900 flex-grow flex flex-col">
+                            <!-- Título del Producto -->
+                            <h3 class="font-serif text-base sm:text-lg md:text-xl font-bold text-white 
+                                       group-hover:text-blue-400 transition-colors duration-300 
+                                       line-clamp-2 leading-tight">
+                                {{ producto.nombre }}
+                            </h3>
+
+                            <!-- Precio -->
+                            <div class="flex items-baseline gap-2">
+                                {% if producto.tiene_descuento %}
+                                    <span class="text-lg sm:text-xl font-bold text-white">
+                                        ${{ producto.precio_oferta }}
+                                    </span>
+                                    <span class="text-sm text-neutral-500 line-through">
+                                        ${{ producto.precio }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-lg sm:text-xl font-bold text-white">
+                                        ${{ producto.precio_final }}
+                                    </span>
+                                {% endif %}
+                                <span class="text-neutral-500 text-xs">USD</span>
+                            </div>
+
+                            <!-- CTA Button Rojo Kitaluro -->
+                            {% comment %}
+                            <button class="btn-crimson w-full shadow-lg 
+                                           transform group-hover:shadow-xl 
+                                           transition-all duration-300
+                                           text-sm py-2.5 mt-auto">
+                                Ver Detalles
+                            </button>
+                            {% endcomment %}
+
+                            <!-- Stock Indicator -->
+                            {% if producto.stock %}
+                            <div class="flex items-center gap-1.5 text-xs">
+                                <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                                <span class="text-neutral-400">
+                                    {{ producto.stock }} disponibles
+                                </span>
+                            </div>
+                            {% else %}
+                            <div class="flex items-center gap-1.5 text-xs">
+                                <div class="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
+                                <span class="text-neutral-500">
+                                    Agotado
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </a>
+                </div>
+        {% endif %}
+        {% endfor %}
+
+                <!-- Empty State -->
+                {% if not productos %}
+                <div class="snap-start flex-shrink-0 w-[85vw] sm:w-[70vw] md:w-[45vw] lg:w-[32%]">
+                    <div class="bg-neutral-900 rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center border border-neutral-800">
+                        <svg class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                        </svg>
+                        <h3 class="text-lg sm:text-xl font-bold text-white mb-2">No hay productos</h3>
+                        <p class="text-neutral-500 text-sm sm:text-base">Agrega productos desde el panel de administración</p>
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+
+            <!-- Navigation Hint (Desktop) -->
+            <div class="hidden lg:flex items-center justify-center gap-2 mt-6 sm:mt-8 text-neutral-600">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 animate-bounce-horizontal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                <span class="text-xs sm:text-sm uppercase tracking-widest">Desliza para ver más</span>
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 animate-bounce-horizontal-reverse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </div>
         </div>
     </div>
 </section>

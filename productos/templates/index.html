@@ -12,7 +12,7 @@
     <div class="absolute inset-0 bg-[url('{% static 'img/productos-hero.jpg' %}')] bg-cover bg-center opacity-10 dark:opacity-20"></div>
     
     <div class="relative z-10 text-center px-4 animate-fade-in">
-        <h1 class="text-5xl lg:text-7xl font-serif mb-6 text-neutral-900 dark:text-white drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]">
+        <h1 class="reveal text-5xl lg:text-7xl font-serif mb-6 text-neutral-900 dark:text-white drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]">
             Catálogo
         </h1>
         
@@ -46,16 +46,16 @@
     <div class="max-w-7xl mx-auto">
         <!-- Results Counter -->
         <div class="mb-8">
-            <p class="text-neutral-600 dark:text-gray-400 text-lg">
+            <p class="reveal text-neutral-600 dark:text-gray-400 text-lg">
                 Mostrando <span id="resultsCount" class="text-blue-600 dark:text-blue-400 font-semibold">{{ productos.count }}</span> productos
             </p>
         </div>
 
         <!-- Grid -->
-        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" data-stagger="100">
             {% for producto in productos %}
             <!-- Product Card: {{ producto.nombre }} -->
-            <a href="{% url 'productos:detalle' producto.slug %}" class="product-card group block relative overflow-hidden rounded-xl h-[400px] sm:h-[450px] cursor-pointer bg-white dark:bg-neutral-900/50 shadow-xl dark:shadow-none border border-gray-200 dark:border-neutral-800/50 hover:shadow-2xl dark:hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] transition-all duration-500 hover:scale-[1.02]" data-category="{{ producto.categoria.slug|default:'general' }}" data-name="{{ producto.nombre }}" data-price="{{ producto.precio_final }}">
+            <a href="{% url 'productos:detalle' producto.slug %}" class="reveal-scale product-card group block relative overflow-hidden rounded-xl h-[400px] sm:h-[450px] cursor-pointer bg-white dark:bg-neutral-900/50 shadow-xl dark:shadow-none border border-gray-200 dark:border-neutral-800/50 hover:shadow-2xl dark:hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] transition-all duration-500 hover:scale-[1.02]" data-category="{{ producto.categoria.slug|default:'general' }}" data-name="{{ producto.nombre }}" data-price="{{ producto.precio_final }}">
                 <div class="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/50 to-neutral-900/95 dark:from-transparent dark:via-black/50 dark:to-black/90"></div>
                 
                 {% if producto.imagen %}
@@ -130,11 +130,13 @@
                     </div>
 
                     <!-- CTA Button (appears on hover) -->
+                    {% comment %}
                     <div class="product-cta mt-4">
                         <button class="btn-crimson w-full shadow-lg">
                             Ver Detalles
                         </button>
                     </div>
+                    {% endcomment %}
                 </div>
             </a>
             {% empty %}
