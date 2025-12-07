@@ -7,30 +7,30 @@
 
 {% block content %}
 <!-- Breadcrumb -->
-<div class="bg-neutral-900/50 border-b border-neutral-800">
+<div class="bg-gray-50 dark:bg-neutral-900/50 border-b border-gray-200 dark:border-neutral-800">
     <div class="max-w-7xl mx-auto px-4 py-4">
-        <div class="flex items-center gap-2 text-sm text-gray-400">
-            <a href="{% url 'home' %}" class="hover:text-blue-400 transition-colors">Inicio</a>
+        <div class="flex items-center gap-2 text-sm text-neutral-600 dark:text-gray-400">
+            <a href="{% url 'home' %}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Inicio</a>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
-            <a href="{% url 'productos:index' %}" class="hover:text-blue-400 transition-colors">Productos</a>
+            <a href="{% url 'productos:index' %}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Productos</a>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
-            <span class="text-white">{{ producto.nombre }}</span>
+            <span class="text-neutral-900 dark:text-white">{{ producto.nombre }}</span>
         </div>
     </div>
 </div>
 
 <!-- Product Detail -->
-<section class="py-16 px-4">
+<section class="py-16 px-4 bg-gray-50 dark:bg-neutral-900">
     <div class="max-w-7xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
             <!-- Image Gallery -->
             <div class="space-y-4">
                 <!-- Main Image -->
-                <div class="card-premium overflow-hidden rounded-xl tech-border-hover aspect-square">
+                <div class="bg-white dark:bg-neutral-900 overflow-hidden rounded-xl border border-gray-200 dark:border-neutral-800 shadow-xl dark:shadow-none aspect-square">
                     {% if producto.imagen %}
                     <img 
                         id="mainImage"
@@ -59,12 +59,12 @@
                 <div class="grid grid-cols-4 gap-4">
                     {% if producto.imagenes_galeria.all %}
                         {% for imagen in producto.imagenes_galeria.all|slice:":4" %}
-                        <button class="thumbnail-btn card-premium rounded-lg overflow-hidden aspect-square border-2 {% if forloop.first %}border-blue-400 tech-glow{% else %}border-transparent hover:border-blue-400/50 transition-all{% endif %}" onclick="changeImage('{{ imagen.image.url }}')">
+                        <button class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 {% if forloop.first %}border-blue-600 dark:border-blue-400 shadow-lg{% else %}border-gray-300 dark:border-transparent hover:border-blue-400 dark:hover:border-blue-400/50 transition-all{% endif %} shadow-md dark:shadow-none" onclick="changeImage('{{ imagen.image.url }}')">
                             <img src="{{ imagen.image.url }}" alt="{{ imagen.alt_text|default:producto.nombre }}" class="w-full h-full object-cover">
                         </button>
                         {% endfor %}
                     {% elif producto.imagen %}
-                        <button class="thumbnail-btn card-premium rounded-lg overflow-hidden aspect-square border-2 border-blue-400 tech-glow" onclick="changeImage('{{ producto.imagen.url }}')">
+                        <button class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-blue-600 dark:border-blue-400 shadow-lg dark:shadow-none" onclick="changeImage('{{ producto.imagen.url }}')">
                             <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="w-full h-full object-cover">
                         </button>
                     {% endif %}
@@ -76,17 +76,17 @@
                 <!-- Badge & Category -->
                 <div class="flex items-center gap-3">
                     {% if producto.en_oferta %}
-                    <span class="badge-offer">Oferta</span>
+                    <span class="badge-offer shadow-lg">Oferta</span>
                     {% elif producto.destacado %}
-                    <span class="badge-offer">Destacado</span>
+                    <span class="badge-offer shadow-lg">Destacado</span>
                     {% endif %}
                     {% if producto.marca or producto.categoria %}
-                    <span class="text-tech text-sm">{{ producto.marca.nombre|default:producto.categoria.nombre }}</span>
+                    <span class="text-blue-600 dark:text-blue-400 text-sm font-semibold">{{ producto.marca.nombre|default:producto.categoria.nombre }}</span>
                     {% endif %}
                 </div>
 
                 <!-- Title -->
-                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-serif text-glow">
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-serif text-neutral-900 dark:text-white drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]">
                     {{ producto.nombre }}
                 </h1>
 
@@ -117,26 +117,26 @@
                 <!-- Price -->
                 <div class="flex flex-wrap items-baseline gap-2 sm:gap-3">
                     {% if producto.tiene_descuento %}
-                        <span class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white">${{ producto.precio_oferta }}</span>
-                        <span class="text-xl sm:text-2xl text-gray-400 line-through">${{ producto.precio }}</span>
+                        <span class="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white">${{ producto.precio_oferta }}</span>
+                        <span class="text-xl sm:text-2xl text-gray-500 dark:text-gray-400 line-through">${{ producto.precio }}</span>
                         {% if producto.porcentaje_descuento %}
-                        <span class="badge-offer">-{{ producto.porcentaje_descuento }}%</span>
+                        <span class="badge-offer shadow-lg">-{{ producto.porcentaje_descuento }}%</span>
                         {% endif %}
                     {% else %}
-                        <span class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white">${{ producto.precio_final }}</span>
+                        <span class="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white">${{ producto.precio_final }}</span>
                     {% endif %}
                 </div>
 
                 <!-- Description -->
-                <p class="text-gray-300 text-lg leading-relaxed">
+                <p class="text-neutral-700 dark:text-gray-300 text-lg leading-relaxed">
                     {{ producto.descripcion_corta|default:producto.descripcion|truncatewords:30 }}
                 </p>
 
                 <!-- Tech Features -->
                 {% if producto.descripcion %}
-                <div class="card-premium p-6 space-y-4">
-                    <h3 class="text-xl font-bold text-white mb-4">Descripción Completa</h3>
-                    <div class="text-gray-300 leading-relaxed">
+                <div class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-6 space-y-4 shadow-lg dark:shadow-none">
+                    <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Descripción Completa</h3>
+                    <div class="text-neutral-700 dark:text-gray-300 leading-relaxed">
                         {{ producto.descripcion|linebreaks }}
                     </div>
                 </div>
@@ -144,46 +144,46 @@
                 
                 <!-- Additional Info -->
                 {% if producto.stock or producto.sku or producto.origen %}
-                <div class="card-premium p-6 space-y-3">
-                    <h3 class="text-xl font-bold text-white mb-4">Información Adicional</h3>
+                <div class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-6 space-y-3 shadow-lg dark:shadow-none">
+                    <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Información Adicional</h3>
                     {% if producto.stock %}
                     <div class="flex items-center gap-3">
-                        <svg class="w-5 h-5 text-blue-400 tech-glow-subtle" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                         </svg>
-                        <span class="text-gray-300">Stock disponible: {{ producto.stock }} unidades</span>
+                        <span class="text-neutral-700 dark:text-gray-300">Stock disponible: {{ producto.stock }} unidades</span>
                     </div>
                     {% endif %}
                     {% if producto.sku %}
                     <div class="flex items-center gap-3">
-                        <svg class="w-5 h-5 text-blue-400 tech-glow-subtle" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                         </svg>
-                        <span class="text-gray-300">SKU: {{ producto.sku }}</span>
+                        <span class="text-neutral-700 dark:text-gray-300">SKU: {{ producto.sku }}</span>
                     </div>
                     {% endif %}
                     {% if producto.origen %}
                     <div class="flex items-center gap-3">
-                        <svg class="w-5 h-5 text-blue-400 tech-glow-subtle" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                         </svg>
-                        <span class="text-gray-300">Origen: {{ producto.origen }}</span>
+                        <span class="text-neutral-700 dark:text-gray-300">Origen: {{ producto.origen }}</span>
                     </div>
                     {% endif %}
                     {% if producto.peso %}
                     <div class="flex items-center gap-3">
-                        <svg class="w-5 h-5 text-blue-400 tech-glow-subtle" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                         </svg>
-                        <span class="text-gray-300">Peso: {{ producto.peso }} kg</span>
+                        <span class="text-neutral-700 dark:text-gray-300">Peso: {{ producto.peso }} kg</span>
                     </div>
                     {% endif %}
                     {% if producto.dimensiones %}
                     <div class="flex items-center gap-3">
-                        <svg class="w-5 h-5 text-blue-400 tech-glow-subtle" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                         </svg>
-                        <span class="text-gray-300">Dimensiones: {{ producto.dimensiones }}</span>
+                        <span class="text-neutral-700 dark:text-gray-300">Dimensiones: {{ producto.dimensiones }}</span>
                     </div>
                     {% endif %}
                 </div>
@@ -226,32 +226,32 @@
                 {% endcomment %}
 
                 <!-- Shipping Info -->
-                <div class="card-premium p-6 space-y-4">
+                <div class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-6 space-y-4 shadow-lg dark:shadow-none">
                     <div class="flex items-center gap-3">
-                        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                         </svg>
                         <div>
-                            <p class="text-white font-semibold">Envío Gratis</p>
-                            <p class="text-gray-400 text-sm">En compras superiores a $100</p>
+                            <p class="text-neutral-900 dark:text-white font-semibold">Envío Gratis</p>
+                            <p class="text-neutral-600 dark:text-gray-400 text-sm">En compras superiores a $100</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
-                        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                         </svg>
                         <div>
-                            <p class="text-white font-semibold">Garantía Extendida</p>
-                            <p class="text-gray-400 text-sm">3 años de cobertura total</p>
+                            <p class="text-neutral-900 dark:text-white font-semibold">Garantía Extendida</p>
+                            <p class="text-neutral-600 dark:text-gray-400 text-sm">3 años de cobertura total</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
-                        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
                         </svg>
                         <div>
-                            <p class="text-white font-semibold">Pago Seguro</p>
-                            <p class="text-gray-400 text-sm">Múltiples métodos de pago</p>
+                            <p class="text-neutral-900 dark:text-white font-semibold">Pago Seguro</p>
+                            <p class="text-neutral-600 dark:text-gray-400 text-sm">Múltiples métodos de pago</p>
                         </div>
                     </div>
                 </div>
@@ -261,86 +261,86 @@
         <!-- Tabs Section -->
         <div class="mb-16">
             <!-- Tab Headers -->
-            <div class="flex gap-2 sm:gap-4 border-b border-neutral-800 mb-8 overflow-x-auto">
-                <button class="tab-btn active px-4 sm:px-6 py-3 text-base sm:text-lg font-semibold text-white border-b-2 border-blue-400 transition-all whitespace-nowrap" data-tab="specs">
+            <div class="flex gap-2 sm:gap-4 border-b border-gray-200 dark:border-neutral-800 mb-8 overflow-x-auto">
+                <button class="tab-btn active px-4 sm:px-6 py-3 text-base sm:text-lg font-semibold text-neutral-900 dark:text-white border-b-2 border-blue-600 dark:border-blue-400 transition-all whitespace-nowrap" data-tab="specs">
                     Especificaciones
                 </button>
                 {% comment %}
-                <button class="tab-btn px-4 sm:px-6 py-3 text-base sm:text-lg font-semibold text-gray-400 border-b-2 border-transparent hover:text-white transition-all whitespace-nowrap" data-tab="reviews">
+                <button class="tab-btn px-4 sm:px-6 py-3 text-base sm:text-lg font-semibold text-neutral-600 dark:text-gray-400 border-b-2 border-transparent hover:text-neutral-900 dark:hover:text-white transition-all whitespace-nowrap" data-tab="reviews">
                     Reseñas (127)
                 </button>
                 {% endcomment %}
-                <button class="tab-btn px-4 sm:px-6 py-3 text-base sm:text-lg font-semibold text-gray-400 border-b-2 border-transparent hover:text-white transition-all whitespace-nowrap" data-tab="warranty">
+                <button class="tab-btn px-4 sm:px-6 py-3 text-base sm:text-lg font-semibold text-neutral-600 dark:text-gray-400 border-b-2 border-transparent hover:text-neutral-900 dark:hover:text-white transition-all whitespace-nowrap" data-tab="warranty">
                     Garantía
                 </button>
             </div>
 
             <!-- Tab Content -->
             <div id="specs" class="tab-content">
-                <div class="card-premium p-8">
-                    <h3 class="text-xl sm:text-2xl font-bold text-white mb-6">Especificaciones Técnicas</h3>
+                <div class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-8 shadow-lg dark:shadow-none">
+                    <h3 class="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white mb-6">Especificaciones Técnicas</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                         <div class="space-y-4">
                             {% if producto.dimensiones %}
-                            <div class="flex justify-between py-3 border-b border-neutral-700">
-                                <span class="text-gray-400">Dimensiones</span>
-                                <span class="text-white font-semibold">{{ producto.dimensiones }}</span>
+                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
+                                <span class="text-neutral-600 dark:text-gray-400">Dimensiones</span>
+                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.dimensiones }}</span>
                             </div>
                             {% endif %}
                             {% if producto.peso %}
-                            <div class="flex justify-between py-3 border-b border-neutral-700">
-                                <span class="text-gray-400">Peso</span>
-                                <span class="text-white font-semibold">{{ producto.peso }} kg</span>
+                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
+                                <span class="text-neutral-600 dark:text-gray-400">Peso</span>
+                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.peso }} kg</span>
                             </div>
                             {% endif %}
                             {% if producto.origen %}
-                            <div class="flex justify-between py-3 border-b border-neutral-700">
-                                <span class="text-gray-400">País de Origen</span>
-                                <span class="text-white font-semibold">{{ producto.origen }}</span>
+                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
+                                <span class="text-neutral-600 dark:text-gray-400">País de Origen</span>
+                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.origen }}</span>
                             </div>
                             {% endif %}
                             {% if producto.marca %}
-                            <div class="flex justify-between py-3 border-b border-neutral-700">
-                                <span class="text-gray-400">Marca</span>
-                                <span class="text-white font-semibold">{{ producto.marca.nombre }}</span>
+                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
+                                <span class="text-neutral-600 dark:text-gray-400">Marca</span>
+                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.marca.nombre }}</span>
                             </div>
                             {% endif %}
                             {% if producto.categoria %}
-                            <div class="flex justify-between py-3 border-b border-neutral-700">
-                                <span class="text-gray-400">Categoría</span>
-                                <span class="text-white font-semibold">{{ producto.categoria.nombre }}</span>
+                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
+                                <span class="text-neutral-600 dark:text-gray-400">Categoría</span>
+                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.categoria.nombre }}</span>
                             </div>
                             {% endif %}
                         </div>
                         <div class="space-y-4">
                             {% if producto.subcategoria %}
-                            <div class="flex justify-between py-3 border-b border-neutral-700">
-                                <span class="text-gray-400">Subcategoría</span>
-                                <span class="text-white font-semibold">{{ producto.subcategoria.nombre }}</span>
+                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
+                                <span class="text-neutral-600 dark:text-gray-400">Subcategoría</span>
+                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.subcategoria.nombre }}</span>
                             </div>
                             {% endif %}
                             {% if producto.sku %}
-                            <div class="flex justify-between py-3 border-b border-neutral-700">
-                                <span class="text-gray-400">SKU</span>
-                                <span class="text-white font-semibold">{{ producto.sku }}</span>
+                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
+                                <span class="text-neutral-600 dark:text-gray-400">SKU</span>
+                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.sku }}</span>
                             </div>
                             {% endif %}
                             {% if producto.stock %}
-                            <div class="flex justify-between py-3 border-b border-neutral-700">
-                                <span class="text-gray-400">Stock Disponible</span>
-                                <span class="text-white font-semibold">{{ producto.stock }} unidades</span>
+                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
+                                <span class="text-neutral-600 dark:text-gray-400">Stock Disponible</span>
+                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.stock }} unidades</span>
                             </div>
                             {% endif %}
                             {% if producto.proveedor %}
-                            <div class="flex justify-between py-3 border-b border-neutral-700">
-                                <span class="text-gray-400">Proveedor</span>
-                                <span class="text-white font-semibold">{{ producto.proveedor.nombre }}</span>
+                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
+                                <span class="text-neutral-600 dark:text-gray-400">Proveedor</span>
+                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.proveedor.nombre }}</span>
                             </div>
                             {% endif %}
                             {% if producto.estatus %}
-                            <div class="flex justify-between py-3 border-b border-neutral-700">
-                                <span class="text-gray-400">Estado</span>
-                                <span class="text-white font-semibold">{{ producto.estatus.nombre }}</span>
+                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
+                                <span class="text-neutral-600 dark:text-gray-400">Estado</span>
+                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.estatus.nombre }}</span>
                             </div>
                             {% endif %}
                         </div>
@@ -348,7 +348,7 @@
                     
                     {% if not producto.dimensiones and not producto.peso and not producto.origen and not producto.marca and not producto.categoria and not producto.subcategoria and not producto.sku and not producto.proveedor and not producto.estatus %}
                     <div class="text-center py-8">
-                        <p class="text-gray-400">No hay especificaciones técnicas disponibles para este producto.</p>
+                        <p class="text-neutral-600 dark:text-gray-400">No hay especificaciones técnicas disponibles para este producto.</p>
                     </div>
                     {% endif %}
                 </div>
@@ -439,15 +439,15 @@
             {% endcomment %}
 
             <div id="warranty" class="tab-content hidden">
-                <div class="card-premium p-8">
-                    <h3 class="text-2xl font-bold text-white mb-6">Información de Garantía</h3>
-                    <div class="space-y-6 text-gray-300 leading-relaxed">
+                <div class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-8 shadow-lg dark:shadow-none">
+                    <h3 class="text-2xl font-bold text-neutral-900 dark:text-white mb-6">Información de Garantía</h3>
+                    <div class="space-y-6 text-neutral-700 dark:text-gray-300 leading-relaxed">
                         <div>
-                            <h4 class="text-xl font-semibold text-white mb-3">Cobertura</h4>
+                            <h4 class="text-xl font-semibold text-neutral-900 dark:text-white mb-3">Cobertura</h4>
                             <p>Este producto incluye una garantía extendida de 3 años que cubre defectos de fabricación y fallos en componentes electrónicos. La garantía incluye mano de obra y repuestos originales.</p>
                         </div>
                         <div>
-                            <h4 class="text-xl font-semibold text-white mb-3">Qué está cubierto</h4>
+                            <h4 class="text-xl font-semibold text-neutral-900 dark:text-white mb-3">Qué está cubierto</h4>
                             <ul class="list-disc list-inside space-y-2">
                                 <li>Defectos de fabricación en materiales y mano de obra</li>
                                 <li>Fallos en el sistema de refrigeración</li>
@@ -457,7 +457,7 @@
                             </ul>
                         </div>
                         <div>
-                            <h4 class="text-xl font-semibold text-white mb-3">Qué NO está cubierto</h4>
+                            <h4 class="text-xl font-semibold text-neutral-900 dark:text-white mb-3">Qué NO está cubierto</h4>
                             <ul class="list-disc list-inside space-y-2">
                                 <li>Daños por mal uso o instalación incorrecta</li>
                                 <li>Daños cosméticos o estéticos</li>
@@ -467,7 +467,7 @@
                             </ul>
                         </div>
                         <div>
-                            <h4 class="text-xl font-semibold text-white mb-3">Cómo hacer válida tu garantía</h4>
+                            <h4 class="text-xl font-semibold text-neutral-900 dark:text-white mb-3">Cómo hacer válida tu garantía</h4>
                             <p>Para hacer válida tu garantía, contacta nuestro servicio de atención al cliente con tu número de serie y factura de compra. Un técnico especializado se comunicará contigo en menos de 24 horas.</p>
                         </div>
                     </div>
@@ -477,14 +477,14 @@
 
         <!-- Related Products -->
         <div>
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-serif mb-6 sm:mb-8 text-glow">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-serif mb-6 sm:mb-8 text-neutral-900 dark:text-white drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]">
                 Productos Relacionados
             </h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 {% for prod in productos_relacionados %}
                 <!-- Related Product: {{ prod.nombre }} -->
-                <a href="{% url 'productos:detalle' prod.slug %}" class="product-card group block relative overflow-hidden rounded-xl h-[350px] sm:h-[400px] cursor-pointer">
-                    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black/90"></div>
+                <a href="{% url 'productos:detalle' prod.slug %}" class="product-card group block relative overflow-hidden rounded-xl h-[350px] sm:h-[400px] cursor-pointer bg-white dark:bg-neutral-900/50 shadow-xl dark:shadow-none border border-gray-200 dark:border-neutral-800/50 hover:shadow-2xl dark:hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] transition-all duration-500 hover:scale-[1.02]">
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/50 to-neutral-900/95 dark:from-transparent dark:via-black/50 dark:to-black/90"></div>
                     
                     {% if prod.imagen %}
                         <img src="{{ prod.imagen.url }}" alt="{{ prod.nombre }}" class="w-full h-full object-cover">
@@ -496,9 +496,9 @@
                     
                     <div class="absolute bottom-0 left-0 right-0 p-6">
                         {% if prod.marca or prod.categoria %}
-                        <span class="text-tech text-sm mb-2 block">{{ prod.marca.nombre|default:prod.categoria.nombre }}</span>
+                        <span class="text-blue-500 dark:text-blue-400 text-sm mb-2 block font-semibold">{{ prod.marca.nombre|default:prod.categoria.nombre }}</span>
                         {% endif %}
-                        <h3 class="text-xl font-bold mb-2 text-white">{{ prod.nombre }}</h3>
+                        <h3 class="text-xl font-bold mb-2 text-white drop-shadow-lg">{{ prod.nombre }}</h3>
                         <div class="flex items-center justify-between">
                             {% if prod.tiene_descuento %}
                                 <span class="text-2xl font-bold text-white">${{ prod.precio_oferta }}</span>
@@ -507,13 +507,13 @@
                             {% endif %}
                         </div>
                         <div class="product-cta mt-4">
-                            <button class="btn-crimson w-full">Ver Detalles</button>
+                            <button class="btn-crimson w-full shadow-lg">Ver Detalles</button>
                         </div>
                     </div>
                 </a>
                 {% empty %}
                 <div class="col-span-full text-center py-8">
-                    <p class="text-gray-400">No hay productos relacionados disponibles</p>
+                    <p class="text-neutral-600 dark:text-gray-400">No hay productos relacionados disponibles</p>
                 </div>
                 {% endfor %}
             </div>
@@ -564,11 +564,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Update button states
             tabBtns.forEach(b => {
-                b.classList.remove('active', 'text-white', 'border-blue-400');
-                b.classList.add('text-gray-400', 'border-transparent');
+                b.classList.remove('active', 'text-neutral-900', 'dark:text-white', 'border-blue-600', 'dark:border-blue-400');
+                b.classList.add('text-neutral-600', 'dark:text-gray-400', 'border-transparent');
             });
-            this.classList.add('active', 'text-white', 'border-blue-400');
-            this.classList.remove('text-gray-400', 'border-transparent');
+            this.classList.add('active', 'text-neutral-900', 'dark:text-white', 'border-blue-600', 'dark:border-blue-400');
+            this.classList.remove('text-neutral-600', 'dark:text-gray-400', 'border-transparent');
             
             // Show corresponding content
             tabContents.forEach(content => {
