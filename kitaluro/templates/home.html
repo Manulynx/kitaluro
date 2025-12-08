@@ -5,58 +5,74 @@
 
 {% block content %}
 
-<!-- ========================================================================== -->
-<!-- HERO SECTION - IMPACTO TOTAL -->
-<!-- ========================================================================== -->
-<section class="relative h-screen flex items-center justify-center bg-white dark:bg-neutral-950 overflow-hidden mt-0">
-    <!-- Background Image con overlay adaptativo -->
-    <div class="absolute inset-0 z-0">
-        <img 
-            src="{% static 'img/logo.png' %}" 
-            alt="Premium Home Appliance" 
-            class="w-full h-full object-cover opacity-20 dark:opacity-40"
-        />
-    </div> 
+<section class="relative h-[500px] lg:h-[450px] flex items-center justify-center overflow-hidden mt-0">
+    <a href="#products" 
+       class="absolute inset-0 w-full h-full cursor-pointer group" 
+       title="Ver Colección de Productos Kitaluro">
+        
+        <video 
+            autoplay 
+            loop 
+            muted 
+            playsinline
+            preload="auto"
+            poster="{% static 'img/hero-poster.jpg' %}"
+            class="absolute inset-0 w-full h-full object-cover object-center z-0" 
+            id="heroVideo"
+            aria-label="Video promocional, haga clic para ver productos"
+        >
+            <source src="{% static 'video/videowebm.webm' %}" type="video/webm">
+            <source src="{% static 'video/video.mp4' %}" type="video/mp4">
+            <img 
+                src="{% static 'img/hero-poster.jpg' %}" 
+                alt="Kitaluro Premium Appliances" 
+                class="w-full h-full object-cover"
+            />
+        </video>
 
-    <!-- ✅ Gradient Overlay diferenciado -->
-    <div class="absolute inset-0 bg-gradient-to-t from-white via-white/50 to-white/80 dark:from-neutral-950 dark:via-transparent dark:to-neutral-950/50 z-10"></div>
+        <div class="relative w-full h-full z-10 flex items-center justify-center">
+            <div class="text-white text-center p-8 bg-black/40 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 hidden md:block">
+                <p class="text-xl font-semibold tracking-wider uppercase text-shadow">Descubrir Ahora</p>
+            </div>
+        </div>
+        
+    </a>
+    </section>
 
-    <!-- Hero Content -->
-    <div class="relative z-20 text-center px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
-        <h1 class="reveal font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-neutral-900 dark:text-white mb-4 sm:mb-6 lg:mb-8 
-                   drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)] 
-                   leading-tight">
-            KITALURO
-        </h1>
+<section class="py-16 sm:py-20 lg:py-24 bg-gray-50 dark:bg-neutral-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="reveal font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-neutral-900 dark:text-white mb-4 sm:mb-6 lg:mb-8 
+                       drop-shadow-2xl dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]
+                       leading-tight">
+                KITALURO
+            </h1>
 
-        <p class="reveal text-neutral-600 dark:text-neutral-400 text-xs sm:text-sm md:text-base tracking-[0.3em] sm:tracking-[0.5em] uppercase mb-8 sm:mb-10 lg:mb-12" data-delay="200">
-            Redefiniendo el Lujo Doméstico
-        </p>
+            <p class="reveal text-neutral-600 dark:text-neutral-300 text-xs sm:text-sm md:text-base tracking-[0.3em] sm:tracking-[0.5em] uppercase mb-8 sm:mb-10 lg:mb-12" data-delay="200">
+                Redefiniendo el Lujo Doméstico
+            </p>
 
-        <div class="reveal flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 max-w-md sm:max-w-none mx-auto" data-delay="400">
-            <a href="{% url 'productos:index' %}" class="w-full sm:w-auto">
-                <button class="btn-crimson shadow-xl dark:shadow-red-900/50 w-full sm:w-auto text-sm sm:text-base"> 
-                    Explorar Productos
-                </button>
-            </a>
-            <a href="#tech" 
-               class="w-full sm:w-auto text-center px-6 sm:px-10 py-3 sm:py-4 border-2 border-blue-500/70 dark:border-blue-400/50 
-                      text-neutral-900 dark:text-white font-medium rounded-full 
-                      bg-white/50 dark:bg-transparent
-                      hover:bg-blue-50 dark:hover:bg-blue-500/10 
-                      hover:border-blue-600 dark:hover:border-blue-400 
-                      shadow-lg dark:shadow-none
-                      transition-all duration-300 transform hover:scale-105
-                      text-sm sm:text-base">
-                Ver Tecnología
-            </a>
+            <div class="reveal flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 max-w-md sm:max-w-none mx-auto" data-delay="400">
+                <a href="{% url 'productos:index' %}" class="w-full sm:w-auto">
+                    <button class="btn-crimson shadow-xl dark:shadow-red-900/50 w-full sm:w-auto text-sm sm:text-base"> 
+                        Explorar Productos
+                    </button>
+                </a>
+                <a href="#tech" 
+                   class="w-full sm:w-auto text-center px-6 sm:px-10 py-3 sm:py-4 border-2 border-neutral-300 dark:border-neutral-700 hover:border-neutral-900 dark:hover:border-white
+                          text-neutral-900 dark:text-white font-medium rounded-full 
+                          bg-white dark:bg-neutral-800
+                          hover:bg-neutral-100 dark:hover:bg-neutral-700
+                          shadow-lg
+                          transition-all duration-300 transform hover:scale-105
+                          text-sm sm:text-base">
+                    Ver Tecnología
+                </a>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- ========================================================================== -->
-<!-- FEATURES GRID - BENTO BOX STYLE -->
-<!-- ========================================================================== -->
 <section id="products" class="py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-neutral-900">
     <div class="max-w-7xl mx-auto">
         <div class="text-center mb-8 sm:mb-12 lg:mb-16">
@@ -69,11 +85,9 @@
             </p>
         </div>
 
-        <!-- ✅ Grid de Productos con Estilos Duales y Stagger Animation -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8" data-stagger="150">
             {% for producto in productos %}
             {% if producto.destacado %}
-            <!-- ✅ Product Card Refinada con Reveal -->
             <div class="reveal-scale group product-card h-[420px] sm:h-[480px] lg:h-[500px] 
                         bg-white dark:bg-neutral-900/50 
                         rounded-xl sm:rounded-2xl overflow-hidden 
@@ -103,7 +117,6 @@
                         />
                     {% endif %}
                     
-                    <!-- ✅ Badge con contraste óptimo -->
                     {% if producto.en_oferta or producto.destacado %}
                     <div class="absolute top-3 sm:top-4 right-3 sm:right-4 z-10">
                         {% if producto.en_oferta %}
@@ -116,12 +129,10 @@
                     </div>
                     {% endif %}
                     
-                    <!-- ✅ Gradient Overlay Adaptativo -->
                     <div class="absolute inset-0 bg-gradient-to-t 
                                 from-neutral-900/95 via-neutral-900/50 to-transparent 
                                 dark:from-black/90 dark:via-black/30 dark:to-transparent"></div>
                     
-                    <!-- ✅ Content con mejor legibilidad -->
                     <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-6 lg:p-8 space-y-2 sm:space-y-3 lg:space-y-4">
                         {% if producto.categoria or producto.marca %}
                         <span class="inline-block text-blue-400 dark:text-blue-400 text-[10px] sm:text-xs font-medium tracking-wider sm:tracking-widest uppercase">
@@ -143,7 +154,6 @@
                         </p>
                         {% endif %}
                         
-                        <!-- ✅ Price -->
                         <div class="flex items-baseline gap-1.5 sm:gap-2">
                             {% if producto.tiene_descuento %}
                                 <span class="text-lg sm:text-xl lg:text-2xl font-bold text-white">${{ producto.precio_oferta }}</span>
@@ -154,7 +164,6 @@
                             <span class="text-gray-300 dark:text-gray-400 text-[10px] sm:text-xs">USD</span>
                         </div>
                         
-                        <!-- ✅ CTA Button -->
                         {% comment %}
                         <div class="product-cta">
                             <button class="btn-crimson w-full mt-1 sm:mt-2 shadow-lg text-sm sm:text-base py-2.5 sm:py-3">
@@ -167,7 +176,6 @@
             </div>
             {% endif %}
             {% empty %}
-            <!-- ✅ Empty State -->
             <div class="col-span-full text-center py-16">
                 <div class="bg-white dark:bg-neutral-900/50 
                             border border-gray-200 dark:border-neutral-800 
@@ -185,14 +193,10 @@
     </div>
 </section>
 
-<!-- ========================================================================== -->
-<!-- GALERÍA DESLIZANTE DE PRODUCTOS - LUXURY E-COMMERCE -->
-<!-- ========================================================================== -->
 <section class="reveal py-12 sm:py-16 md:py-20 lg:py-24 px-0 bg-neutral-950 overflow-hidden">
     <div class="max-w-7xl mx-auto">
         {% for producto in productos %}
         {% if productos.destacado %}
-        <!-- Header -->
         <div class="text-center mb-8 sm:mb-10 lg:mb-12 px-4 sm:px-6">
             <h2 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-4 
                        drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]">
@@ -204,21 +208,16 @@
         </div>
         {% endif %}
 
-        <!-- Scroll Container con Snap -->
         <div class="relative">
-            <!-- Gradient Fade Left -->
             <div class="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-neutral-950 to-transparent z-10 pointer-events-none hidden md:block"></div>
             
-            <!-- Gradient Fade Right -->
             <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-neutral-950 to-transparent z-10 pointer-events-none hidden md:block"></div>
 
-            <!-- The Track - Contenedor Deslizante -->
             <div class="flex overflow-x-scroll snap-x snap-mandatory hide-scrollbar gap-4 sm:gap-5 lg:gap-6 px-4 sm:px-6 lg:px-8 pb-4" 
                  style="scroll-padding: 0 1rem;">
                 
                 
         {% if not producto.destacado %}
-                <!-- Product Slide Card -->
                 <div class="snap-start snap-always flex-shrink-0 w-[85vw] sm:w-[70vw] md:w-[45vw] lg:w-[350px] xl:w-[380px] group">
                     <a href="{% url 'productos:detalle' producto.slug %}" 
                        class="block bg-neutral-900 rounded-xl sm:rounded-2xl overflow-hidden 
@@ -227,7 +226,6 @@
                               border border-neutral-800 hover:border-blue-500/30
                               h-full flex flex-col">
                         
-                        <!-- Imagen del Producto -->
                         <div class="relative h-[280px] sm:h-[320px] md:h-[280px] lg:h-[300px] overflow-hidden bg-neutral-800 flex-shrink-0">
                             {% if producto.imagen %}
                                 <img 
@@ -255,10 +253,8 @@
                                 />
                             {% endif %}
 
-                            <!-- Overlay Gradient -->
                             <div class="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/40 to-transparent"></div>
 
-                            <!-- Badge -->
                             {% if producto.en_oferta or producto.destacado %}
                             <div class="absolute top-3 sm:top-4 right-3 sm:right-4 z-10">
                                 {% if producto.en_oferta %}
@@ -271,7 +267,6 @@
                             </div>
                             {% endif %}
 
-                            <!-- Marca/Categoría en hover -->
                             {% if producto.marca or producto.categoria %}
                             <div class="absolute top-3 sm:top-4 left-3 sm:left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 <span class="text-blue-400 text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest font-semibold">
@@ -281,16 +276,13 @@
                             {% endif %}
                         </div>
 
-                        <!-- Content Section -->
                         <div class="p-4 sm:p-5 lg:p-5 space-y-2 sm:space-y-2.5 bg-neutral-900 flex-grow flex flex-col">
-                            <!-- Título del Producto -->
                             <h3 class="font-serif text-base sm:text-lg md:text-xl font-bold text-white 
                                        group-hover:text-blue-400 transition-colors duration-300 
                                        line-clamp-2 leading-tight">
                                 {{ producto.nombre }}
                             </h3>
 
-                            <!-- Precio -->
                             <div class="flex items-baseline gap-2">
                                 {% if producto.tiene_descuento %}
                                     <span class="text-lg sm:text-xl font-bold text-white">
@@ -307,7 +299,6 @@
                                 <span class="text-neutral-500 text-xs">USD</span>
                             </div>
 
-                            <!-- CTA Button Rojo Kitaluro -->
                             {% comment %}
                             <button class="btn-crimson w-full shadow-lg 
                                            transform group-hover:shadow-xl 
@@ -317,7 +308,6 @@
                             </button>
                             {% endcomment %}
 
-                            <!-- Stock Indicator -->
                             {% if producto.stock %}
                             <div class="flex items-center gap-1.5 text-xs">
                                 <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
@@ -339,7 +329,6 @@
         {% endif %}
         {% endfor %}
 
-                <!-- Empty State -->
                 {% if not productos %}
                 <div class="snap-start flex-shrink-0 w-[85vw] sm:w-[70vw] md:w-[45vw] lg:w-[32%]">
                     <div class="bg-neutral-900 rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center border border-neutral-800">
@@ -354,7 +343,6 @@
 
             </div>
 
-            <!-- Navigation Hint (Desktop) -->
             <div class="hidden lg:flex items-center justify-center gap-2 mt-6 sm:mt-8 text-neutral-600">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 animate-bounce-horizontal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -368,4 +356,85 @@
     </div>
 </section>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    const video = document.getElementById('heroVideo');
+    
+    if (video) {
+        console.log('🎬 VIDEO DEBUG - Información del video:');
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        
+        // Detectar errores de carga
+        video.addEventListener('error', function(e) {
+            console.error('❌ ERROR AL CARGAR EL VIDEO');
+            console.error('Código de error:', video.error ? video.error.code : 'Desconocido');
+            console.error('Mensaje:', video.error ? video.error.message : 'Sin mensaje');
+            
+            // Intentar obtener la fuente que falló
+            const sources = video.querySelectorAll('source');
+            sources.forEach((source, index) => {
+                console.error(`Fuente ${index + 1}:`, source.src);
+                console.error(`Tipo:`, source.type);
+            });
+        }, true);
+        
+        // Cuando el video se carga correctamente
+        video.addEventListener('loadeddata', function() {
+            console.log('✅ VIDEO CARGADO EXITOSAMENTE');
+            console.log('Duración:', video.duration, 'segundos');
+            console.log('Dimensiones:', video.videoWidth, 'x', video.videoHeight);
+        });
+        
+        // Cuando el video empieza a reproducirse
+        video.addEventListener('playing', function() {
+            console.log('▶️ VIDEO REPRODUCIÉNDOSE');
+        });
+        
+        // Mostrar todas las fuentes de video
+        const sources = video.querySelectorAll('source');
+        console.log('📁 Fuentes de video configuradas:');
+        sources.forEach((source, index) => {
+            console.log(`  ${index + 1}. ${source.type}:`);
+            console.log(`     ${source.src}`);
+            
+            // Verificar si la URL es accesible
+            fetch(source.src, { method: 'HEAD' })
+                .then(response => {
+                    if (response.ok) {
+                        console.log(`     ✅ Archivo accesible (${response.status})`);
+                    } else {
+                        console.error(`     ❌ Error ${response.status}: Archivo no encontrado`);
+                    }
+                })
+                .catch(err => {
+                    console.error(`     ❌ Error de red:`, err.message);
+                });
+        });
+        
+        // Mostrar poster
+        console.log('🖼️ Poster:', video.poster);
+        
+        // Verificar estado de reproducción
+        setTimeout(() => {
+            if (video.paused) {
+                console.warn('⚠️ El video está PAUSADO');
+                console.log('Intentando reproducir manualmente...');
+                
+                video.play()
+                    .then(() => console.log('✅ Reproducción manual exitosa'))
+                    .catch(err => console.error('❌ Error al reproducir:', err));
+            } else {
+                console.log('✅ El video se está reproduciendo automáticamente');
+            }
+        }, 1000);
+        
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    } else {
+        console.error('❌ No se encontró el elemento <video> con id="heroVideo"');
+    }
+})();
+</script>
 {% endblock %}
