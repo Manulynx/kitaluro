@@ -896,6 +896,21 @@ html {
   transform: translateY(-1px);
 }
 
+/* Ajuste para botón ghost en móvil (fondo claro) */
+@media (max-width: 640px) {
+  .lux-hero-mobile-actions .lux-btn-ghost {
+    background: transparent;
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+    box-shadow: none;
+  }
+  
+  .lux-hero-mobile-actions .lux-btn-ghost:hover {
+    background: var(--bg-secondary);
+    border-color: var(--text-primary);
+  }
+}
+
 @media (max-width: 1024px) {
   .lux-hero-media {
     height: clamp(260px, 55vh, 480px);
@@ -950,7 +965,9 @@ html {
     display: block;
     padding: 1.5rem 1.25rem 2rem;
     text-align: center;
-    background: #020617;
+    /* Usamos variables CSS para que coincida con el body */
+    background: var(--bg-primary);
+    color: var(--text-primary);
   }
 
   .lux-hero-mobile-kicker {
@@ -958,7 +975,7 @@ html {
     font-size: 0.7rem;
     letter-spacing: 0.32em;
     text-transform: uppercase;
-    color: #9ca3af;
+    color: var(--text-secondary);
     margin-bottom: 0.6rem;
   }
 
@@ -967,7 +984,7 @@ html {
     font-size: 1.9rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: #fefce8;
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
   }
 
@@ -975,7 +992,7 @@ html {
     font-family: 'Outfit', system-ui, sans-serif;
     font-size: 0.9rem;
     line-height: 1.6;
-    color: #d1d5db;
+    color: var(--text-secondary);
     max-width: 22rem;
     margin: 0 auto 1.25rem;
   }
@@ -995,3 +1012,55 @@ html {
     transition: none !important;
   }
 }
+
+/* ========================================================================== */
+/* SCROLL TO TOP BUTTON                                                     */
+/* ========================================================================== */
+
+.scroll-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 99;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); /* Crimson Red */
+  color: white;
+  border: none;
+  box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-to-top.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.scroll-to-top:hover {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(220, 38, 38, 0.6);
+}
+
+.scroll-to-top:active {
+  transform: translateY(-2px);
+}
+
+@media (max-width: 640px) {
+  .scroll-to-top {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 3rem;
+    height: 3rem;
+  }
+}
+

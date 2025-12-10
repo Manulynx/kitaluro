@@ -8,8 +8,8 @@
 <!-- ========================================================================== -->
 <!-- HERO BANNER - VIDEO COMPLETO SIN RECORTE -->
 <!-- ========================================================================== -->
-<section class="lux-hero-banner">
-    <div class="lux-hero-media">
+<section class="lux-hero-banner ">
+    <div class="lux-hero-media reveal">
         <video
             id="heroVideo"
             class="lux-hero-video"
@@ -32,26 +32,25 @@
                 <p class="lux-hero-kicker">Colección 2025</p>
                 <h1 class="lux-hero-title">KITALURO</h1>
                 <p class="lux-hero-subtitle">
-                    Tecnología silenciosa, acabados impecables y una experiencia de lujo en cada detalle.
+                    Redefiniendo el lujo.
                 </p>
                 <div class="lux-hero-actions">
-                    <a href="#products" class="btn-crimson">Explorar Colección</a>
-                    <a href="#tech" class="lux-btn-ghost">Ver Tecnología</a>
+                    <a href="{% url 'productos:index' %}" class="btn-crimson">Explorar Colección</a>
+                    
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Bloque de texto independiente solo para móviles -->
-    <div class="lux-hero-mobile-copy">
+    <div class="lux-hero-mobile-copy reveal">
         <p class="lux-hero-mobile-kicker">Colección 2025</p>
         <h1 class="lux-hero-mobile-title">KITALURO</h1>
         <p class="lux-hero-mobile-subtitle">
-            Tecnología silenciosa, acabados impecables y una experiencia de lujo en cada detalle.
+            Redefiniendo el lujo.
         </p>
         <div class="lux-hero-mobile-actions">
-            <a href="#products" class="btn-crimson">Explorar Colección</a>
-            <a href="#tech" class="lux-btn-ghost">Ver Tecnología</a>
+            <a href="{% url 'productos:index' %}" class="btn-crimson">Explorar Colección</a>
         </div>
     </div>
 </section>

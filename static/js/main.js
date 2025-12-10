@@ -124,4 +124,30 @@ document.addEventListener('DOMContentLoaded', function() {
             observer.observe(heroVideo);
         }
     }
-});
+
+    // =====================================================================
+    // SCROLL TO TOP BUTTON LOGIC
+    // =====================================================================
+    const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+    
+    if (scrollToTopBtn) {
+        // Mostrar botón al hacer scroll
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) {
+                scrollToTopBtn.classList.add('show');
+            } else {
+                scrollToTopBtn.classList.remove('show');
+            }
+        });
+        
+        // Acción de volver arriba
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+
+}); // End DOMContentLoaded
+
