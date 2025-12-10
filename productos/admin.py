@@ -1,8 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import (Categoria, Subcategoria, Marca, Proveedor, Estatus, 
-                     Producto, ProductImage, ProductVideo, MediaProducto, 
-                     ImagenProducto, Valoracion)
+                     Producto, ProductImage, ProductVideo, Valoracion)
 
 # Register your models here.
 
@@ -64,19 +63,6 @@ class ProductVideoInline(admin.TabularInline):
     fields = ['video', 'title', 'description', 'order']
 
 
-class MediaProductoInline(admin.TabularInline):
-    model = MediaProducto
-    extra = 1
-    fields = ['tipo', 'imagen', 'video', 'video_url', 'thumbnail', 'titulo', 'es_principal', 'orden', 'activo']
-    readonly_fields = []
-
-
-class ImagenProductoInline(admin.TabularInline):
-    model = ImagenProducto
-    extra = 1
-    fields = ['imagen', 'alt_text', 'es_principal', 'orden']
-
-
 class ValoracionInline(admin.TabularInline):
     model = Valoracion
     extra = 0
@@ -120,7 +106,7 @@ class ProductoAdmin(admin.ModelAdmin):
         }),
     )
     
-    inlines = [ProductImageInline, ProductVideoInline, MediaProductoInline, ImagenProductoInline, ValoracionInline]
+    inlines = [ProductImageInline, ProductVideoInline, ValoracionInline]
     
     def precio_display(self, obj):
         if obj.precio:
@@ -132,39 +118,6 @@ class ProductoAdmin(admin.ModelAdmin):
             return f'${obj.precio}'
         return '-'
     precio_display.short_description = 'Precio'
-
-
-@admin.register(MediaProducto)
-class MediaProductoAdmin(admin.ModelAdmin):
-    list_display = ['producto', 'tipo', 'titulo', 'es_principal', 'orden', 'activo', 'fecha_creacion']
-    list_filter = ['tipo', 'es_principal', 'activo', 'fecha_creacion']
-    search_fields = ['producto__nombre', 'titulo', 'descripcion']
-    list_editable = ['es_principal', 'orden', 'activo']
-    
-    fieldsets = (
-        ('Información Básica', {
-            'fields': ('producto', 'tipo', 'titulo', 'descripcion')
-        }),
-        ('Imagen', {
-            'fields': ('imagen', 'alt_text'),
-            'classes': ('collapse',)
-        }),
-        ('Video', {
-            'fields': ('video', 'video_url', 'thumbnail'),
-            'classes': ('collapse',)
-        }),
-        ('Configuración', {
-            'fields': ('es_principal', 'orden', 'activo')
-        }),
-    )
-
-
-@admin.register(ImagenProducto)
-class ImagenProductoAdmin(admin.ModelAdmin):
-    list_display = ['producto', 'es_principal', 'orden', 'fecha_creacion']
-    list_filter = ['es_principal', 'fecha_creacion']
-    search_fields = ['producto__nombre', 'alt_text']
-    list_editable = ['es_principal', 'orden']
 
 
 @admin.register(Valoracion)

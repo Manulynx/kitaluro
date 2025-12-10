@@ -27,10 +27,10 @@
 <section class="py-16 px-4 bg-gray-50 dark:bg-neutral-900">
     <div class="max-w-7xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-            <!-- Image Gallery -->
+            <!-- Image & Video Gallery -->
             <div class="reveal-left space-y-4">
-                <!-- Main Image -->
-                <div class="bg-white dark:bg-neutral-900 overflow-hidden rounded-xl border border-gray-200 dark:border-neutral-800 shadow-xl dark:shadow-none aspect-square">
+                <!-- Main Display Area -->
+                <div id="mainDisplay" class="bg-white dark:bg-neutral-900 overflow-hidden rounded-xl border border-gray-200 dark:border-neutral-800 shadow-xl dark:shadow-none aspect-square">
                     {% if producto.imagen %}
                     <img 
                         id="mainImage"
@@ -38,6 +38,12 @@
                         alt="{{ producto.nombre }}"
                         class="w-full h-full object-cover"
                     >
+                    <video 
+                        id="mainVideo"
+                        controls
+                        class="w-full h-full object-cover hidden"
+                    >
+                    </video>
                     {% elif producto.get_main_image %}
                     <img 
                         id="mainImage"
@@ -45,6 +51,12 @@
                         alt="{{ producto.nombre }}"
                         class="w-full h-full object-cover"
                     >
+                    <video 
+                        id="mainVideo"
+                        controls
+                        class="w-full h-full object-cover hidden"
+                    >
+                    </video>
                     {% else %}
                     <img 
                         id="mainImage"
@@ -52,21 +64,59 @@
                         alt="{{ producto.nombre }}"
                         class="w-full h-full object-cover"
                     >
+                    <video 
+                        id="mainVideo"
+                        controls
+                        class="w-full h-full object-cover hidden"
+                    >
+                    </video>
                     {% endif %}
                 </div>
                 
-                <!-- Thumbnail Gallery -->
-                <div class="grid grid-cols-4 gap-4">
-                    {% if producto.imagenes_galeria.all %}
-                        {% for imagen in producto.imagenes_galeria.all|slice:":4" %}
-                        <button class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 {% if forloop.first %}border-blue-600 dark:border-blue-400 shadow-lg{% else %}border-gray-300 dark:border-transparent hover:border-blue-400 dark:hover:border-blue-400/50 transition-all{% endif %} shadow-md dark:shadow-none" onclick="changeImage('{{ imagen.image.url }}')">
-                            <img src="{{ imagen.image.url }}" alt="{{ imagen.alt_text|default:producto.nombre }}" class="w-full h-full object-cover">
-                        </button>
-                        {% endfor %}
-                    {% elif producto.imagen %}
-                        <button class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-blue-600 dark:border-blue-400 shadow-lg dark:shadow-none" onclick="changeImage('{{ producto.imagen.url }}')">
-                            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="w-full h-full object-cover">
-                        </button>
+                <!-- Thumbnail Gallery (Images + Videos) -->
+                <div class="grid grid-cols-4 gap-4" id="galleryThumbnails">
+                    <!-- Imágenes de la galería -->
+                    {% for imagen in producto.imagenes_galeria.all %}
+                    <button class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 {% if forloop.first %}border-blue-600 dark:border-blue-400 shadow-lg{% else %}border-gray-300 dark:border-transparent hover:border-blue-400 dark:hover:border-blue-400/50 transition-all{% endif %} shadow-md dark:shadow-none" onclick="showImage('{{ imagen.image.url }}')">
+                        <img src="{{ imagen.image.url }}" alt="{{ imagen.alt_text|default:producto.nombre }}" class="w-full h-full object-cover">
+                    </button>
+                    {% endfor %}
+                    
+                    <!-- Videos de la galería -->
+                    {% for video in producto.videos_galeria.all %}
+                    <button class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-gray-300 dark:border-transparent hover:border-blue-400 dark:hover:border-blue-400/50 transition-all shadow-md dark:shadow-none relative" onclick="showVideo('{{ video.video.url }}', '{{ video.title|default:producto.nombre }}')">
+                        <div class="w-full h-full bg-gray-800 flex items-center justify-center">
+                            <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                            </svg>
+                        </div>
+                        {% if video.title %}
+                        <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-xs p-1 truncate">
+                            {{ video.title }}
+                        </div>
+                        {% endif %}
+                    </button>
+                    {% endfor %}
+                    
+                    <!-- Imagen principal si no hay galería -->
+                    {% if not producto.imagenes_galeria.all and producto.imagen %}
+                    <button class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-blue-600 dark:border-blue-400 shadow-lg dark:shadow-none" onclick="showImage('{{ producto.imagen.url }}')">
+                        <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="w-full h-full object-cover">
+                    </button>
+                    {% endif %}
+                    
+                    <!-- Video principal si existe -->
+                    {% if producto.video %}
+                    <button class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-gray-300 dark:border-transparent hover:border-blue-400 dark:hover:border-blue-400/50 transition-all shadow-md dark:shadow-none relative" onclick="showVideo('{{ producto.video.url }}', '{{ producto.nombre }}')">
+                        <div class="w-full h-full bg-gray-800 flex items-center justify-center">
+                            <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                            </svg>
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-xs p-1 truncate">
+                            Video
+                        </div>
+                    </button>
                     {% endif %}
                 </div>
             </div>
@@ -524,34 +574,51 @@
 
 {% block extra_js %}
 <script>
-// Image Gallery
-function changeImage(src) {
+// Image & Video Gallery Functions
+function showImage(src) {
     const mainImage = document.getElementById('mainImage');
+    const mainVideo = document.getElementById('mainVideo');
+    
+    // Mostrar imagen, ocultar video
     mainImage.src = src;
+    mainImage.classList.remove('hidden');
+    mainVideo.classList.add('hidden');
+    mainVideo.pause();
     
     // Update active thumbnail
+    updateActiveThumbnail(event.currentTarget);
+}
+
+function showVideo(src, title) {
+    const mainImage = document.getElementById('mainImage');
+    const mainVideo = document.getElementById('mainVideo');
+    
+    // Mostrar video, ocultar imagen
+    mainVideo.src = src;
+    mainVideo.classList.remove('hidden');
+    mainImage.classList.add('hidden');
+    mainVideo.load();
+    
+    // Update active thumbnail
+    updateActiveThumbnail(event.currentTarget);
+}
+
+function updateActiveThumbnail(activeBtn) {
+    // Remove active state from all thumbnails
     document.querySelectorAll('.thumbnail-btn').forEach(btn => {
-        btn.classList.remove('border-blue-400', 'tech-glow');
-        btn.classList.add('border-transparent');
+        btn.classList.remove('border-blue-600', 'dark:border-blue-400', 'shadow-lg');
+        btn.classList.add('border-gray-300', 'dark:border-transparent');
     });
-    event.currentTarget.classList.add('border-blue-400', 'tech-glow');
-    event.currentTarget.classList.remove('border-transparent');
+    
+    // Add active state to clicked thumbnail
+    activeBtn.classList.add('border-blue-600', 'dark:border-blue-400', 'shadow-lg');
+    activeBtn.classList.remove('border-gray-300', 'dark:border-transparent');
 }
 
-// Quantity Controls
-/*
-function increaseQuantity() {
-    const input = document.getElementById('quantity');
-    input.value = parseInt(input.value) + 1;
+// Legacy function for backwards compatibility
+function changeImage(src) {
+    showImage(src);
 }
-
-function decreaseQuantity() {
-    const input = document.getElementById('quantity');
-    if (parseInt(input.value) > 1) {
-        input.value = parseInt(input.value) - 1;
-    }
-}
-*/
 
 // Tabs
 document.addEventListener('DOMContentLoaded', function() {

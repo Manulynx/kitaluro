@@ -220,7 +220,7 @@ def get_producto_detalle_json(request, slug):
         Q(marca=producto.marca)
     ).exclude(id=producto.id).distinct()[:6]
     
-    # Serializar imágenes desde ProductImage (galería principal)
+    # Serializar imágenes desde ProductImage (galería)
     imagenes = []
     for img in producto.imagenes_galeria.all():
         imagenes.append({
@@ -230,18 +230,7 @@ def get_producto_detalle_json(request, slug):
             'order': img.order
         })
     
-    # Si no hay imágenes en galería, usar medias legacy
-    if not imagenes:
-        for media in producto.medias.filter(tipo='imagen'):
-            if media.imagen:
-                imagenes.append({
-                    'url': media.imagen.url,
-                    'alt': media.alt_text or producto.nombre,
-                    'is_main': media.es_principal,
-                    'order': media.orden
-                })
-    
-    # Agregar imagen principal del modelo si existe
+    # Agregar imagen principal del modelo si existe y no hay galería
     if producto.imagen and not imagenes:
         imagenes.append({
             'url': producto.imagen.url,
