@@ -5,73 +5,57 @@
 
 {% block content %}
 
-<section class="relative h-[500px] lg:h-[450px] flex items-center justify-center overflow-hidden mt-0">
-    <a href="#products" 
-       class="absolute inset-0 w-full h-full cursor-pointer group" 
-       title="Ver Colección de Productos Kitaluro">
-        
-        <video 
-            autoplay 
-            loop 
-            muted 
-            playsinline
-            preload="auto"
-            poster="{% static 'img/hero-poster.jpg' %}"
-            class="absolute inset-0 w-full h-full object-cover object-center z-0" 
+<!-- ========================================================================== -->
+<!-- HERO BANNER - VIDEO COMPLETO SIN RECORTE -->
+<!-- ========================================================================== -->
+<section class="lux-hero-banner">
+    <div class="lux-hero-media">
+        <video
             id="heroVideo"
-            aria-label="Video promocional, haga clic para ver productos"
+            class="lux-hero-video"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="none"
+            poster="{% static 'img/hero-poster.jpg' %}"
+            aria-label="Video promocional de la colección Kitaluro"
         >
             <source src="{% static 'video/videowebm.webm' %}" type="video/webm">
             <source src="{% static 'video/video.mp4' %}" type="video/mp4">
-            <img 
-                src="{% static 'img/hero-poster.jpg' %}" 
-                alt="Kitaluro Premium Appliances" 
-                class="w-full h-full object-cover"
-            />
+            <img src="{% static 'img/hero-poster.jpg' %}" alt="Colección Kitaluro" />
         </video>
 
-        <div class="relative w-full h-full z-10 flex items-center justify-center">
-            <div class="text-white text-center p-8 bg-black/40 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 hidden md:block">
-                <p class="text-xl font-semibold tracking-wider uppercase text-shadow">Descubrir Ahora</p>
-            </div>
-        </div>
-        
-    </a>
-    </section>
-
-<section class="py-16 sm:py-20 lg:py-24 bg-gray-50 dark:bg-neutral-900">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center">
-            <h1 class="reveal font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-neutral-900 dark:text-white mb-4 sm:mb-6 lg:mb-8 
-                       drop-shadow-2xl dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]
-                       leading-tight">
-                KITALURO
-            </h1>
-
-            <p class="reveal text-neutral-600 dark:text-neutral-300 text-xs sm:text-sm md:text-base tracking-[0.3em] sm:tracking-[0.5em] uppercase mb-8 sm:mb-10 lg:mb-12" data-delay="200">
-                Redefiniendo el Lujo Doméstico
-            </p>
-
-            <div class="reveal flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 max-w-md sm:max-w-none mx-auto" data-delay="400">
-                <a href="{% url 'productos:index' %}" class="w-full sm:w-auto">
-                    <button class="btn-crimson shadow-xl dark:shadow-red-900/50 w-full sm:w-auto text-sm sm:text-base"> 
-                        Explorar Productos
-                    </button>
-                </a>
-                <a href="#tech" 
-                   class="w-full sm:w-auto text-center px-6 sm:px-10 py-3 sm:py-4 border-2 border-neutral-300 dark:border-neutral-700 hover:border-neutral-900 dark:hover:border-white
-                          text-neutral-900 dark:text-white font-medium rounded-full 
-                          bg-white dark:bg-neutral-800
-                          hover:bg-neutral-100 dark:hover:bg-neutral-700
-                          shadow-lg
-                          transition-all duration-300 transform hover:scale-105
-                          text-sm sm:text-base">
-                    Ver Tecnología
-                </a>
+        <!-- Capa de texto solo para escritorio/tablet -->
+        <div class="lux-hero-overlay">
+            <div class="lux-hero-content">
+                <p class="lux-hero-kicker">Colección 2025</p>
+                <h1 class="lux-hero-title">KITALURO</h1>
+                <p class="lux-hero-subtitle">
+                    Tecnología silenciosa, acabados impecables y una experiencia de lujo en cada detalle.
+                </p>
+                <div class="lux-hero-actions">
+                    <a href="#products" class="btn-crimson">Explorar Colección</a>
+                    <a href="#tech" class="lux-btn-ghost">Ver Tecnología</a>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Bloque de texto independiente solo para móviles -->
+    <div class="lux-hero-mobile-copy">
+        <p class="lux-hero-mobile-kicker">Colección 2025</p>
+        <h1 class="lux-hero-mobile-title">KITALURO</h1>
+        <p class="lux-hero-mobile-subtitle">
+            Tecnología silenciosa, acabados impecables y una experiencia de lujo en cada detalle.
+        </p>
+        <div class="lux-hero-mobile-actions">
+            <a href="#products" class="btn-crimson">Explorar Colección</a>
+            <a href="#tech" class="lux-btn-ghost">Ver Tecnología</a>
+        </div>
+    </div>
 </section>
+
 
 <section id="products" class="py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-neutral-900">
     <div class="max-w-7xl mx-auto">

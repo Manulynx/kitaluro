@@ -91,4 +91,37 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(`🎬 Scroll Reveal activado: ${revealElements.length} elementos observados`);
     }
     
+    // =====================================================================
+    // HERO VIDEO AUTOPLAY + INTERSECTION OBSERVER (RESPETA REDUCED MOTION)
+    // =====================================================================
+    const heroVideo = document.getElementById('heroVideo');
+    if (heroVideo) {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (prefersReducedMotion) {
+            heroVideo.pause();
+            heroVideo.removeAttribute('autoplay');
+        } else {
+            const tryPlay = () => {
+                heroVideo.play().catch(err => {
+                    console.warn('Autoplay bloqueado, mostrando poster estático.', err && err.message);
+                });
+            };
+
+            const observer = new IntersectionObserver(
+                entries => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            tryPlay();
+                        } else {
+                            heroVideo.pause();
+                        }
+                    });
+                },
+                { threshold: 0.35 }
+            );
+
+            observer.observe(heroVideo);
+        }
+    }
 });
