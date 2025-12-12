@@ -55,7 +55,11 @@
         // Aplicar tema inmediatamente para evitar flash
         (function() {
             const theme = localStorage.getItem('theme');
-            if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            // Modo oscuro por defecto: solo aplicar claro si está explícitamente guardado
+            if (theme === 'light') {
+                // No agregar clase dark
+            } else {
+                // Modo oscuro por defecto (sin preferencia guardada o dark guardado)
                 document.documentElement.classList.add('dark');
             }
         })();
