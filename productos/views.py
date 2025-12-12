@@ -1,6 +1,7 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.http import JsonResponse
+from django.contrib import messages
 from django.db.models import Q, Avg
 from .models import (Producto, Categoria, Subcategoria, Marca, Proveedor, 
                      Estatus, ProductImage, ProductVideo)
@@ -352,3 +353,159 @@ def get_producto_detalle_json(request, slug):
     }
     
     return JsonResponse(data)
+
+
+# ==================== VISTAS DE ADMINISTRACIÓN ====================
+
+def admin_productos(request):
+    """Vista para listar productos en el admin"""
+    productos = Producto.objects.all().select_related(
+        'categoria', 'subcategoria', 'marca', 'proveedor', 'estatus'
+    ).order_by('-fecha_creacion')
+    
+    context = {
+        'productos': productos,
+    }
+    return render(request, 'admin_lista_productos.html', context)
+
+
+def nuevo_producto(request):
+    """Vista para crear un nuevo producto"""
+    if request.method == 'POST':
+        return guardar_producto(request)
+    
+    # GET: Mostrar formulario vacío
+    categorias = Categoria.objects.filter(activo=True).order_by('nombre')
+    subcategorias = Subcategoria.objects.filter(activo=True).select_related('categoria').order_by('nombre')
+    marcas = Marca.objects.filter(activo=True).order_by('nombre')
+    proveedores = Proveedor.objects.filter(activo=True).order_by('nombre')
+    estatus_list = Estatus.objects.filter(activo=True).order_by('nombre')
+    
+    context = {
+        'categorias': categorias,
+        'subcategorias': subcategorias,
+        'marcas': marcas,
+        'proveedores': proveedores,
+        'estatus_list': estatus_list,
+    }
+    return render(request, 'admin_form_producto.html', context)
+
+
+def editar_producto(request, producto_id):
+    """Vista para editar un producto existente"""
+    producto = get_object_or_404(Producto, id=producto_id)
+    
+    if request.method == 'POST':
+        return guardar_producto(request, producto_id)
+    
+    # GET: Mostrar formulario con datos del producto
+    categorias = Categoria.objects.filter(activo=True).order_by('nombre')
+    subcategorias = Subcategoria.objects.filter(activo=True).select_related('categoria').order_by('nombre')
+    marcas = Marca.objects.filter(activo=True).order_by('nombre')
+    proveedores = Proveedor.objects.filter(activo=True).order_by('nombre')
+    estatus_list = Estatus.objects.filter(activo=True).order_by('nombre')
+    
+    context = {
+        'producto': producto,
+        'categorias': categorias,
+        'subcategorias': subcategorias,
+        'marcas': marcas,
+        'proveedores': proveedores,
+        'estatus_list': estatus_list,
+    }
+    return render(request, 'admin_form_producto.html', context)
+
+
+def guardar_producto(request, producto_id=None):
+    """Vista para guardar (crear o actualizar) un producto"""
+    if request.method == 'POST':
+        # Si hay ID, es edición; sino, es creación
+        if producto_id:
+            producto = get_object_or_404(Producto, id=producto_id)
+            mensaje = 'Producto actualizado exitosamente'
+        else:
+            producto = Producto()
+            mensaje = 'Producto creado exitosamente'
+        
+        # Asignar campos básicos
+        producto.nombre = request.POST.get('nombre')
+        producto.descripcion_corta = request.POST.get('descripcion_corta', '')
+        producto.descripcion = request.POST.get('descripcion', '')
+        producto.origen = request.POST.get('origen', '')
+        producto.dimensiones = request.POST.get('dimensiones', '')
+        
+        # Asignar relaciones (ForeignKey)
+        categoria_id = request.POST.get('categoria')
+        if categoria_id:
+            producto.categoria = Categoria.objects.get(id=categoria_id)
+        else:
+            producto.categoria = None
+            
+        subcategoria_id = request.POST.get('subcategoria')
+        if subcategoria_id:
+            producto.subcategoria = Subcategoria.objects.get(id=subcategoria_id)
+        else:
+            producto.subcategoria = None
+            
+        marca_id = request.POST.get('marca')
+        if marca_id:
+            producto.marca = Marca.objects.get(id=marca_id)
+        else:
+            producto.marca = None
+            
+        proveedor_id = request.POST.get('proveedor')
+        if proveedor_id:
+            producto.proveedor = Proveedor.objects.get(id=proveedor_id)
+        else:
+            producto.proveedor = None
+            
+        estatus_id = request.POST.get('estatus')
+        if estatus_id:
+            producto.estatus = Estatus.objects.get(id=estatus_id)
+        else:
+            producto.estatus = None
+        
+        # Asignar campos numéricos
+        precio = request.POST.get('precio')
+        producto.precio = float(precio) if precio else None
+        
+        precio_oferta = request.POST.get('precio_oferta')
+        producto.precio_oferta = float(precio_oferta) if precio_oferta else None
+        
+        stock = request.POST.get('stock')
+        producto.stock = int(stock) if stock else 0
+        
+        peso = request.POST.get('peso')
+        producto.peso = float(peso) if peso else None
+        
+        # Asignar checkboxes
+        producto.disponible = 'disponible' in request.POST
+        producto.activo = 'activo' in request.POST
+        producto.destacado = 'destacado' in request.POST
+        producto.en_oferta = 'en_oferta' in request.POST
+        
+        # Manejar archivos
+        if 'imagen' in request.FILES:
+            producto.imagen = request.FILES['imagen']
+            
+        if 'video' in request.FILES:
+            producto.video = request.FILES['video']
+            
+        if 'ficha_tecnica' in request.FILES:
+            producto.ficha_tecnica = request.FILES['ficha_tecnica']
+        
+        producto.save()
+        messages.success(request, mensaje)
+        
+    return redirect('productos:admin_productos')
+
+
+def eliminar_producto(request, producto_id):
+    """Vista para eliminar un producto"""
+    if request.method == 'POST':
+        producto = get_object_or_404(Producto, id=producto_id)
+        nombre = producto.nombre
+        producto.delete()
+        messages.success(request, f'Producto "{nombre}" eliminado exitosamente')
+    
+    return redirect('productos:admin_productos')

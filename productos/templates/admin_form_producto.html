@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if producto %}Editar{% else %}Nuevo{% endif %} Producto - Kitaluro{% endblock %}
+
+{% block content %}
+<section class="py-16 px-4 bg-gray-50 dark:bg-neutral-900 min-h-screen">
+    <div class="max-w-5xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8 flex justify-between items-center">
+            <div>
+                <h1 class="text-4xl font-serif font-bold text-neutral-900 dark:text-white mb-2">
+                    {% if producto %}Editar Producto{% else %}Nuevo Producto{% endif %}
+                </h1>
+                <p class="text-neutral-600 dark:text-gray-400">
+                    {% if producto %}Modifica los datos del producto{% else %}Completa el formulario para crear un nuevo producto{% endif %}
+                </p>
+            </div>
+            <a href="{% url 'productos:admin_productos' %}" class="px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-neutral-600 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white font-semibold rounded-lg transition-colors">
+                <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Volver
+            </a>
+        </div>
+
+        <!-- Mensajes -->
+        {% if messages %}
+        <div class="mb-6 space-y-2">
+            {% for message in messages %}
+            <div class="p-4 rounded-lg {% if message.tags == 'success' %}bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300{% elif message.tags == 'error' %}bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300{% else %}bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Formulario -->
+        <div class="bg-white dark:bg-neutral-800 rounded-xl shadow-xl p-8">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Grid de campos -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Nombre -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            Nombre del Producto *
+                        </label>
+                        <input type="text" name="nombre" value="{{ producto.nombre|default:'' }}" required 
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Descripción Corta -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            Descripción Corta
+                        </label>
+                        <input type="text" name="descripcion_corta" value="{{ producto.descripcion_corta|default:'' }}" maxlength="500"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            Descripción Completa
+                        </label>
+                        <textarea name="descripcion" rows="4"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">{{ producto.descripcion|default:'' }}</textarea>
+                    </div>
+
+                    <!-- Categoría -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            Categoría
+                        </label>
+                        <select name="categoria"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Seleccionar...</option>
+                            {% for categoria in categorias %}
+                            <option value="{{ categoria.id }}" {% if producto.categoria.id == categoria.id %}selected{% endif %}>{{ categoria.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Subcategoría -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            Subcategoría
+                        </label>
+                        <select name="subcategoria"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Seleccionar...</option>
+                            {% for subcategoria in subcategorias %}
+                            <option value="{{ subcategoria.id }}" {% if producto.subcategoria.id == subcategoria.id %}selected{% endif %}>{{ subcategoria.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Marca -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            Marca
+                        </label>
+                        <select name="marca"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Seleccionar...</option>
+                            {% for marca in marcas %}
+                            <option value="{{ marca.id }}" {% if producto.marca.id == marca.id %}selected{% endif %}>{{ marca.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Proveedor -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            Proveedor
+                        </label>
+                        <select name="proveedor"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Seleccionar...</option>
+                            {% for proveedor in proveedores %}
+                            <option value="{{ proveedor.id }}" {% if producto.proveedor.id == proveedor.id %}selected{% endif %}>{{ proveedor.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Estatus -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            Estatus de Procedencia
+                        </label>
+                        <select name="estatus"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Seleccionar...</option>
+                            {% for estatus in estatus_list %}
+                            <option value="{{ estatus.id }}" {% if producto.estatus.id == estatus.id %}selected{% endif %}>{{ estatus.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Origen -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            País de Origen
+                        </label>
+                        <input type="text" name="origen" value="{{ producto.origen|default:'' }}"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Precio -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            Precio
+                        </label>
+                        <input type="number" name="precio" value="{{ producto.precio|default:'' }}" step="0.01" min="0"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Precio Oferta -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            Precio de Oferta
+                        </label>
+                        <input type="number" name="precio_oferta" value="{{ producto.precio_oferta|default:'' }}" step="0.01" min="0"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Stock -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            Stock
+                        </label>
+                        <input type="number" name="stock" value="{{ producto.stock|default:'0' }}" min="0"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Peso -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            Peso (kg)
+                        </label>
+                        <input type="number" name="peso" value="{{ producto.peso|default:'' }}" step="0.01" min="0"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Dimensiones -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            Dimensiones (Alto x Ancho x Largo cm)
+                        </label>
+                        <input type="text" name="dimensiones" value="{{ producto.dimensiones|default:'' }}"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Imagen Principal -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            Imagen Principal
+                        </label>
+                        <input type="file" name="imagen" accept="image/*"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        {% if producto.imagen %}
+                        <div class="mt-2">
+                            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="w-32 h-32 object-cover rounded-lg">
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Video -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            Video del Producto
+                        </label>
+                        <input type="file" name="video" accept="video/*"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        {% if producto.video %}
+                        <p class="mt-2 text-sm text-green-600 dark:text-green-400">✓ Video cargado</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Ficha Técnica -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                            Ficha Técnica (PDF)
+                        </label>
+                        <input type="file" name="ficha_tecnica" accept=".pdf"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        {% if producto.ficha_tecnica %}
+                        <p class="mt-2 text-sm text-green-600 dark:text-green-400">✓ Ficha técnica cargada</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Checkboxes -->
+                    <div class="md:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="disponible" {% if not producto or producto.disponible %}checked{% endif %}
+                                class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <span class="text-sm text-neutral-700 dark:text-neutral-300">Disponible</span>
+                        </label>
+
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="activo" {% if not producto or producto.activo %}checked{% endif %}
+                                class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <span class="text-sm text-neutral-700 dark:text-neutral-300">Activo</span>
+                        </label>
+
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="destacado" {% if producto.destacado %}checked{% endif %}
+                                class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <span class="text-sm text-neutral-700 dark:text-neutral-300">Destacado</span>
+                        </label>
+
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="en_oferta" {% if producto.en_oferta %}checked{% endif %}
+                                class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <span class="text-sm text-neutral-700 dark:text-neutral-300">En Oferta</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="mt-8 flex gap-4">
+                    <button type="submit" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-lg">
+                        <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        {% if producto %}Actualizar Producto{% else %}Crear Producto{% endif %}
+                    </button>
+                    <a href="{% url 'productos:admin_productos' %}" class="px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-neutral-600 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white font-semibold rounded-lg transition-colors">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
