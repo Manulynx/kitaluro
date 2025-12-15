@@ -126,7 +126,7 @@ html {
 .reveal {
   opacity: 0;
   transform: translateY(32px);
-  transition: all 1000ms ease-out;
+  transition: all 800ms ease-out;
 }
 
 .reveal.active {

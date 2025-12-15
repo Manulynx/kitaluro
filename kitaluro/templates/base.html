@@ -1,308 +1,504 @@
 <!DOCTYPE html>
 <!-- ✅ CORRECTO - Remover clase dark hardcodeada -->
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
     <title>{% block title %}Kitaluro | Productos de Lujo{% endblock %}</title>
-    <meta name="description" content="{% block description %}Kitaluro - Tu tienda de productos premium y de lujo{% endblock %}">
-    
+    <meta
+      name="description"
+      content="{% block description %}Kitaluro - Tu tienda de productos premium y de lujo{% endblock %}"
+    />
+
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Tailwind Config -->
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Outfit', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
-                    },
-                    colors: {
-                        gold: {
-                            50: '#fefce8',
-                            100: '#fef9c3',
-                            200: '#fef08a',
-                            300: '#fde047',
-                            400: '#facc15',
-                            500: '#eab308',
-                            600: '#ca8a04',
-                            700: '#a16207',
-                            800: '#854d0e',
-                            900: '#713f12',
-                        },
-                    },
-                }
-            }
-        }
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Outfit", "sans-serif"],
+              serif: ["Playfair Display", "serif"],
+            },
+            colors: {
+              gold: {
+                50: "#fefce8",
+                100: "#fef9c3",
+                200: "#fef08a",
+                300: "#fde047",
+                400: "#facc15",
+                500: "#eab308",
+                600: "#ca8a04",
+                700: "#a16207",
+                800: "#854d0e",
+                900: "#713f12",
+              },
+            },
+          },
+        },
+      };
     </script>
-    
+
     <!-- External CSS -->
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+
     <!-- ✅ NUEVO - Script de tema ANTES de cargar el DOM -->
     <script>
-        // Aplicar tema inmediatamente para evitar flash
-        (function() {
-            const theme = localStorage.getItem('theme');
-            // Modo oscuro por defecto: solo aplicar claro si está explícitamente guardado
-            if (theme === 'light') {
-                // No agregar clase dark
-            } else {
-                // Modo oscuro por defecto (sin preferencia guardada o dark guardado)
-                document.documentElement.classList.add('dark');
-            }
-        })();
+      // Aplicar tema inmediatamente para evitar flash
+      (function () {
+        const theme = localStorage.getItem("theme");
+        // Modo oscuro por defecto: solo aplicar claro si está explícitamente guardado
+        if (theme === "light") {
+          // No agregar clase dark
+        } else {
+          // Modo oscuro por defecto (sin preferencia guardada o dark guardado)
+          document.documentElement.classList.add("dark");
+        }
+      })();
     </script>
-    
-    {% block extra_css %}{% endblock %}
-</head>
 
-<body class="bg-gray-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-200 antialiased transition-colors duration-300 selection:bg-blue-500 selection:text-white font-sans">
-    
+    {% block extra_css %}{% endblock %}
+  </head>
+
+  <body
+    class="bg-gray-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-200 antialiased transition-colors duration-300 selection:bg-blue-500 selection:text-white font-sans"
+  >
     <!-- ✅ Header corregido -->
     <header id="main-header" class="sticky top-0 z-50">
-        {% block header %}
-        <nav class="backdrop-blur-md bg-white/90 dark:bg-neutral-950/90 border-b border-gray-200 dark:border-neutral-800/50 shadow-sm dark:shadow-none">
-            <!-- Nivel 1: Logo + Search -->
-            <div class="px-4 py-4 flex items-center justify-between">
-                <!-- Hamburger Menu Button (Mobile Only) -->
-                <button id="menu-toggle" class="lg:hidden text-neutral-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors" aria-label="Abrir menú">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
-                </button>
+      {% block header %}
+      <nav
+        class="backdrop-blur-md bg-white/90 dark:bg-neutral-950/90 border-b border-gray-200 dark:border-neutral-800/50 shadow-sm dark:shadow-none"
+      >
+        <!-- Nivel 1: Logo + Search -->
+        <div class="px-4 py-4 flex items-center justify-between">
+          <!-- Hamburger Menu Button (Mobile Only) -->
+          <button
+            id="menu-toggle"
+            class="lg:hidden text-neutral-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            aria-label="Abrir menú"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
 
-                <!-- Spacer for desktop (mantiene espacio del hamburger) -->
-                <div class="hidden lg:block w-6"></div>
+          <!-- Spacer for desktop (mantiene espacio del hamburger) -->
+          <div class="hidden lg:block w-6"></div>
 
-                <!-- Logo Centrado -->
-                <a href="{% url 'home' %}" class="absolute left-1/2 transform -translate-x-1/2 font-serif text-2xl font-bold text-neutral-900 dark:text-white tracking-tight hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                    Kitaluro
-                </a>
+          <!-- Logo Centrado -->
+          <a
+            href="{% url 'home' %}"
+            class="absolute left-1/2 transform -translate-x-1/2 font-serif text-5xl font-bold text-neutral-900 dark:text-white tracking-wide hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            KITALURO
+          </a>
 
-                <!-- Theme Toggle & Search Icons -->
-                <div class="flex items-center gap-3 ml-auto">
-                    <!-- ✅ NUEVO - Botón de toggle tema -->
-                    <button id="theme-toggle" class="text-neutral-700 dark:text-white hover:text-blue-500 dark:hover:text-blue-400 transition-colors" aria-label="Cambiar tema">
-                        <!-- Sol (modo claro) -->
-                        <svg id="theme-icon-light" class="w-6 h-6 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                        </svg>
-                        <!-- Luna (modo oscuro) -->
-                        <svg id="theme-icon-dark" class="w-6 h-6 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                        </svg>
-                    </button>
+          <!-- Theme Toggle & Search Icons -->
+          <div class="flex items-center gap-3 ml-auto">
+            <!-- ✅ NUEVO - Botón de toggle tema -->
+            <button
+              id="theme-toggle"
+              class="text-neutral-700 dark:text-white hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+              aria-label="Cambiar tema"
+            >
+              <!-- Sol (modo claro) -->
+              <svg
+                id="theme-icon-light"
+                class="w-6 h-6 hidden dark:block"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                ></path>
+              </svg>
+              <!-- Luna (modo oscuro) -->
+              <svg
+                id="theme-icon-dark"
+                class="w-6 h-6 block dark:hidden"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                ></path>
+              </svg>
+            </button>
 
-                    <!-- Search Icon -->
-                    <button class="text-neutral-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors" aria-label="Buscar">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Nivel 2: Navigation Links (Desktop Centered) -->
-            <div class="hidden lg:flex items-center justify-center pb-4 px-4">
-                <div class="flex items-center gap-8">
-                    <a href="{% url 'productos:admin_productos' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-semibold transition-colors duration-300 relative group">
-                        Admin
-                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"></span>
-                    </a>
-                    <a href="{% url 'home' %}" class="text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white font-medium transition-colors duration-300 relative group">
-                        Inicio
-                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"></span>
-                    </a>
-                    <a href="{% url 'productos:index' %}" class="text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white font-medium transition-colors duration-300 relative group">
-                        Productos
-                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"></span>
-                    </a>
-                    <a href="{% url 'contacto' %}" class="text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white font-medium transition-colors duration-300 relative group">
-                        Contacto
-                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"></span>
-                    </a>
-                </div>
-            </div>
-        </nav>
-
-        <!-- Mobile Sidebar Menu (Hamburger Lateral Lujoso) -->
-        <div id="mobile-menu" class="fixed inset-0 z-[100] pointer-events-none">
-            <!-- Overlay -->
-            <div id="menu-overlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
-            
-            <!-- Sidebar -->
-            <div id="menu-sidebar" class="absolute left-0 top-0 h-full w-80 max-w-[85vw] bg-white dark:bg-neutral-900/95 dark:glass-panel shadow-2xl dark:shadow-none backdrop-blur-md transform -translate-x-full transition-transform duration-300 ease-out">
-                <!-- Header del Sidebar -->
-                <div class="p-6 border-b border-gray-200 dark:border-neutral-800/50">
-                    <div class="flex items-center justify-between">
-                        <h2 class="font-serif text-2xl font-bold text-neutral-900 dark:text-white">Kitaluro</h2>
-                        <button id="menu-close" class="text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors" aria-label="Cerrar menú">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <p class="text-neutral-500 dark:text-neutral-400 text-sm mt-2">Premium Home Technology</p>
-                </div>
-
-                <!-- Navigation Links -->
-                <nav class="p-6">
-                    <ul class="space-y-2">
-                        <li>
-                            <a href="{% url 'productos:admin_productos' %}" class="flex items-center gap-4 px-4 py-3 rounded-lg text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300 group">
-                                <svg class="w-5 h-5 group-hover:tech-glow-subtle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                </svg>
-                                <span class="font-semibold">Admin</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'home' %}" class="flex items-center gap-4 px-4 py-3 rounded-lg text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800/50 transition-all duration-300 group">
-                                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:tech-glow-subtle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                                </svg>
-                                <span class="font-medium">Inicio</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'productos:index' %}" class="flex items-center gap-4 px-4 py-3 rounded-lg text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800/50 transition-all duration-300 group">
-                                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:tech-glow-subtle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                                </svg>
-                                <span class="font-medium">Productos</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{% url 'contacto' %}" class="flex items-center gap-4 px-4 py-3 rounded-lg text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800/50 transition-all duration-300 group">
-                                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:tech-glow-subtle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                </svg>
-                                <span class="font-medium">Contacto</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-
-                <!-- Footer del Sidebar -->
-                <div class="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-200 dark:border-neutral-800/50">
-                    <div class="flex items-center gap-2 text-neutral-500 dark:text-neutral-500 text-xs">
-                        <div class="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full animate-pulse"></div>
-                        <span>Conectado</span>
-                    </div>
-                </div>
-            </div>
+            <!-- Search Icon -->
+            <button
+              class="text-neutral-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              aria-label="Buscar"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
 
-        <!-- JavaScript para el menú y tema -->
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const themeToggle = document.getElementById('theme-toggle');
-                const htmlElement = document.documentElement;
-                
-                // Toggle del tema
-                themeToggle?.addEventListener('click', () => {
-                    const isDark = htmlElement.classList.contains('dark');
-                    
-                    if (isDark) {
-                        htmlElement.classList.remove('dark');
-                        localStorage.setItem('theme', 'light');
-                    } else {
-                        htmlElement.classList.add('dark');
-                        localStorage.setItem('theme', 'dark');
-                    }
-                });
+        <!-- Nivel 2: Navigation Links (Desktop Centered) -->
+        <div class="hidden lg:flex items-center justify-center pb-4 px-4">
+          <div class="flex items-center gap-12">
+            <a
+              href="{% url 'productos:admin_productos' %}"
+              class="text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white font-semibold text-xl transition-colors duration-300 relative group"
+            >
+              ADMIN
+              <span
+                class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"
+              ></span>
+            </a>
+            <a
+              href="{% url 'home' %}"
+              class="text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white font-semibold text-xl transition-colors duration-300 relative group"
+            >
+              INICIO
+              <span
+                class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"
+              ></span>
+            </a>
+            <a
+              href="{% url 'productos:index' %}"
+              class="text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white font-semibold text-xl transition-colors duration-300 relative group"
+            >
+              PRODUCTOS
+              <span
+                class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"
+              ></span>
+            </a>
+            <a
+              href="{% url 'contacto' %}"
+              class="text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white font-semibold text-xl transition-colors duration-300 relative group"
+            >
+              CONTACTO
+              <span
+                class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"
+              ></span>
+            </a>
+          </div>
+        </div>
+      </nav>
 
-                // Mobile Menu
-                const menuToggle = document.getElementById('menu-toggle');
-                const menuClose = document.getElementById('menu-close');
-                const mobileMenu = document.getElementById('mobile-menu');
-                const menuOverlay = document.getElementById('menu-overlay');
-                const menuSidebar = document.getElementById('menu-sidebar');
+      <!-- Mobile Sidebar Menu (Hamburger Lateral Lujoso) -->
+      <div id="mobile-menu" class="fixed inset-0 z-[100] pointer-events-none">
+        <!-- Overlay -->
+        <div
+          id="menu-overlay"
+          class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300"
+        ></div>
 
-                function openMenu() {
-                    mobileMenu.classList.remove('pointer-events-none');
-                    mobileMenu.classList.add('pointer-events-auto');
-                    setTimeout(() => {
-                        menuOverlay.style.opacity = '1';
-                        menuSidebar.style.transform = 'translateX(0)';
-                    }, 10);
-                    document.body.style.overflow = 'hidden';
-                }
+        <!-- Sidebar -->
+        <div
+          id="menu-sidebar"
+          class="absolute left-0 top-0 h-full w-80 max-w-[85vw] bg-white dark:bg-neutral-900/95 dark:glass-panel shadow-2xl dark:shadow-none backdrop-blur-md transform -translate-x-full transition-transform duration-300 ease-out"
+        >
+          <!-- Header del Sidebar -->
+          <div class="p-6 border-b border-gray-200 dark:border-neutral-800/50">
+            <div class="flex items-center justify-between">
+              <h2
+                class="font-serif text-4xl font-bold text-neutral-900 dark:text-white tracking-wide"
+              >
+                KITALURO
+              </h2>
+              <button
+                id="menu-close"
+                class="text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+                aria-label="Cerrar menú"
+              >
+                <svg
+                  class="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <p class="text-neutral-500 dark:text-neutral-400 text-sm mt-2">
+              Premium Home Technology
+            </p>
+          </div>
 
-                function closeMenu() {
-                    menuOverlay.style.opacity = '0';
-                    menuSidebar.style.transform = 'translateX(-100%)';
-                    setTimeout(() => {
-                        mobileMenu.classList.remove('pointer-events-auto');
-                        mobileMenu.classList.add('pointer-events-none');
-                    }, 300);
-                    document.body.style.overflow = '';
-                }
+          <!-- Navigation Links -->
+          <nav class="p-6">
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="{% url 'productos:admin_productos' %}"
+                  class="flex items-center gap-4 px-4 py-3 rounded-lg text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300 group"
+                >
+                  <svg
+                    class="w-5 h-5 group-hover:tech-glow-subtle"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                  <span class="font-bold">ADMIN</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="{% url 'home' %}"
+                  class="flex items-center gap-4 px-4 py-3 rounded-lg text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800/50 transition-all duration-300 group"
+                >
+                  <svg
+                    class="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:tech-glow-subtle"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                    />
+                  </svg>
+                  <span class="font-semibold">INICIO</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="{% url 'productos:index' %}"
+                  class="flex items-center gap-4 px-4 py-3 rounded-lg text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800/50 transition-all duration-300 group"
+                >
+                  <svg
+                    class="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:tech-glow-subtle"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    />
+                  </svg>
+                  <span class="font-semibold">PRODUCTOS</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="{% url 'contacto' %}"
+                  class="flex items-center gap-4 px-4 py-3 rounded-lg text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800/50 transition-all duration-300 group"
+                >
+                  <svg
+                    class="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:tech-glow-subtle"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <span class="font-semibold">CONTACTO</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
 
-                menuToggle.addEventListener('click', openMenu);
-                menuClose.addEventListener('click', closeMenu);
-                menuOverlay.addEventListener('click', closeMenu);
+          <!-- Footer del Sidebar -->
+          <div
+            class="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-200 dark:border-neutral-800/50"
+          >
+            <div
+              class="flex items-center gap-2 text-neutral-500 dark:text-neutral-500 text-xs"
+            >
+              <div
+                class="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full animate-pulse"
+              ></div>
+              <span>Conectado</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-                // Cerrar menú al hacer clic en un enlace
-                const menuLinks = menuSidebar.querySelectorAll('a');
-                menuLinks.forEach(link => {
-                    link.addEventListener('click', closeMenu);
-                });
+      <!-- JavaScript para el menú y tema -->
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const themeToggle = document.getElementById("theme-toggle");
+          const htmlElement = document.documentElement;
 
-                // Cerrar con tecla Escape
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape' && !mobileMenu.classList.contains('pointer-events-none')) {
-                        closeMenu();
-                    }
-                });
-            });
-        </script>
-        {% endblock %}
+          // Toggle del tema
+          themeToggle?.addEventListener("click", () => {
+            const isDark = htmlElement.classList.contains("dark");
+
+            if (isDark) {
+              htmlElement.classList.remove("dark");
+              localStorage.setItem("theme", "light");
+            } else {
+              htmlElement.classList.add("dark");
+              localStorage.setItem("theme", "dark");
+            }
+          });
+
+          // Mobile Menu
+          const menuToggle = document.getElementById("menu-toggle");
+          const menuClose = document.getElementById("menu-close");
+          const mobileMenu = document.getElementById("mobile-menu");
+          const menuOverlay = document.getElementById("menu-overlay");
+          const menuSidebar = document.getElementById("menu-sidebar");
+
+          function openMenu() {
+            mobileMenu.classList.remove("pointer-events-none");
+            mobileMenu.classList.add("pointer-events-auto");
+            setTimeout(() => {
+              menuOverlay.style.opacity = "1";
+              menuSidebar.style.transform = "translateX(0)";
+            }, 10);
+            document.body.style.overflow = "hidden";
+          }
+
+          function closeMenu() {
+            menuOverlay.style.opacity = "0";
+            menuSidebar.style.transform = "translateX(-100%)";
+            setTimeout(() => {
+              mobileMenu.classList.remove("pointer-events-auto");
+              mobileMenu.classList.add("pointer-events-none");
+            }, 300);
+            document.body.style.overflow = "";
+          }
+
+          menuToggle.addEventListener("click", openMenu);
+          menuClose.addEventListener("click", closeMenu);
+          menuOverlay.addEventListener("click", closeMenu);
+
+          // Cerrar menú al hacer clic en un enlace
+          const menuLinks = menuSidebar.querySelectorAll("a");
+          menuLinks.forEach((link) => {
+            link.addEventListener("click", closeMenu);
+          });
+
+          // Cerrar con tecla Escape
+          document.addEventListener("keydown", function (e) {
+            if (
+              e.key === "Escape" &&
+              !mobileMenu.classList.contains("pointer-events-none")
+            ) {
+              closeMenu();
+            }
+          });
+        });
+      </script>
+      {% endblock %}
     </header>
-    
+
     <!-- Main Content -->
     <main id="content" class="min-h-screen">
-        {% block content %}{% endblock %}
+      {% block content %}{% endblock %}
     </main>
-    
+
     <!-- ✅ Footer corregido -->
     <footer id="main-footer" class="bg-neutral-950 border-t border-neutral-800">
-        <div class="max-w-7xl mx-auto px-4 py-6">
-            <div class="text-center">
-                <p class="text-neutral-400 text-sm">
-                    Creado por 
-                    <a href="https://manulynx.github.io/M-C-Dev-Studio/" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 transition-colors font-medium tech-glow-subtle">
-                        M&C Dev Studio
-                    </a>
-                </p>
-            </div>
+      <div class="max-w-7xl mx-auto px-4 py-6">
+        <div class="text-center">
+          <p class="text-neutral-400 text-sm">
+            Creado por
+            <a
+              href="https://manulynx.github.io/M-C-Dev-Studio/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-blue-400 hover:text-blue-300 transition-colors font-medium tech-glow-subtle"
+            >
+              M&C Dev Studio
+            </a>
+          </p>
         </div>
-        {% block footer %}{% endblock %}
+      </div>
+      {% block footer %}{% endblock %}
     </footer>
-    
+
     <!-- Scroll to Top Button -->
-    <button id="scrollToTopBtn" class="scroll-to-top" aria-label="Volver arriba">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
-        </svg>
+    <button
+      id="scrollToTopBtn"
+      class="scroll-to-top"
+      aria-label="Volver arriba"
+    >
+      <svg
+        class="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M5 10l7-7m0 0l7 7m-7-7v18"
+        ></path>
+      </svg>
     </button>
 
     <!-- Main JavaScript -->
     <script src="{% static 'js/main.js' %}"></script>
-    
+
     {% block extra_js %}{% endblock %}
-</body>
+  </body>
 </html>
