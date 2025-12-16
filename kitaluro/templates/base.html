@@ -84,7 +84,7 @@
         class="backdrop-blur-md bg-white/90 dark:bg-neutral-950/90 border-b border-gray-200 dark:border-neutral-800/50 shadow-sm dark:shadow-none"
       >
         <!-- Nivel 1: Logo + Search -->
-        <div class="px-4 py-4 flex items-center justify-between">
+        <div class="px-4 py-4 lg:py-8 flex items-center justify-between">
           <!-- Hamburger Menu Button (Mobile Only) -->
           <button
             id="menu-toggle"
@@ -112,7 +112,7 @@
           <!-- Logo Centrado -->
           <a
             href="{% url 'home' %}"
-            class="absolute left-1/2 transform -translate-x-1/2 font-serif text-5xl font-bold text-neutral-900 dark:text-white tracking-wide hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            class="absolute left-1/2 transform -translate-x-1/2 font-serif text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white tracking-wide hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
             KITALURO
           </a>
@@ -179,43 +179,43 @@
           </div>
         </div>
 
-        <!-- Nivel 2: Navigation Links (Desktop Centered) -->
-        <div class="hidden lg:flex items-center justify-center pb-4 px-4">
-          <div class="flex items-center gap-12">
+        <!-- Nivel 2: Navigation Links (Desktop Centered) - Más separación vertical -->
+        <div class="hidden lg:flex items-center justify-center pb-6 px-4">
+          <div class="flex items-center gap-16">
             <a
               href="{% url 'productos:admin_productos' %}"
-              class="text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white font-semibold text-xl transition-colors duration-300 relative group"
+              class="{% if 'admin' in request.resolver_match.url_name %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-xl transition-all duration-300 relative group"
             >
               ADMIN
               <span
-                class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"
+                class="nav-underline absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"
               ></span>
             </a>
             <a
               href="{% url 'home' %}"
-              class="text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white font-semibold text-xl transition-colors duration-300 relative group"
+              class="{% if request.resolver_match.url_name == 'home' %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-xl transition-all duration-300 relative group"
             >
               INICIO
               <span
-                class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"
+                class="nav-underline absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"
               ></span>
             </a>
             <a
               href="{% url 'productos:index' %}"
-              class="text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white font-semibold text-xl transition-colors duration-300 relative group"
+              class="{% if 'productos' in request.resolver_match.namespace and 'admin' not in request.resolver_match.url_name %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-xl transition-all duration-300 relative group"
             >
               PRODUCTOS
               <span
-                class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"
+                class="nav-underline absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"
               ></span>
             </a>
             <a
               href="{% url 'contacto' %}"
-              class="text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white font-semibold text-xl transition-colors duration-300 relative group"
+              class="{% if request.resolver_match.url_name == 'contacto' %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-xl transition-all duration-300 relative group"
             >
               CONTACTO
               <span
-                class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"
+                class="nav-underline absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"
               ></span>
             </a>
           </div>
@@ -274,7 +274,7 @@
               <li>
                 <a
                   href="{% url 'productos:admin_productos' %}"
-                  class="flex items-center gap-4 px-4 py-3 rounded-lg text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300 group"
+                  class="flex items-center gap-4 px-4 py-3 rounded-lg {% if 'admin' in request.resolver_match.url_name %}nav-link-active{% else %}text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20{% endif %} transition-all duration-300 group"
                 >
                   <svg
                     class="w-5 h-5 group-hover:tech-glow-subtle"
@@ -301,7 +301,7 @@
               <li>
                 <a
                   href="{% url 'home' %}"
-                  class="flex items-center gap-4 px-4 py-3 rounded-lg text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800/50 transition-all duration-300 group"
+                  class="flex items-center gap-4 px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'home' %}nav-link-active{% else %}text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800/50{% endif %} transition-all duration-300 group"
                 >
                   <svg
                     class="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:tech-glow-subtle"
@@ -322,7 +322,7 @@
               <li>
                 <a
                   href="{% url 'productos:index' %}"
-                  class="flex items-center gap-4 px-4 py-3 rounded-lg text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800/50 transition-all duration-300 group"
+                  class="flex items-center gap-4 px-4 py-3 rounded-lg {% if 'productos' in request.resolver_match.namespace and 'admin' not in request.resolver_match.url_name %}nav-link-active{% else %}text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800/50{% endif %} transition-all duration-300 group"
                 >
                   <svg
                     class="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:tech-glow-subtle"
@@ -343,7 +343,7 @@
               <li>
                 <a
                   href="{% url 'contacto' %}"
-                  class="flex items-center gap-4 px-4 py-3 rounded-lg text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800/50 transition-all duration-300 group"
+                  class="flex items-center gap-4 px-4 py-3 rounded-lg {% if request.resolver_match.url_name == 'contacto' %}nav-link-active{% else %}text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800/50{% endif %} transition-all duration-300 group"
                 >
                   <svg
                     class="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:tech-glow-subtle"

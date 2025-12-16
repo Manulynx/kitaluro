@@ -1,10 +1,7 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Productos - Kitaluro{% endblock %}
-
-{% block description %}Explora nuestra colección de electrodomésticos premium con tecnología de vanguardia{% endblock %}
-
+{% extends 'base.html' %} 
+{% load static %} 
+{% block title %}Productos - Kitaluro{% endblock %} 
+{% block description %}Explora nuestra colección de electrodomésticos premium con tecnología de vanguardia{% endblock %} 
 {% block content %}
 <!-- Hero Section -->
 <section
@@ -18,22 +15,33 @@
   ></div>
 
   <div class="relative z-10 text-center px-4 animate-fade-in">
+    <!-- Hero Section con título del mismo tamaño que "Destacados" -->
     <h1
-      class="reveal text-1xl lg:text-3xl font-serif mb-3 text-neutral-900 dark:text-white drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+      class="reveal text-4xl sm:text-4xl lg:text-4xl font-serif mb-3 text-neutral-900 dark:text-white drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]"
     >
       Catálogo
     </h1>
   </div>
 </section>
 
-<!-- Search Section -->
-<section
-  class="py-8 bg-gray-50 dark:bg-neutral-900/50 border-b border-gray-200 dark:border-neutral-800"
->
-  <div class="max-w-7xl mx-auto px-4">
-    <div class="flex justify-center">
-      <!-- Search -->
-      <div class="w-full max-w-2xl">
+<!-- Products Grid -->
+<section class="py-16 px-4 bg-gray-50 dark:bg-neutral-900">
+  <div class="max-w-7xl mx-auto">
+    <!-- Results Counter & Search Bar -->
+    <div class="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <!-- Results Counter -->
+      <p class="reveal text-neutral-600 dark:text-gray-400 text-lg">
+        Mostrando
+        <span
+          id="resultsCount"
+          class="text-blue-600 dark:text-blue-400 font-semibold"
+          >{{ productos.count }}</span
+        >
+        productos
+      </p>
+      
+      <!-- Search Bar -->
+      <div class="w-full lg:w-auto lg:max-w-md">
         <div class="relative">
           <input
             type="text"
@@ -56,24 +64,6 @@
           </svg>
         </div>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- Products Grid -->
-<section class="py-16 px-4 bg-gray-50 dark:bg-neutral-900">
-  <div class="max-w-7xl mx-auto">
-    <!-- Results Counter -->
-    <div class="mb-8">
-      <p class="reveal text-neutral-600 dark:text-gray-400 text-lg">
-        Mostrando
-        <span
-          id="resultsCount"
-          class="text-blue-600 dark:text-blue-400 font-semibold"
-          >{{ productos.count }}</span
-        >
-        productos
-      </p>
     </div>
 
     <!-- Grid -->
