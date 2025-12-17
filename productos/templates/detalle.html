@@ -1,649 +1,1209 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}{{ producto.nombre }} - Kitaluro{% endblock %}
-
-{% block description %}{{ producto.descripcion_corta }}{% endblock %}
-
+{% extends 'base.html' %} 
+{% load static %} 
+{% block title %}{{ producto.nombre}} - Kitaluro{% endblock %} 
+{% block description %}{{ producto.descripcion_corta}}{% endblock %} 
 {% block content %}
 <!-- Breadcrumb -->
-<div class="bg-gray-50 dark:bg-neutral-900/50 border-b border-gray-200 dark:border-neutral-800">
-    <div class="max-w-7xl mx-auto px-4 py-4">
-        <div class="flex items-center gap-2 text-sm text-neutral-600 dark:text-gray-400">
-            <a href="{% url 'home' %}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Inicio</a>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-            <a href="{% url 'productos:index' %}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Productos</a>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-            <span class="text-neutral-900 dark:text-white">{{ producto.nombre }}</span>
-        </div>
+<div
+  class="bg-gray-50 dark:bg-neutral-900/50 border-b border-gray-200 dark:border-neutral-800"
+>
+  <div class="max-w-7xl mx-auto px-4 py-4">
+    <div
+      class="flex items-center gap-2 text-sm text-neutral-600 dark:text-gray-400"
+    >
+      <a
+        href="{% url 'home' %}"
+        class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+        >Inicio</a
+      >
+      <svg
+        class="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 5l7 7-7 7"
+        ></path>
+      </svg>
+      <a
+        href="{% url 'productos:index' %}"
+        class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+        >Productos</a
+      >
+      <svg
+        class="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 5l7 7-7 7"
+        ></path>
+      </svg>
+      <span class="text-neutral-900 dark:text-white"
+        >{{ producto.nombre }}</span
+      >
     </div>
+  </div>
 </div>
 
 <!-- Product Detail -->
 <section class="py-16 px-4 bg-gray-50 dark:bg-neutral-900">
-    <div class="max-w-7xl mx-auto">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-            <!-- Image & Video Gallery -->
-            <div class="reveal-left space-y-4">
-                <!-- Main Display Area -->
-                <div id="mainDisplay" class="bg-white dark:bg-neutral-900 overflow-hidden rounded-xl border border-gray-200 dark:border-neutral-800 shadow-xl dark:shadow-none aspect-square">
-                    {% if producto.imagen %}
-                    <img 
-                        id="mainImage"
-                        src="{{ producto.imagen.url }}" 
-                        alt="{{ producto.nombre }}"
-                        class="w-full h-full object-cover"
-                    >
-                    <video 
-                        id="mainVideo"
-                        controls
-                        class="w-full h-full object-cover hidden"
-                    >
-                    </video>
-                    {% elif producto.get_main_image %}
-                    <img 
-                        id="mainImage"
-                        src="{{ producto.get_main_image.url }}" 
-                        alt="{{ producto.nombre }}"
-                        class="w-full h-full object-cover"
-                    >
-                    <video 
-                        id="mainVideo"
-                        controls
-                        class="w-full h-full object-cover hidden"
-                    >
-                    </video>
-                    {% else %}
-                    <img 
-                        id="mainImage"
-                        src="{% static 'img/placeholder-product.jpg' %}" 
-                        alt="{{ producto.nombre }}"
-                        class="w-full h-full object-cover"
-                    >
-                    <video 
-                        id="mainVideo"
-                        controls
-                        class="w-full h-full object-cover hidden"
-                    >
-                    </video>
-                    {% endif %}
-                </div>
-                
-                <!-- Thumbnail Gallery (Images + Videos) -->
-                <div class="grid grid-cols-4 gap-4" id="galleryThumbnails">
-                    <!-- Imágenes de la galería -->
-                    {% for imagen in producto.imagenes_galeria.all %}
-                    <button class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 {% if forloop.first %}border-blue-600 dark:border-blue-400 shadow-lg{% else %}border-gray-300 dark:border-transparent hover:border-blue-400 dark:hover:border-blue-400/50 transition-all{% endif %} shadow-md dark:shadow-none" onclick="showImage('{{ imagen.image.url }}')">
-                        <img src="{{ imagen.image.url }}" alt="{{ imagen.alt_text|default:producto.nombre }}" class="w-full h-full object-cover">
-                    </button>
-                    {% endfor %}
-                    
-                    <!-- Videos de la galería -->
-                    {% for video in producto.videos_galeria.all %}
-                    <button class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-gray-300 dark:border-transparent hover:border-blue-400 dark:hover:border-blue-400/50 transition-all shadow-md dark:shadow-none relative" onclick="showVideo('{{ video.video.url }}', '{{ video.title|default:producto.nombre }}')">
-                        <div class="w-full h-full bg-gray-800 flex items-center justify-center">
-                            <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
-                            </svg>
-                        </div>
-                        {% if video.title %}
-                        <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-xs p-1 truncate">
-                            {{ video.title }}
-                        </div>
-                        {% endif %}
-                    </button>
-                    {% endfor %}
-                    
-                    <!-- Imagen principal si no hay galería -->
-                    {% if not producto.imagenes_galeria.all and producto.imagen %}
-                    <button class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-blue-600 dark:border-blue-400 shadow-lg dark:shadow-none" onclick="showImage('{{ producto.imagen.url }}')">
-                        <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="w-full h-full object-cover">
-                    </button>
-                    {% endif %}
-                    
-                    <!-- Video principal si existe -->
-                    {% if producto.video %}
-                    <button class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-gray-300 dark:border-transparent hover:border-blue-400 dark:hover:border-blue-400/50 transition-all shadow-md dark:shadow-none relative" onclick="showVideo('{{ producto.video.url }}', '{{ producto.nombre }}')">
-                        <div class="w-full h-full bg-gray-800 flex items-center justify-center">
-                            <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
-                            </svg>
-                        </div>
-                        <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-xs p-1 truncate">
-                            Video
-                        </div>
-                    </button>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Product Info -->
-            <div class="reveal-right space-y-6" data-delay="200">
-                <!-- Badge & Category -->
-                <div class="flex items-center gap-3">
-                    {% if producto.en_oferta %}
-                    <span class="badge-offer shadow-lg">Oferta</span>
-                    {% elif producto.destacado %}
-                    <span class="badge-offer shadow-lg">Destacado</span>
-                    {% endif %}
-                    {% if producto.marca or producto.categoria %}
-                    <span class="text-blue-600 dark:text-blue-400 text-sm font-semibold">{{ producto.marca.nombre|default:producto.categoria.nombre }}</span>
-                    {% endif %}
-                </div>
-
-                <!-- Title -->
-                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-serif text-neutral-900 dark:text-white drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]">
-                    {{ producto.nombre }}
-                </h1>
-
-                <!-- Rating & Reviews -->
-                {% comment %}
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center gap-1">
-                        {% with promedio=producto.valoraciones.all|length %}
-                        {% if promedio > 0 %}
-                            {% for i in "12345" %}
-                            <svg class="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                            </svg>
-                            {% endfor %}
-                        {% else %}
-                            {% for i in "12345" %}
-                            <svg class="w-5 h-5 text-gray-600 fill-current" viewBox="0 0 20 20">
-                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                            </svg>
-                            {% endfor %}
-                        {% endif %}
-                        {% endwith %}
-                    </div>
-                    <span class="text-gray-400">({{ producto.valoraciones.count }} reseñas)</span>
-                </div>
-                {% endcomment %}
-
-                <!-- Price -->
-                <div class="flex flex-wrap items-baseline gap-2 sm:gap-3">
-                    {% if producto.tiene_descuento %}
-                        <span class="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white">${{ producto.precio_oferta }}</span>
-                        <span class="text-xl sm:text-2xl text-gray-500 dark:text-gray-400 line-through">${{ producto.precio }}</span>
-                        {% if producto.porcentaje_descuento %}
-                        <span class="badge-offer shadow-lg">-{{ producto.porcentaje_descuento }}%</span>
-                        {% endif %}
-                    {% else %}
-                        <span class="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white">${{ producto.precio_final }}</span>
-                    {% endif %}
-                </div>
-
-                <!-- Description -->
-                <p class="text-neutral-700 dark:text-gray-300 text-lg leading-relaxed">
-                    {{ producto.descripcion_corta|default:producto.descripcion|truncatewords:30 }}
-                </p>
-
-                <!-- Tech Features -->
-                {% if producto.descripcion %}
-                <div class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-6 space-y-4 shadow-lg dark:shadow-none">
-                    <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Descripción Completa</h3>
-                    <div class="text-neutral-700 dark:text-gray-300 leading-relaxed">
-                        {{ producto.descripcion|linebreaks }}
-                    </div>
-                </div>
-                {% endif %}
-                
-                <!-- Additional Info -->
-                {% if producto.stock or producto.sku or producto.origen %}
-                <div class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-6 space-y-3 shadow-lg dark:shadow-none">
-                    <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">Información Adicional</h3>
-                    {% if producto.stock %}
-                    <div class="flex items-center gap-3">
-                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="text-neutral-700 dark:text-gray-300">Stock disponible: {{ producto.stock }} unidades</span>
-                    </div>
-                    {% endif %}
-                    {% if producto.sku %}
-                    <div class="flex items-center gap-3">
-                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="text-neutral-700 dark:text-gray-300">SKU: {{ producto.sku }}</span>
-                    </div>
-                    {% endif %}
-                    {% if producto.origen %}
-                    <div class="flex items-center gap-3">
-                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="text-neutral-700 dark:text-gray-300">Origen: {{ producto.origen }}</span>
-                    </div>
-                    {% endif %}
-                    {% if producto.peso %}
-                    <div class="flex items-center gap-3">
-                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="text-neutral-700 dark:text-gray-300">Peso: {{ producto.peso }} kg</span>
-                    </div>
-                    {% endif %}
-                    {% if producto.dimensiones %}
-                    <div class="flex items-center gap-3">
-                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="text-neutral-700 dark:text-gray-300">Dimensiones: {{ producto.dimensiones }}</span>
-                    </div>
-                    {% endif %}
-                </div>
-                {% endif %}
-
-                <!-- Quantity & Actions -->
-                {% comment %}
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <div class="flex items-center gap-3 card-premium px-4 py-3 rounded-lg">
-                        <button class="text-gray-400 hover:text-white transition-colors" onclick="decreaseQuantity()">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-                            </svg>
-                        </button>
-                        <input 
-                            type="number" 
-                            id="quantity" 
-                            value="1" 
-                            min="1" 
-                            class="w-16 bg-transparent text-center text-white text-lg font-bold focus:outline-none"
-                            readonly
-                        >
-                        <button class="text-gray-400 hover:text-white transition-colors" onclick="increaseQuantity()">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <button class="btn-crimson flex-1 px-8 py-4 text-lg">
-                        Agregar al Carrito
-                    </button>
-
-                    <button class="btn-premium px-6 py-4">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                        </svg>
-                    </button>
-                </div>
-                {% endcomment %}
-
-                <!-- Shipping Info -->
-                <div class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-6 space-y-4 shadow-lg dark:shadow-none">
-                    <div class="flex items-center gap-3">
-                        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                        </svg>
-                        <div>
-                            <p class="text-neutral-900 dark:text-white font-semibold">Envío Gratis</p>
-                            <p class="text-neutral-600 dark:text-gray-400 text-sm">En compras superiores a $100</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                        </svg>
-                        <div>
-                            <p class="text-neutral-900 dark:text-white font-semibold">Garantía Extendida</p>
-                            <p class="text-neutral-600 dark:text-gray-400 text-sm">3 años de cobertura total</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                        </svg>
-                        <div>
-                            <p class="text-neutral-900 dark:text-white font-semibold">Pago Seguro</p>
-                            <p class="text-neutral-600 dark:text-gray-400 text-sm">Múltiples métodos de pago</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div class="max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+      <!-- Image & Video Gallery -->
+      <div class="reveal-left space-y-4">
+        <!-- Main Display Area -->
+        <div
+          id="mainDisplay"
+          class="bg-white dark:bg-neutral-900 overflow-hidden rounded-xl border border-gray-200 dark:border-neutral-800 shadow-xl dark:shadow-none aspect-square"
+        >
+          {% if producto.imagen %}
+          <img
+            id="mainImage"
+            src="{{ producto.imagen.url }}"
+            alt="{{ producto.nombre }}"
+            class="w-full h-full object-cover"
+          />
+          <video
+            id="mainVideo"
+            controls
+            class="w-full h-full object-cover hidden"
+          ></video>
+          {% elif producto.get_main_image %}
+          <img
+            id="mainImage"
+            src="{{ producto.get_main_image.url }}"
+            alt="{{ producto.nombre }}"
+            class="w-full h-full object-cover"
+          />
+          <video
+            id="mainVideo"
+            controls
+            class="w-full h-full object-cover hidden"
+          ></video>
+          {% else %}
+          <img
+            id="mainImage"
+            src="{% static 'img/placeholder-product.jpg' %}"
+            alt="{{ producto.nombre }}"
+            class="w-full h-full object-cover"
+          />
+          <video
+            id="mainVideo"
+            controls
+            class="w-full h-full object-cover hidden"
+          ></video>
+          {% endif %}
         </div>
 
-        <!-- Tabs Section -->
-        <div class="mb-16">
-            <!-- Tab Headers -->
-            <div class="flex gap-2 sm:gap-4 border-b border-gray-200 dark:border-neutral-800 mb-8 overflow-x-auto">
-                <button class="tab-btn active px-4 sm:px-6 py-3 text-base sm:text-lg font-semibold text-neutral-900 dark:text-white border-b-2 border-blue-600 dark:border-blue-400 transition-all whitespace-nowrap" data-tab="specs">
-                    Especificaciones
-                </button>
-                {% comment %}
-                <button class="tab-btn px-4 sm:px-6 py-3 text-base sm:text-lg font-semibold text-neutral-600 dark:text-gray-400 border-b-2 border-transparent hover:text-neutral-900 dark:hover:text-white transition-all whitespace-nowrap" data-tab="reviews">
-                    Reseñas (127)
-                </button>
-                {% endcomment %}
-                <button class="tab-btn px-4 sm:px-6 py-3 text-base sm:text-lg font-semibold text-neutral-600 dark:text-gray-400 border-b-2 border-transparent hover:text-neutral-900 dark:hover:text-white transition-all whitespace-nowrap" data-tab="warranty">
-                    Garantía
-                </button>
-            </div>
+        <!-- Thumbnail Gallery (Images + Videos) -->
+        <div class="grid grid-cols-4 gap-4" id="galleryThumbnails">
+          <!-- Imágenes de la galería -->
+          {% for imagen in producto.imagenes_galeria.all %}
+          <button
+            class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 {% if forloop.first %}border-blue-600 dark:border-blue-400 shadow-lg{% else %}border-gray-300 dark:border-transparent hover:border-blue-400 dark:hover:border-blue-400/50 transition-all{% endif %} shadow-md dark:shadow-none"
+            onclick="showImage('{{ imagen.image.url }}')"
+          >
+            <img
+              src="{{ imagen.image.url }}"
+              alt="{{ imagen.alt_text|default:producto.nombre }}"
+              class="w-full h-full object-cover"
+            />
+          </button>
+          {% endfor %}
 
-            <!-- Tab Content -->
-            <div id="specs" class="tab-content">
-                <div class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-8 shadow-lg dark:shadow-none">
-                    <h3 class="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white mb-6">Especificaciones Técnicas</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                        <div class="space-y-4">
-                            {% if producto.dimensiones %}
-                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
-                                <span class="text-neutral-600 dark:text-gray-400">Dimensiones</span>
-                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.dimensiones }}</span>
-                            </div>
-                            {% endif %}
-                            {% if producto.peso %}
-                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
-                                <span class="text-neutral-600 dark:text-gray-400">Peso</span>
-                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.peso }} kg</span>
-                            </div>
-                            {% endif %}
-                            {% if producto.origen %}
-                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
-                                <span class="text-neutral-600 dark:text-gray-400">País de Origen</span>
-                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.origen }}</span>
-                            </div>
-                            {% endif %}
-                            {% if producto.marca %}
-                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
-                                <span class="text-neutral-600 dark:text-gray-400">Marca</span>
-                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.marca.nombre }}</span>
-                            </div>
-                            {% endif %}
-                            {% if producto.categoria %}
-                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
-                                <span class="text-neutral-600 dark:text-gray-400">Categoría</span>
-                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.categoria.nombre }}</span>
-                            </div>
-                            {% endif %}
-                        </div>
-                        <div class="space-y-4">
-                            {% if producto.subcategoria %}
-                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
-                                <span class="text-neutral-600 dark:text-gray-400">Subcategoría</span>
-                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.subcategoria.nombre }}</span>
-                            </div>
-                            {% endif %}
-                            {% if producto.sku %}
-                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
-                                <span class="text-neutral-600 dark:text-gray-400">SKU</span>
-                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.sku }}</span>
-                            </div>
-                            {% endif %}
-                            {% if producto.stock %}
-                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
-                                <span class="text-neutral-600 dark:text-gray-400">Stock Disponible</span>
-                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.stock }} unidades</span>
-                            </div>
-                            {% endif %}
-                            {% if producto.proveedor %}
-                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
-                                <span class="text-neutral-600 dark:text-gray-400">Proveedor</span>
-                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.proveedor.nombre }}</span>
-                            </div>
-                            {% endif %}
-                            {% if producto.estatus %}
-                            <div class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700">
-                                <span class="text-neutral-600 dark:text-gray-400">Estado</span>
-                                <span class="text-neutral-900 dark:text-white font-semibold">{{ producto.estatus.nombre }}</span>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    {% if not producto.dimensiones and not producto.peso and not producto.origen and not producto.marca and not producto.categoria and not producto.subcategoria and not producto.sku and not producto.proveedor and not producto.estatus %}
-                    <div class="text-center py-8">
-                        <p class="text-neutral-600 dark:text-gray-400">No hay especificaciones técnicas disponibles para este producto.</p>
-                    </div>
-                    {% endif %}
-                </div>
+          <!-- Videos de la galería -->
+          {% for video in producto.videos_galeria.all %}
+          <button
+            class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-gray-300 dark:border-transparent hover:border-blue-400 dark:hover:border-blue-400/50 transition-all shadow-md dark:shadow-none relative"
+            onclick="showVideo('{{ video.video.url }}', '{{ video.title|default:producto.nombre }}')"
+          >
+            <div
+              class="w-full h-full bg-gray-800 flex items-center justify-center"
+            >
+              <svg
+                class="w-12 h-12 text-white"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"
+                />
+              </svg>
             </div>
-
-            {% comment %}
-            <div id="reviews" class="tab-content hidden">
-                <div class="space-y-6">
-                    {% if producto.valoraciones.all %}
-                    <!-- Review Summary -->
-                    <div class="card-premium p-8">
-                        <div class="flex flex-col md:flex-row gap-8 items-center">
-                            <div class="text-center">
-                                <div class="text-6xl font-bold text-white mb-2">
-                                    {% widthratio producto.valoraciones.all|length 1 5 as avg_rating %}
-                                    {{ avg_rating|default:"0" }}
-                                </div>
-                                <div class="flex items-center justify-center gap-1 mb-2">
-                                    {% for i in "12345" %}
-                                    <svg class="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                                    </svg>
-                                    {% endfor %}
-                                </div>
-                                <div class="text-gray-400">{{ producto.valoraciones.count }} reseñas</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Individual Reviews -->
-                    {% for valoracion in producto.valoraciones.all|slice:":10" %}
-                    <div class="card-premium p-6">
-                        <div class="flex items-start gap-4">
-                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold">
-                                {{ valoracion.usuario.username|slice:":2"|upper|default:"AN" }}
-                            </div>
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between mb-2">
-                                    <div>
-                                        <h4 class="text-white font-semibold">{{ valoracion.usuario.get_full_name|default:valoracion.usuario.username }}</h4>
-                                        <div class="flex items-center gap-1 mt-1">
-                                            {% for i in "12345" %}
-                                                {% if i|add:"0" <= valoracion.puntuacion %}
-                                                <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                                                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                                                </svg>
-                                                {% else %}
-                                                <svg class="w-4 h-4 text-gray-600 fill-current" viewBox="0 0 20 20">
-                                                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                                                </svg>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                    <span class="text-gray-400 text-sm">{{ valoracion.fecha_creacion|timesince }}</span>
-                                </div>
-                                {% if valoracion.titulo %}
-                                <h5 class="text-white font-semibold mb-2">{{ valoracion.titulo }}</h5>
-                                {% endif %}
-                                {% if valoracion.comentario %}
-                                <p class="text-gray-300 leading-relaxed">
-                                    {{ valoracion.comentario }}
-                                </p>
-                                {% endif %}
-                                {% if valoracion.verificado %}
-                                <div class="mt-2">
-                                    <span class="text-xs px-2 py-1 bg-blue-500/20 border border-blue-400/30 rounded text-blue-300">
-                                        ✓ Compra Verificada
-                                    </span>
-                                </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                    {% else %}
-                    <!-- No Reviews -->
-                    <div class="card-premium p-12 text-center">
-                        <svg class="w-16 h-16 mx-auto mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
-                        </svg>
-                        <h3 class="text-xl font-bold text-white mb-2">Aún no hay reseñas</h3>
-                        <p class="text-gray-400">Sé el primero en dejar una reseña de este producto</p>
-                    </div>
-                    {% endif %}
-                </div>
+            {% if video.title %}
+            <div
+              class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-xs p-1 truncate"
+            >
+              {{ video.title }}
             </div>
-            {% endcomment %}
+            {% endif %}
+          </button>
+          {% endfor %}
 
-            <div id="warranty" class="tab-content hidden">
-                <div class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-8 shadow-lg dark:shadow-none">
-                    <h3 class="text-2xl font-bold text-neutral-900 dark:text-white mb-6">Información de Garantía</h3>
-                    <div class="space-y-6 text-neutral-700 dark:text-gray-300 leading-relaxed">
-                        <div>
-                            <h4 class="text-xl font-semibold text-neutral-900 dark:text-white mb-3">Cobertura</h4>
-                            <p>Este producto incluye una garantía extendida de 3 años que cubre defectos de fabricación y fallos en componentes electrónicos. La garantía incluye mano de obra y repuestos originales.</p>
-                        </div>
-                        <div>
-                            <h4 class="text-xl font-semibold text-neutral-900 dark:text-white mb-3">Qué está cubierto</h4>
-                            <ul class="list-disc list-inside space-y-2">
-                                <li>Defectos de fabricación en materiales y mano de obra</li>
-                                <li>Fallos en el sistema de refrigeración</li>
-                                <li>Problemas con componentes electrónicos</li>
-                                <li>Defectos en el compresor</li>
-                                <li>Reparaciones con repuestos originales</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="text-xl font-semibold text-neutral-900 dark:text-white mb-3">Qué NO está cubierto</h4>
-                            <ul class="list-disc list-inside space-y-2">
-                                <li>Daños por mal uso o instalación incorrecta</li>
-                                <li>Daños cosméticos o estéticos</li>
-                                <li>Daños causados por fenómenos naturales</li>
-                                <li>Modificaciones no autorizadas</li>
-                                <li>Desgaste normal por uso</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="text-xl font-semibold text-neutral-900 dark:text-white mb-3">Cómo hacer válida tu garantía</h4>
-                            <p>Para hacer válida tu garantía, contacta nuestro servicio de atención al cliente con tu número de serie y factura de compra. Un técnico especializado se comunicará contigo en menos de 24 horas.</p>
-                        </div>
-                    </div>
-                </div>
+          <!-- Imagen principal si no hay galería -->
+          {% if not producto.imagenes_galeria.all and producto.imagen %}
+          <button
+            class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-blue-600 dark:border-blue-400 shadow-lg dark:shadow-none"
+            onclick="showImage('{{ producto.imagen.url }}')"
+          >
+            <img
+              src="{{ producto.imagen.url }}"
+              alt="{{ producto.nombre }}"
+              class="w-full h-full object-cover"
+            />
+          </button>
+          {% endif %}
+
+          <!-- Video principal si existe -->
+          {% if producto.video %}
+          <button
+            class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-gray-300 dark:border-transparent hover:border-blue-400 dark:hover:border-blue-400/50 transition-all shadow-md dark:shadow-none relative"
+            onclick="showVideo('{{ producto.video.url }}', '{{ producto.nombre }}')"
+          >
+            <div
+              class="w-full h-full bg-gray-800 flex items-center justify-center"
+            >
+              <svg
+                class="w-12 h-12 text-white"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"
+                />
+              </svg>
             </div>
+            <div
+              class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-xs p-1 truncate"
+            >
+              Video
+            </div>
+          </button>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Product Info -->
+      <div class="reveal-right space-y-6" data-delay="200">
+        <!-- Badge & Category -->
+        <div class="flex items-center gap-3">
+          {% if producto.en_oferta %}
+          <span class="badge-offer shadow-lg">Oferta</span>
+          {% elif producto.destacado %}
+          <span class="badge-offer shadow-lg">Destacado</span>
+          {% endif %} {% if producto.marca or producto.categoria %}
+          <span class="text-blue-600 dark:text-blue-400 text-sm font-semibold"
+            >{{ producto.marca.nombre|default:producto.categoria.nombre }}</span
+          >
+          {% endif %}
         </div>
 
-        <!-- Related Products -->
-        <div>
-            <h2 class="reveal text-2xl sm:text-3xl lg:text-4xl font-serif mb-6 sm:mb-8 text-neutral-900 dark:text-white drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]">
-                Productos Relacionados
-            </h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6" data-stagger="100">
-                {% for prod in productos_relacionados %}
-                <!-- Related Product: {{ prod.nombre }} -->
-                <a href="{% url 'productos:detalle' prod.slug %}" class="reveal-scale product-card group block relative overflow-hidden rounded-xl h-[350px] sm:h-[400px] cursor-pointer bg-white dark:bg-neutral-900/50 shadow-xl dark:shadow-none border border-gray-200 dark:border-neutral-800/50 hover:shadow-2xl dark:hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] transition-all duration-500 hover:scale-[1.02]">
-                    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-neutral-900/50 to-neutral-900/95 dark:from-transparent dark:via-black/50 dark:to-black/90"></div>
-                    
-                    {% if prod.imagen %}
-                        <img src="{{ prod.imagen.url }}" alt="{{ prod.nombre }}" class="w-full h-full object-cover">
-                    {% elif prod.get_main_image %}
-                        <img src="{{ prod.get_main_image.url }}" alt="{{ prod.nombre }}" class="w-full h-full object-cover">
-                    {% else %}
-                        <img src="{% static 'img/placeholder-product.jpg' %}" alt="{{ prod.nombre }}" class="w-full h-full object-cover">
-                    {% endif %}
-                    
-                    <div class="absolute bottom-0 left-0 right-0 p-6">
-                        {% if prod.marca or prod.categoria %}
-                        <span class="text-blue-500 dark:text-blue-400 text-sm mb-2 block font-semibold">{{ prod.marca.nombre|default:prod.categoria.nombre }}</span>
-                        {% endif %}
-                        <h3 class="text-xl font-bold mb-2 text-white drop-shadow-lg">{{ prod.nombre }}</h3>
-                        <div class="flex items-center justify-between">
-                            {% if prod.tiene_descuento %}
-                                <span class="text-2xl font-bold text-white">${{ prod.precio_oferta }}</span>
-                            {% else %}
-                                <span class="text-2xl font-bold text-white">${{ prod.precio_final }}</span>
-                            {% endif %}
-                        </div>
-                    <!--<div class="product-cta mt-4">
-                            <button class="btn-crimson w-full shadow-lg">Ver Detalles</button>
-                        </div>-->
-                    </div> 
-                </a>
-                {% empty %}
-                <div class="col-span-full text-center py-8">
-                    <p class="text-neutral-600 dark:text-gray-400">No hay productos relacionados disponibles</p>
-                </div>
-                {% endfor %}
-            </div>
+        <!-- Title -->
+        <h1
+          class="text-3xl sm:text-4xl lg:text-5xl font-serif text-neutral-900 dark:text-white drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+        >
+          {{ producto.nombre }}
+        </h1>
+
+        <!-- Rating & Reviews -->
+        {% comment %}
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-1">
+            {% with promedio=producto.valoraciones.all|length %} {% if promedio
+            > 0 %} {% for i in "12345" %}
+            <svg
+              class="w-5 h-5 text-yellow-400 fill-current"
+              viewBox="0 0 20 20"
+            >
+              <path
+                d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"
+              />
+            </svg>
+            {% endfor %} {% else %} {% for i in "12345" %}
+            <svg class="w-5 h-5 text-gray-600 fill-current" viewBox="0 0 20 20">
+              <path
+                d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"
+              />
+            </svg>
+            {% endfor %} {% endif %} {% endwith %}
+          </div>
+          <span class="text-gray-400"
+            >({{ producto.valoraciones.count }} reseñas)</span
+          >
         </div>
+        {% endcomment %}
+
+        <!-- Price -->
+        <div class="flex flex-wrap items-baseline gap-2 sm:gap-3">
+          {% if producto.tiene_descuento %}
+          <span
+            class="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white"
+            >${{ producto.precio_oferta }}</span
+          >
+          <span
+            class="text-xl sm:text-2xl text-gray-500 dark:text-gray-400 line-through"
+            >${{ producto.precio }}</span
+          >
+          {% if producto.porcentaje_descuento %}
+          <span class="badge-offer shadow-lg"
+            >-{{ producto.porcentaje_descuento }}%</span
+          >
+          {% endif %} {% else %}
+          <span
+            class="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white"
+            >${{ producto.precio_final }}</span
+          >
+          {% endif %}
+        </div>
+
+        <!-- Description -->
+        <p class="text-neutral-700 dark:text-gray-300 text-lg leading-relaxed">
+          {{
+          producto.descripcion_corta|default:producto.descripcion|truncatewords:30
+          }}
+        </p>
+
+        <!-- Tech Features -->
+        {% if producto.descripcion %}
+        <div
+          class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-6 space-y-4 shadow-lg dark:shadow-none"
+        >
+          <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">
+            Descripción Completa
+          </h3>
+          <div class="text-neutral-700 dark:text-gray-300 leading-relaxed">
+            {{ producto.descripcion|linebreaks }}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Additional Info -->
+        {% if producto.stock or producto.sku or producto.origen %}
+        <div
+          class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-6 space-y-3 shadow-lg dark:shadow-none"
+        >
+          <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">
+            Información Adicional
+          </h3>
+          {% if producto.stock %}
+          <div class="flex items-center gap-3">
+            <svg
+              class="w-5 h-5 text-blue-600 dark:text-blue-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            <span class="text-neutral-700 dark:text-gray-300"
+              >Stock disponible: {{ producto.stock }} unidades</span
+            >
+          </div>
+          {% endif %} {% if producto.sku %}
+          <div class="flex items-center gap-3">
+            <svg
+              class="w-5 h-5 text-blue-600 dark:text-blue-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            <span class="text-neutral-700 dark:text-gray-300"
+              >SKU: {{ producto.sku }}</span
+            >
+          </div>
+          {% endif %} {% if producto.origen %}
+          <div class="flex items-center gap-3">
+            <svg
+              class="w-5 h-5 text-blue-600 dark:text-blue-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            <span class="text-neutral-700 dark:text-gray-300"
+              >Origen: {{ producto.origen }}</span
+            >
+          </div>
+          {% endif %} {% if producto.peso %}
+          <div class="flex items-center gap-3">
+            <svg
+              class="w-5 h-5 text-blue-600 dark:text-blue-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            <span class="text-neutral-700 dark:text-gray-300"
+              >Peso: {{ producto.peso }} kg</span
+            >
+          </div>
+          {% endif %} {% if producto.dimensiones %}
+          <div class="flex items-center gap-3">
+            <svg
+              class="w-5 h-5 text-blue-600 dark:text-blue-400"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            <span class="text-neutral-700 dark:text-gray-300"
+              >Dimensiones: {{ producto.dimensiones }}</span
+            >
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Quantity & Actions -->
+        {% comment %}
+        <div class="flex flex-col sm:flex-row gap-4">
+          <div
+            class="flex items-center gap-3 card-premium px-4 py-3 rounded-lg"
+          >
+            <button
+              class="text-gray-400 hover:text-white transition-colors"
+              onclick="decreaseQuantity()"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20 12H4"
+                ></path>
+              </svg>
+            </button>
+            <input
+              type="number"
+              id="quantity"
+              value="1"
+              min="1"
+              class="w-16 bg-transparent text-center text-white text-lg font-bold focus:outline-none"
+              readonly
+            />
+            <button
+              class="text-gray-400 hover:text-white transition-colors"
+              onclick="increaseQuantity()"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4v16m8-8H4"
+                ></path>
+              </svg>
+            </button>
+          </div>
+
+          <button class="btn-crimson flex-1 px-8 py-4 text-lg">
+            Agregar al Carrito
+          </button>
+
+          <button class="btn-premium px-6 py-4">
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              ></path>
+            </svg>
+          </button>
+        </div>
+        {% endcomment %}
+
+        <!-- Shipping Info -->
+        <div
+          class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-6 space-y-4 shadow-lg dark:shadow-none"
+        >
+          <div class="flex items-center gap-3">
+            <svg
+              class="w-6 h-6 text-blue-600 dark:text-blue-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
+              ></path>
+            </svg>
+            <div>
+              <p class="text-neutral-900 dark:text-white font-semibold">
+                Envío Gratis
+              </p>
+              <p class="text-neutral-600 dark:text-gray-400 text-sm">
+                En compras superiores a $100
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <svg
+              class="w-6 h-6 text-blue-600 dark:text-blue-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+              ></path>
+            </svg>
+            <div>
+              <p class="text-neutral-900 dark:text-white font-semibold">
+                Garantía Extendida
+              </p>
+              <p class="text-neutral-600 dark:text-gray-400 text-sm">
+                3 años de cobertura total
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <svg
+              class="w-6 h-6 text-blue-600 dark:text-blue-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+              ></path>
+            </svg>
+            <div>
+              <p class="text-neutral-900 dark:text-white font-semibold">
+                Pago Seguro
+              </p>
+              <p class="text-neutral-600 dark:text-gray-400 text-sm">
+                Múltiples métodos de pago
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-</section>
-{% endblock %}
 
-{% block extra_js %}
+    <!-- Tabs Section -->
+    <div class="mb-16">
+      <!-- Tab Headers -->
+      <div
+        class="flex gap-2 sm:gap-4 border-b border-gray-200 dark:border-neutral-800 mb-8 overflow-x-auto"
+      >
+        <button
+          class="tab-btn active px-4 sm:px-6 py-3 text-base sm:text-lg font-semibold text-neutral-900 dark:text-white border-b-2 border-blue-600 dark:border-blue-400 transition-all whitespace-nowrap"
+          data-tab="specs"
+        >
+          Especificaciones
+        </button>
+        {% comment %}
+        <button
+          class="tab-btn px-4 sm:px-6 py-3 text-base sm:text-lg font-semibold text-neutral-600 dark:text-gray-400 border-b-2 border-transparent hover:text-neutral-900 dark:hover:text-white transition-all whitespace-nowrap"
+          data-tab="reviews"
+        >
+          Reseñas (127)
+        </button>
+        {% endcomment %}
+        <button
+          class="tab-btn px-4 sm:px-6 py-3 text-base sm:text-lg font-semibold text-neutral-600 dark:text-gray-400 border-b-2 border-transparent hover:text-neutral-900 dark:hover:text-white transition-all whitespace-nowrap"
+          data-tab="warranty"
+        >
+          Garantía
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div id="specs" class="tab-content">
+        <div
+          class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-8 shadow-lg dark:shadow-none"
+        >
+          <h3
+            class="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white mb-6"
+          >
+            Especificaciones Técnicas
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div class="space-y-4">
+              {% if producto.dimensiones %}
+              <div
+                class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700"
+              >
+                <span class="text-neutral-600 dark:text-gray-400"
+                  >Dimensiones</span
+                >
+                <span class="text-neutral-900 dark:text-white font-semibold"
+                  >{{ producto.dimensiones }}</span
+                >
+              </div>
+              {% endif %} {% if producto.peso %}
+              <div
+                class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700"
+              >
+                <span class="text-neutral-600 dark:text-gray-400">Peso</span>
+                <span class="text-neutral-900 dark:text-white font-semibold"
+                  >{{ producto.peso }} kg</span
+                >
+              </div>
+              {% endif %} {% if producto.origen %}
+              <div
+                class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700"
+              >
+                <span class="text-neutral-600 dark:text-gray-400"
+                  >País de Origen</span
+                >
+                <span class="text-neutral-900 dark:text-white font-semibold"
+                  >{{ producto.origen }}</span
+                >
+              </div>
+              {% endif %} {% if producto.marca %}
+              <div
+                class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700"
+              >
+                <span class="text-neutral-600 dark:text-gray-400">Marca</span>
+                <span class="text-neutral-900 dark:text-white font-semibold"
+                  >{{ producto.marca.nombre }}</span
+                >
+              </div>
+              {% endif %} {% if producto.categoria %}
+              <div
+                class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700"
+              >
+                <span class="text-neutral-600 dark:text-gray-400"
+                  >Categoría</span
+                >
+                <span class="text-neutral-900 dark:text-white font-semibold"
+                  >{{ producto.categoria.nombre }}</span
+                >
+              </div>
+              {% endif %}
+            </div>
+            <div class="space-y-4">
+              {% if producto.subcategoria %}
+              <div
+                class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700"
+              >
+                <span class="text-neutral-600 dark:text-gray-400"
+                  >Subcategoría</span
+                >
+                <span class="text-neutral-900 dark:text-white font-semibold"
+                  >{{ producto.subcategoria.nombre }}</span
+                >
+              </div>
+              {% endif %} {% if producto.sku %}
+              <div
+                class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700"
+              >
+                <span class="text-neutral-600 dark:text-gray-400">SKU</span>
+                <span class="text-neutral-900 dark:text-white font-semibold"
+                  >{{ producto.sku }}</span
+                >
+              </div>
+              {% endif %} {% if producto.stock %}
+              <div
+                class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700"
+              >
+                <span class="text-neutral-600 dark:text-gray-400"
+                  >Stock Disponible</span
+                >
+                <span class="text-neutral-900 dark:text-white font-semibold"
+                  >{{ producto.stock }} unidades</span
+                >
+              </div>
+              {% endif %} {% if producto.proveedor %}
+              <div
+                class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700"
+              >
+                <span class="text-neutral-600 dark:text-gray-400"
+                  >Proveedor</span
+                >
+                <span class="text-neutral-900 dark:text-white font-semibold"
+                  >{{ producto.proveedor.nombre }}</span
+                >
+              </div>
+              {% endif %} {% if producto.estatus %}
+              <div
+                class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700"
+              >
+                <span class="text-neutral-600 dark:text-gray-400">Estado</span>
+                <span class="text-neutral-900 dark:text-white font-semibold"
+                  >{{ producto.estatus.nombre }}</span
+                >
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          {% if not producto.dimensiones and not producto.peso and not
+          producto.origen and not producto.marca and not producto.categoria and
+          not producto.subcategoria and not producto.sku and not
+          producto.proveedor and not producto.estatus %}
+          <div class="text-center py-8">
+            <p class="text-neutral-600 dark:text-gray-400">
+              No hay especificaciones técnicas disponibles para este producto.
+            </p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% comment %}
+      <div id="reviews" class="tab-content hidden">
+        <div class="space-y-6">
+          {% if producto.valoraciones.all %}
+          <!-- Review Summary -->
+          <div class="card-premium p-8">
+            <div class="flex flex-col md:flex-row gap-8 items-center">
+              <div class="text-center">
+                <div class="text-6xl font-bold text-white mb-2">
+                  {% widthratio producto.valoraciones.all|length 1 5 as
+                  avg_rating %} {{ avg_rating|default:"0" }}
+                </div>
+                <div class="flex items-center justify-center gap-1 mb-2">
+                  {% for i in "12345" %}
+                  <svg
+                    class="w-5 h-5 text-yellow-400 fill-current"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"
+                    />
+                  </svg>
+                  {% endfor %}
+                </div>
+                <div class="text-gray-400">
+                  {{ producto.valoraciones.count }} reseñas
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Individual Reviews -->
+          {% for valoracion in producto.valoraciones.all|slice:":10" %}
+          <div class="card-premium p-6">
+            <div class="flex items-start gap-4">
+              <div
+                class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold"
+              >
+                {{ valoracion.usuario.username|slice:":2"|upper|default:"AN" }}
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center justify-between mb-2">
+                  <div>
+                    <h4 class="text-white font-semibold">
+                      {{
+                      valoracion.usuario.get_full_name|default:valoracion.usuario.username
+                      }}
+                    </h4>
+                    <div class="flex items-center gap-1 mt-1">
+                      {% for i in "12345" %} {% if i|add:"0" <=
+                      valoracion.puntuacion %}
+                      <svg
+                        class="w-4 h-4 text-yellow-400 fill-current"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"
+                        />
+                      </svg>
+                      {% else %}
+                      <svg
+                        class="w-4 h-4 text-gray-600 fill-current"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"
+                        />
+                      </svg>
+                      {% endif %} {% endfor %}
+                    </div>
+                  </div>
+                  <span class="text-gray-400 text-sm"
+                    >{{ valoracion.fecha_creacion|timesince }}</span
+                  >
+                </div>
+                {% if valoracion.titulo %}
+                <h5 class="text-white font-semibold mb-2">
+                  {{ valoracion.titulo }}
+                </h5>
+                {% endif %} {% if valoracion.comentario %}
+                <p class="text-gray-300 leading-relaxed">
+                  {{ valoracion.comentario }}
+                </p>
+                {% endif %} {% if valoracion.verificado %}
+                <div class="mt-2">
+                  <span
+                    class="text-xs px-2 py-1 bg-blue-500/20 border border-blue-400/30 rounded text-blue-300"
+                  >
+                    ✓ Compra Verificada
+                  </span>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %} {% else %}
+          <!-- No Reviews -->
+          <div class="card-premium p-12 text-center">
+            <svg
+              class="w-16 h-16 mx-auto mb-4 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
+              ></path>
+            </svg>
+            <h3 class="text-xl font-bold text-white mb-2">
+              Aún no hay reseñas
+            </h3>
+            <p class="text-gray-400">
+              Sé el primero en dejar una reseña de este producto
+            </p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endcomment %}
+
+      <div id="warranty" class="tab-content hidden">
+        <div
+          class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-8 shadow-lg dark:shadow-none"
+        >
+          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white mb-6">
+            Información de Garantía
+          </h3>
+          <div
+            class="space-y-6 text-neutral-700 dark:text-gray-300 leading-relaxed"
+          >
+            <div>
+              <h4
+                class="text-xl font-semibold text-neutral-900 dark:text-white mb-3"
+              >
+                Cobertura
+              </h4>
+              <p>
+                Este producto incluye una garantía extendida de 3 años que cubre
+                defectos de fabricación y fallos en componentes electrónicos. La
+                garantía incluye mano de obra y repuestos originales.
+              </p>
+            </div>
+            <div>
+              <h4
+                class="text-xl font-semibold text-neutral-900 dark:text-white mb-3"
+              >
+                Qué está cubierto
+              </h4>
+              <ul class="list-disc list-inside space-y-2">
+                <li>Defectos de fabricación en materiales y mano de obra</li>
+                <li>Fallos en el sistema de refrigeración</li>
+                <li>Problemas con componentes electrónicos</li>
+                <li>Defectos en el compresor</li>
+                <li>Reparaciones con repuestos originales</li>
+              </ul>
+            </div>
+            <div>
+              <h4
+                class="text-xl font-semibold text-neutral-900 dark:text-white mb-3"
+              >
+                Qué NO está cubierto
+              </h4>
+              <ul class="list-disc list-inside space-y-2">
+                <li>Daños por mal uso o instalación incorrecta</li>
+                <li>Daños cosméticos o estéticos</li>
+                <li>Daños causados por fenómenos naturales</li>
+                <li>Modificaciones no autorizadas</li>
+                <li>Desgaste normal por uso</li>
+              </ul>
+            </div>
+            <div>
+              <h4
+                class="text-xl font-semibold text-neutral-900 dark:text-white mb-3"
+              >
+                Cómo hacer válida tu garantía
+              </h4>
+              <p>
+                Para hacer válida tu garantía, contacta nuestro servicio de
+                atención al cliente con tu número de serie y factura de compra.
+                Un técnico especializado se comunicará contigo en menos de 24
+                horas.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Products - Carrusel Compacto -->
+    <div class="relative">
+      <h2
+        class="reveal text-2xl sm:text-3xl lg:text-4xl font-serif mb-6 sm:mb-8 text-neutral-900 dark:text-white drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+      >
+        Productos Relacionados
+      </h2>
+
+      <!-- Fade edges -->
+      <div
+        class="absolute left-0 top-16 bottom-0 w-8 bg-gradient-to-r from-gray-50 dark:from-neutral-900 to-transparent z-10 pointer-events-none"
+      ></div>
+      <div
+        class="absolute right-0 top-16 bottom-0 w-8 bg-gradient-to-l from-gray-50 dark:from-neutral-900 to-transparent z-10 pointer-events-none"
+      ></div>
+
+      <div
+        id="related-carousel"
+        class="flex overflow-x-scroll snap-x snap-mandatory hide-scrollbar gap-4 pb-4"
+        style="scroll-padding: 0 1rem"
+      >
+        {% for prod in productos_relacionados %}
+        <!-- Related Product Mini Card: {{ prod.nombre }} -->
+        <a
+          href="{% url 'productos:detalle' prod.slug %}"
+          class="snap-start flex-shrink-0 w-48 sm:w-56 group block rounded-xl overflow-hidden bg-white dark:bg-neutral-900/80 border border-gray-200 dark:border-neutral-800/50 shadow-lg dark:shadow-none hover:shadow-xl dark:hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] transition-all duration-300 hover:scale-[1.03]"
+        >
+          <!-- Imagen cuadrada -->
+          <div
+            class="relative aspect-square overflow-hidden bg-gray-100 dark:bg-neutral-800"
+          >
+            {% if prod.imagen %}
+            <img
+              src="{{ prod.imagen.url }}"
+              alt="{{ prod.nombre }}"
+              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              loading="lazy"
+            />
+            {% elif prod.get_main_image %}
+            <img
+              src="{{ prod.get_main_image.url }}"
+              alt="{{ prod.nombre }}"
+              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              loading="lazy"
+            />
+            {% else %}
+            <img
+              src="{% static 'img/placeholder-product.jpg' %}"
+              alt="{{ prod.nombre }}"
+              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              loading="lazy"
+            />
+            {% endif %}
+
+            <!-- Badge si está en oferta -->
+            {% if prod.en_oferta %}
+            <div class="absolute top-2 right-2">
+              <span
+                class="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow"
+                >OFERTA</span
+              >
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Info compacta -->
+          <div class="p-3 space-y-1">
+            {% if prod.marca or prod.categoria %}
+            <span
+              class="text-blue-600 dark:text-blue-400 text-[10px] font-medium uppercase tracking-wider"
+              >{{ prod.marca.nombre|default:prod.categoria.nombre }}</span
+            >
+            {% endif %}
+
+            <h3
+              class="text-sm font-semibold text-neutral-900 dark:text-white line-clamp-2 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
+            >
+              {{ prod.nombre }}
+            </h3>
+
+            <div class="flex items-baseline gap-1.5 pt-1">
+              {% if prod.tiene_descuento %}
+              <span class="text-2xl font-bold text-white"
+                >${{ prod.precio_oferta }}</span
+              >
+              {% else %}
+              <span class="text-2xl font-bold text-white"
+                >${{ prod.precio_final }}</span
+              >
+              {% endif %} {% if prod.tiene_descuento %}
+              <span class="text-base font-bold text-neutral-900 dark:text-white"
+                >${{ prod.precio_oferta }}</span
+              >
+              <span
+                class="text-xs text-gray-500 dark:text-gray-400 line-through"
+                >${{ prod.precio }}</span
+              >
+              {% else %}
+              <span class="text-base font-bold text-neutral-900 dark:text-white"
+                >${{ prod.precio_final }}</span
+              >
+              {% endif %}
+              <span class="text-gray-400 dark:text-gray-500 text-[10px]"
+                >USD</span
+              >
+            </div>
+          </div>
+        </a>
+        {% empty %}
+        <div class="flex-shrink-0 w-full text-center py-8">
+          <p class="text-neutral-600 dark:text-gray-400">
+            No hay productos relacionados disponibles
+          </p>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Indicador de scroll -->
+      {% if productos_relacionados %}
+      <div
+        class="flex items-center justify-center gap-2 mt-4 text-neutral-500 dark:text-neutral-600"
+      >
+        <svg
+          class="w-4 h-4 animate-pulse"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 19l-7-7 7-7"
+          ></path>
+        </svg>
+        <span class="text-xs uppercase tracking-widest">Desliza</span>
+        <svg
+          class="w-4 h-4 animate-pulse"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 5l7 7-7 7"
+          ></path>
+        </svg>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %} {% block extra_js %}
 <script>
-// Image & Video Gallery Functions
-function showImage(src) {
-    const mainImage = document.getElementById('mainImage');
-    const mainVideo = document.getElementById('mainVideo');
-    
+  // ========================================
+  // AUTOPLAY CAROUSEL - Productos Relacionados
+  // ========================================
+  (function () {
+    const carousel = document.getElementById("related-carousel");
+
+    if (carousel) {
+      let scrollSpeed = 0.8; // Velocidad ligeramente más lenta para este carrusel
+      let isHovering = false;
+      let animationId = null;
+
+      function autoScroll() {
+        if (!isHovering) {
+          if (
+            carousel.scrollLeft >=
+            carousel.scrollWidth - carousel.clientWidth - 5
+          ) {
+            carousel.scrollTo({ left: 0, behavior: "smooth" });
+            setTimeout(() => {
+              animationId = requestAnimationFrame(autoScroll);
+            }, 1500);
+            return;
+          }
+          carousel.scrollLeft += scrollSpeed;
+        }
+        animationId = requestAnimationFrame(autoScroll);
+      }
+
+      carousel.addEventListener("mouseenter", () => {
+        isHovering = true;
+      });
+      carousel.addEventListener("mouseleave", () => {
+        isHovering = false;
+      });
+      carousel.addEventListener(
+        "touchstart",
+        () => {
+          isHovering = true;
+        },
+        { passive: true }
+      );
+      carousel.addEventListener(
+        "touchend",
+        () => {
+          setTimeout(() => {
+            isHovering = false;
+          }, 2000);
+        },
+        { passive: true }
+      );
+
+      setTimeout(() => {
+        animationId = requestAnimationFrame(autoScroll);
+      }, 2500);
+
+      window.addEventListener("beforeunload", () => {
+        if (animationId) cancelAnimationFrame(animationId);
+      });
+    }
+  })();
+
+  // ========================================
+  // Image & Video Gallery Functions
+  // ========================================
+  function showImage(src) {
+    const mainImage = document.getElementById("mainImage");
+    const mainVideo = document.getElementById("mainVideo");
+
     // Mostrar imagen, ocultar video
     mainImage.src = src;
-    mainImage.classList.remove('hidden');
-    mainVideo.classList.add('hidden');
+    mainImage.classList.remove("hidden");
+    mainVideo.classList.add("hidden");
     mainVideo.pause();
-    
+
     // Update active thumbnail
     updateActiveThumbnail(event.currentTarget);
-}
+  }
 
-function showVideo(src, title) {
-    const mainImage = document.getElementById('mainImage');
-    const mainVideo = document.getElementById('mainVideo');
-    
+  function showVideo(src, title) {
+    const mainImage = document.getElementById("mainImage");
+    const mainVideo = document.getElementById("mainVideo");
+
     // Mostrar video, ocultar imagen
     mainVideo.src = src;
-    mainVideo.classList.remove('hidden');
-    mainImage.classList.add('hidden');
+    mainVideo.classList.remove("hidden");
+    mainImage.classList.add("hidden");
     mainVideo.load();
-    
+
     // Update active thumbnail
     updateActiveThumbnail(event.currentTarget);
-}
+  }
 
-function updateActiveThumbnail(activeBtn) {
+  function updateActiveThumbnail(activeBtn) {
     // Remove active state from all thumbnails
-    document.querySelectorAll('.thumbnail-btn').forEach(btn => {
-        btn.classList.remove('border-blue-600', 'dark:border-blue-400', 'shadow-lg');
-        btn.classList.add('border-gray-300', 'dark:border-transparent');
+    document.querySelectorAll(".thumbnail-btn").forEach((btn) => {
+      btn.classList.remove(
+        "border-blue-600",
+        "dark:border-blue-400",
+        "shadow-lg"
+      );
+      btn.classList.add("border-gray-300", "dark:border-transparent");
     });
-    
+
     // Add active state to clicked thumbnail
-    activeBtn.classList.add('border-blue-600', 'dark:border-blue-400', 'shadow-lg');
-    activeBtn.classList.remove('border-gray-300', 'dark:border-transparent');
-}
+    activeBtn.classList.add(
+      "border-blue-600",
+      "dark:border-blue-400",
+      "shadow-lg"
+    );
+    activeBtn.classList.remove("border-gray-300", "dark:border-transparent");
+  }
 
-// Legacy function for backwards compatibility
-function changeImage(src) {
+  // Legacy function for backwards compatibility
+  function changeImage(src) {
     showImage(src);
-}
+  }
 
-// Tabs
-document.addEventListener('DOMContentLoaded', function() {
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
+  // Tabs
+  document.addEventListener("DOMContentLoaded", function () {
+    const tabBtns = document.querySelectorAll(".tab-btn");
+    const tabContents = document.querySelectorAll(".tab-content");
 
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const tabId = this.dataset.tab;
-            
-            // Update button states
-            tabBtns.forEach(b => {
-                b.classList.remove('active', 'text-neutral-900', 'dark:text-white', 'border-blue-600', 'dark:border-blue-400');
-                b.classList.add('text-neutral-600', 'dark:text-gray-400', 'border-transparent');
-            });
-            this.classList.add('active', 'text-neutral-900', 'dark:text-white', 'border-blue-600', 'dark:border-blue-400');
-            this.classList.remove('text-neutral-600', 'dark:text-gray-400', 'border-transparent');
-            
-            // Show corresponding content
-            tabContents.forEach(content => {
-                content.classList.add('hidden');
-            });
-            document.getElementById(tabId).classList.remove('hidden');
+    tabBtns.forEach((btn) => {
+      btn.addEventListener("click", function () {
+        const tabId = this.dataset.tab;
+
+        // Update button states
+        tabBtns.forEach((b) => {
+          b.classList.remove(
+            "active",
+            "text-neutral-900",
+            "dark:text-white",
+            "border-blue-600",
+            "dark:border-blue-400"
+          );
+          b.classList.add(
+            "text-neutral-600",
+            "dark:text-gray-400",
+            "border-transparent"
+          );
         });
+        this.classList.add(
+          "active",
+          "text-neutral-900",
+          "dark:text-white",
+          "border-blue-600",
+          "dark:border-blue-400"
+        );
+        this.classList.remove(
+          "text-neutral-600",
+          "dark:text-gray-400",
+          "border-transparent"
+        );
+
+        // Show corresponding content
+        tabContents.forEach((content) => {
+          content.classList.add("hidden");
+        });
+        document.getElementById(tabId).classList.remove("hidden");
+      });
     });
-});
+  });
 </script>
 {% endblock %}

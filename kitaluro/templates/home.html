@@ -1,61 +1,54 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Kitaluro | The Future of Home{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% load static %} {% block title %}Kitaluro | The
+Future of Home{% endblock %} {% block content %}
 
 <!-- ========================================================================== -->
 <!-- HERO BANNER - VIDEO COMPLETO SIN RECORTE -->
 <!-- ========================================================================== -->
-<section class="lux-hero-banner ">
-    <div class="lux-hero-media reveal">
-        <video
-            id="heroVideo"
-            class="lux-hero-video"
-            autoplay
-            muted
-            loop
-            playsinline
-            preload="none"
-            poster="{% static 'img/hero-poster.jpg' %}"
-            aria-label="Video promocional de la colección Kitaluro"
-        >
-            <source src="{% static 'video/videowebm.webm' %}" type="video/webm">
-            <source src="{% static 'video/video.mp4' %}" type="video/mp4">
-            <img src="{% static 'img/hero-poster.jpg' %}" alt="Colección Kitaluro" />
-        </video>
+<section class="lux-hero-banner">
+  <div class="lux-hero-media reveal">
+    <video
+      id="heroVideo"
+      class="lux-hero-video"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="none"
+      poster="{% static 'img/hero-poster.jpg' %}"
+      aria-label="Video promocional de la colección Kitaluro"
+    >
+      <source src="{% static 'video/videowebm.webm' %}" type="video/webm" />
+      <source src="{% static 'video/video.mp4' %}" type="video/mp4" />
+      <img src="{% static 'img/hero-poster.jpg' %}" alt="Colección Kitaluro" />
+    </video>
 
-        <!-- Capa de texto solo para escritorio/tablet -->
-        <div class="lux-hero-overlay">
-            <div class="lux-hero-content">
-                <p class="lux-hero-kicker">Colección 2025</p>
-                <h1 class="lux-hero-title">KITALURO</h1>
-                <p class="lux-hero-subtitle">
-                    Redefiniendo el lujo.
-                </p>
-                <div class="lux-hero-actions">
-                    <a href="{% url 'productos:index' %}" class="btn-crimson">Explorar Colección</a>
-                    
-                </div>
-            </div>
+    <!-- Capa de texto solo para escritorio/tablet -->
+    <div class="lux-hero-overlay">
+      <div class="lux-hero-content">
+        <p class="lux-hero-kicker">Colección 2025</p>
+        <h1 class="lux-hero-title">KITALURO</h1>
+        <p class="lux-hero-subtitle">Redefiniendo el lujo.</p>
+        <div class="lux-hero-actions">
+          <a href="{% url 'productos:index' %}" class="btn-crimson"
+            >Explorar Colección</a
+          >
         </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Bloque de texto independiente solo para móviles -->
-    <div class="lux-hero-mobile-copy reveal">
-        <p class="lux-hero-mobile-kicker">Colección 2025</p>
-        <h1 class="lux-hero-mobile-title">KITALURO</h1>
-        <p class="lux-hero-mobile-subtitle">
-            Redefiniendo el lujo.
-        </p>
-        <div class="lux-hero-mobile-actions">
-            <a href="{% url 'productos:index' %}" class="btn-crimson">Explorar Colección</a>
-        </div>
+  <!-- Bloque de texto independiente solo para móviles -->
+  <div class="lux-hero-mobile-copy reveal">
+    <p class="lux-hero-mobile-kicker">Colección 2025</p>
+    <h1 class="lux-hero-mobile-title">KITALURO</h1>
+    <p class="lux-hero-mobile-subtitle">Redefiniendo el lujo.</p>
+    <div class="lux-hero-mobile-actions">
+      <a href="{% url 'productos:index' %}" class="btn-crimson"
+        >Explorar Colección</a
+      >
     </div>
+  </div>
 </section>
-
-
 <section id="products" class="py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-neutral-900">
     <div class="max-w-7xl mx-auto">
         <div class="text-center mb-8 sm:mb-12 lg:mb-16">
@@ -175,249 +168,602 @@
         </div>
     </div>
 </section>
-
-<section class="reveal py-12 sm:py-16 md:py-20 lg:py-24 px-0 bg-neutral-950 overflow-hidden">
-    <div class="max-w-7xl mx-auto">
-        {% for producto in productos %}
-        {% if productos.destacado %}
-        <div class="text-center mb-8 sm:mb-10 lg:mb-12 px-4 sm:px-6">
-            <h2 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-4 
-                       drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]">
-                Colección Exclusiva
-            </h2>
-            <p class="text-neutral-400 text-sm sm:text-base lg:text-lg tracking-wide max-w-2xl mx-auto px-4">
-                Desliza para descubrir nuestra selección premium
-            </p>
-        </div>
-        {% endif %}
-
-        <div class="relative">
-            <div class="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-neutral-950 to-transparent z-10 pointer-events-none hidden md:block"></div>
-            
-            <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-neutral-950 to-transparent z-10 pointer-events-none hidden md:block"></div>
-
-            <div class="flex overflow-x-scroll snap-x snap-mandatory hide-scrollbar gap-4 sm:gap-5 lg:gap-6 px-4 sm:px-6 lg:px-8 pb-4" 
-                 style="scroll-padding: 0 1rem;">
-                
-                
-        {% if not producto.destacado %}
-                <div class="snap-start snap-always flex-shrink-0 w-[85vw] sm:w-[70vw] md:w-[45vw] lg:w-[350px] xl:w-[380px] group">
-                    <a href="{% url 'productos:detalle' producto.slug %}" 
-                       class="block bg-neutral-900 rounded-xl sm:rounded-2xl overflow-hidden 
-                              shadow-2xl hover:shadow-[0_0_40px_rgba(59,130,246,0.3)]
-                              transition-all duration-500 hover:scale-[1.02]
-                              border border-neutral-800 hover:border-blue-500/30
-                              h-full flex flex-col">
-                        
-                        <div class="relative h-[280px] sm:h-[320px] md:h-[280px] lg:h-[300px] overflow-hidden bg-neutral-800 flex-shrink-0">
-                            {% if producto.imagen %}
-                                <img 
-                                    src="{{ producto.imagen.url }}" 
-                                    alt="{{ producto.nombre }}" 
-                                    class="w-full h-full object-cover transform group-hover:scale-110 
-                                           transition-transform duration-700"
-                                    loading="lazy"
-                                />
-                            {% elif producto.get_main_image %}
-                                <img 
-                                    src="{{ producto.get_main_image.url }}" 
-                                    alt="{{ producto.nombre }}" 
-                                    class="w-full h-full object-cover transform group-hover:scale-110 
-                                           transition-transform duration-700"
-                                    loading="lazy"
-                                />
-                            {% else %}
-                                <img 
-                                    src="{% static 'img/placeholder-product.jpg' %}" 
-                                    alt="{{ producto.nombre }}" 
-                                    class="w-full h-full object-cover transform group-hover:scale-110 
-                                           transition-transform duration-700"
-                                    loading="lazy"
-                                />
-                            {% endif %}
-
-                            <div class="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/40 to-transparent"></div>
-
-                            {% if producto.en_oferta or producto.destacado %}
-                            <div class="absolute top-3 sm:top-4 right-3 sm:right-4 z-10">
-                                {% if producto.en_oferta %}
-                                    <span class="badge-offer shadow-lg text-xs sm:text-sm">
-                                        {% if producto.porcentaje_descuento %}-{{ producto.porcentaje_descuento }}%{% else %}Oferta{% endif %}
-                                    </span>
-                                {% elif producto.destacado %}
-                                    <span class="badge-offer bg-blue-600 shadow-lg text-xs sm:text-sm">Premium</span>
-                                {% endif %}
-                            </div>
-                            {% endif %}
-
-                            {% if producto.marca or producto.categoria %}
-                            <div class="absolute top-3 sm:top-4 left-3 sm:left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <span class="text-blue-400 text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest font-semibold">
-                                    {{ producto.marca.nombre|default:producto.categoria.nombre }}
-                                </span>
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="p-4 sm:p-5 lg:p-5 space-y-2 sm:space-y-2.5 bg-neutral-900 flex-grow flex flex-col">
-                            <h3 class="font-serif text-base sm:text-lg md:text-xl font-bold text-white 
-                                       group-hover:text-blue-400 transition-colors duration-300 
-                                       line-clamp-2 leading-tight">
-                                {{ producto.nombre }}
-                            </h3>
-
-                            <div class="flex items-baseline gap-2">
-                                {% if producto.tiene_descuento %}
-                                    <span class="text-lg sm:text-xl font-bold text-white">
-                                        ${{ producto.precio_oferta }}
-                                    </span>
-                                    <span class="text-sm text-neutral-500 line-through">
-                                        ${{ producto.precio }}
-                                    </span>
-                                {% else %}
-                                    <span class="text-lg sm:text-xl font-bold text-white">
-                                        ${{ producto.precio_final }}
-                                    </span>
-                                {% endif %}
-                                <span class="text-neutral-500 text-xs">USD</span>
-                            </div>
-
-                            {% comment %}
-                            <button class="btn-crimson w-full shadow-lg 
-                                           transform group-hover:shadow-xl 
-                                           transition-all duration-300
-                                           text-sm py-2.5 mt-auto">
-                                Ver Detalles
-                            </button>
-                            {% endcomment %}
-
-                            {% if producto.stock %}
-                            <div class="flex items-center gap-1.5 text-xs">
-                                <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                                <span class="text-neutral-400">
-                                    {{ producto.stock }} disponibles
-                                </span>
-                            </div>
-                            {% else %}
-                            <div class="flex items-center gap-1.5 text-xs">
-                                <div class="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
-                                <span class="text-neutral-500">
-                                    Agotado
-                                </span>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </a>
-                </div>
-        {% endif %}
-        {% endfor %}
-
-                {% if not productos %}
-                <div class="snap-start flex-shrink-0 w-[85vw] sm:w-[70vw] md:w-[45vw] lg:w-[32%]">
-                    <div class="bg-neutral-900 rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center border border-neutral-800">
-                        <svg class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-                        </svg>
-                        <h3 class="text-lg sm:text-xl font-bold text-white mb-2">No hay productos</h3>
-                        <p class="text-neutral-500 text-sm sm:text-base">Agrega productos desde el panel de administración</p>
-                    </div>
-                </div>
-                {% endif %}
-
-            </div>
-
-            <div class="hidden lg:flex items-center justify-center gap-2 mt-6 sm:mt-8 text-neutral-600">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 animate-bounce-horizontal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-                <span class="text-xs sm:text-sm uppercase tracking-widest">Desliza para ver más</span>
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 animate-bounce-horizontal-reverse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-            </div>
-        </div>
+<section
+  class="reveal py-12 sm:py-16 md:py-20 lg:py-24 px-0 bg-neutral-950 overflow-hidden"
+>
+  <div class="max-w-7xl mx-auto">
+    {% if productos %}
+    <div class="text-center mb-8 sm:mb-10 lg:mb-12 px-4 sm:px-6">
+      <h2
+        class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-4 drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+      >
+        Otros Productos
+      </h2>
+      <p
+        class="text-neutral-400 text-sm sm:text-base lg:text-lg tracking-wide max-w-2xl mx-auto px-4"
+      >
+        Desliza para descubrir más
+      </p>
     </div>
-</section>
+    {% endif %}
 
-{% endblock %}
+    <div class="relative">
+      <div
+        class="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-neutral-950 to-transparent z-10 pointer-events-none hidden md:block"
+      ></div>
 
-{% block extra_js %}
-<script>
-(function() {
-    const video = document.getElementById('heroVideo');
-    
-    if (video) {
-        console.log('🎬 VIDEO DEBUG - Información del video:');
-        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        
+      <div
+        class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-neutral-950 to-transparent z-10 pointer-events-none hidden md:block"
+      ></div>
+
+      <div
+        id="product-carousel"
+        class="flex overflow-x-scroll snap-x snap-mandatory hide-scrollbar gap-4 sm:gap-5 lg:gap-6 px-4 sm:px-6 lg:px-8 pb-4"
+        style="scroll-padding: 0 1rem"
+      >
+        {% for producto in productos %} {% if not producto.destacado %}
+        <div
+          class="snap-start snap-always flex-shrink-0 w-[85vw] sm:w-[70vw] md:w-[45vw] lg:w-[350px] xl:w-[380px] group"
+        >
+          <a
+            href="{% url 'productos:detalle' producto.slug %}"
+            class="block bg-neutral-900 rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl hover:shadow-[0_0_40px_rgba(59,130,246,0.3)] transition-all duration-500 hover:scale-[1.02] border border-neutral-800 hover:border-blue-500/30 h-full flex flex-col"
+          >
+            <div
+              class="relative h-[280px] sm:h-[320px] md:h-[280px] lg:h-[300px] overflow-hidden bg-neutral-800 flex-shrink-0"
+            >
+              {% if producto.imagen %}
+              <img
+                src="{{ producto.imagen.url }}"
+                alt="{{ producto.nombre }}"
+                class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                loading="lazy"
+              />
+              {% elif producto.get_main_image %}
+              <img
+                src="{{ producto.get_main_image.url }}"
+                alt="{{ producto.nombre }}"
+                class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                loading="lazy"
+              />
+              {% else %}
+              <img
+                src="{% static 'img/placeholder-product.jpg' %}"
+                alt="{{ producto.nombre }}"
+                class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                loading="lazy"
+              />
+              {% endif %}
+
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/40 to-transparent"
+              ></div>
+
+              {% if producto.en_oferta or producto.destacado %}
+              <div class="absolute top-3 sm:top-4 right-3 sm:right-4 z-10">
+                {% if producto.en_oferta %}
+                <span class="badge-offer shadow-lg text-xs sm:text-sm">
+                  {% if producto.porcentaje_descuento %}-{{
+                  producto.porcentaje_descuento }}%{% else %}Oferta{% endif %}
+                </span>
+                {% elif producto.destacado %}
+                <span
+                  class="badge-offer bg-blue-600 shadow-lg text-xs sm:text-sm"
+                  >Premium</span
+                >
+                {% endif %}
+              </div>
+              {% endif %} {% if producto.marca or producto.categoria %}
+              <div
+                class="absolute top-3 sm:top-4 left-3 sm:left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              >
+                <span
+                  class="text-blue-400 text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest font-semibold"
+                >
+                  {{ producto.marca.nombre|default:producto.categoria.nombre }}
+                </span>
+              </div>
+              {% endif %}
+            </div>
+
+            <div
+              class="p-4 sm:p-5 lg:p-5 space-y-2 sm:space-y-2.5 bg-neutral-900 flex-grow flex flex-col"
+            >
+              <h3
+                class="font-serif text-base sm:text-lg md:text-xl font-bold text-white group-hover:text-blue-400 transition-colors duration-300 line-clamp-2 leading-tight"
+              >
+                {{ producto.nombre }}
+              </h3>
+
+              <div class="flex items-baseline gap-2">
+                {% if producto.tiene_descuento %}
+                <span class="text-lg sm:text-xl font-bold text-white">
+                  ${{ producto.precio_oferta }}
+                </span>
+                <span class="text-sm text-neutral-500 line-through">
+                  ${{ producto.precio }}
+                </span>
+                {% else %}
+                <span class="text-lg sm:text-xl font-bold text-white">
+                  ${{ producto.precio_final }}
+                </span>
+                {% endif %}
+                <span class="text-neutral-500 text-xs">USD</span>
+              </div>
+
+              {% comment %}
+              <button
+                class="btn-crimson w-full shadow-lg transform group-hover:shadow-xl transition-all duration-300 text-sm py-2.5 mt-auto"
+              >
+                Ver Detalles
+              </button>
+              {% endcomment %} {% if producto.stock %}
+              <div class="flex items-center gap-1.5 text-xs">
+                <div
+                  class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"
+                ></div>
+                <span class="text-neutral-400">
+                  {{ producto.stock }} disponibles
+                </span>
+              </div>
+              {% else %}
+              <div class="flex items-center gap-1.5 text-xs">
+                <div class="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
+                <span class="text-neutral-500"> Agotado </span>
+              </div>
+              {% endif %}
+            </div>
+          </a>
+        </div>
+        {% endif %} {% endfor %} {% if not productos %}
+        <div
+          class="snap-start flex-shrink-0 w-[85vw] sm:w-[70vw] md:w-[45vw] lg:w-[32%]"
+        >
+          <div
+            class="bg-neutral-900 rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center border border-neutral-800"
+          >
+            <svg
+              class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 text-neutral-700"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+              ></path>
+            </svg>
+            <h3 class="text-lg sm:text-xl font-bold text-white mb-2">
+              No hay productos
+            </h3>
+            <p class="text-neutral-500 text-sm sm:text-base">
+              Agrega productos desde el panel de administración
+            </p>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Controles de navegación -->
+      <!-- Botón Anterior: pegado al margen izquierdo -->
+      <button
+        id="carousel-prev"
+        type="button"
+        class="pointer-events-auto absolute inset-y-1/2 -translate-y-1/2 left-2 sm:left-4 z-20 w-8 h-8 sm:w-9 sm:h-9 lg:w-16 lg:h-16 flex items-center justify-center rounded-full bg-black/30 dark:bg-white/5 hover:bg-black/50 dark:hover:bg-white/10 text-white border border-blue-500/40 hover:border-blue-400 shadow-[0_0_15px_rgba(37,99,235,0.45)] transition-colors duration-200"
+        aria-label="Anterior"
+      >
+        <svg
+          class="w-4 h-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </button>
+
+      <!-- Botón Play / Pause: centrado abajo -->
+      <div
+        class="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 z-20"
+      >
+        <button
+          id="carousel-playpause"
+          type="button"
+          class="pointer-events-auto w-8 h-8 sm:w-9 sm:h-9 lg:w-16 lg:h-16 flex items-center justify-center rounded-full bg-black/40 dark:bg-white/10 hover:bg-black/60 dark:hover:bg-white/20 text-white border border-blue-500/40 hover:border-blue-400 shadow-[0_0_15px_rgba(37,99,235,0.45)] transition-colors duration-200"
+          aria-label="Pausar carrusel"
+        >
+          <!-- Ícono Play -->
+          <svg
+            data-icon="play"
+            class="w-4 h-4 hidden"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          <!-- Ícono Pause -->
+          <svg
+            data-icon="pause"
+            class="w-4 h-4"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M7 5h4v14H7zM13 5h4v14h-4z" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Botón Siguiente: pegado al margen derecho -->
+      <button
+        id="carousel-next"
+        type="button"
+        class="pointer-events-auto absolute inset-y-1/2 -translate-y-1/2 right-2 sm:right-4 z-20 w-8 h-8 sm:w-9 sm:h-9 lg:w-16 lg:h-16 flex items-center justify-center rounded-full bg-black/30 dark:bg-white/5 hover:bg-black/50 dark:hover:bg-white/10 text-white border border-blue-500/40 hover:border-blue-400 shadow-[0_0_15px_rgba(37,99,235,0.45)] transition-colors duration-200"
+        aria-label="Siguiente"
+      >
+        <svg
+          class="w-4 h-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M9 5l7 7-7 7"
+          />
+        </svg>
+      </button>
+
+      <div
+        class="hidden lg:flex items-center justify-center gap-2 mt-6 sm:mt-8 text-neutral-600"
+      >
+        <svg
+          class="w-4 h-4 sm:w-5 sm:h-5 animate-bounce-horizontal"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 19l-7-7 7-7"
+          ></path>
+        </svg>
+        <span class="text-xs sm:text-sm uppercase tracking-widest"
+          >Desliza para ver más</span
+        >
+        <svg
+          class="w-4 h-4 sm:w-5 sm:h-5 animate-bounce-horizontal-reverse"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 5l7 7-7 7"
+          ></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+  {% endblock %} {% block extra_js %}
+  <script>
+    // ========================================
+    // AUTOPLAY CAROUSEL - Controles + Auto-Scroll Inteligente
+    // ========================================
+    (function () {
+      const carousel = document.getElementById("product-carousel");
+      const prevBtn = document.getElementById("carousel-prev");
+      const nextBtn = document.getElementById("carousel-next");
+      const playPauseBtn = document.getElementById("carousel-playpause");
+
+      if (!carousel || !prevBtn || !nextBtn || !playPauseBtn) {
+        return;
+      }
+
+      // Items del carrusel y modo escritorio/móvil
+      const items = carousel.querySelectorAll(".snap-start");
+      const desktopMedia = window.matchMedia("(min-width: 1024px)");
+      let isDesktop = desktopMedia.matches;
+      let currentIndex = 0;
+
+      function updateVisibleItem() {
+        if (!items.length) return;
+
+        if (isDesktop) {
+          // Vista PC: solo una carta visible centrada, sin scroll horizontal
+          items.forEach((item, index) => {
+            item.style.display = index === currentIndex ? "block" : "none";
+          });
+          carousel.style.justifyContent = "center";
+          carousel.style.overflowX = "hidden";
+        } else {
+          // Vista móvil/tablet: carrusel horizontal normal con varias cartas
+          items.forEach((item) => {
+            item.style.display = "";
+          });
+          carousel.style.justifyContent = "";
+          carousel.style.overflowX = "scroll";
+        }
+      }
+
+      // Aplicar layout inicial y escuchar cambios de tamaño
+      updateVisibleItem();
+      desktopMedia.addEventListener("change", (e) => {
+        isDesktop = e.matches;
+        // Asegurar índice válido al cambiar de modo
+        if (items.length) {
+          currentIndex = Math.max(0, Math.min(currentIndex, items.length - 1));
+        }
+        updateVisibleItem();
+      });
+
+      const AUTO_PLAY_DELAY = 2000; // ms - misma velocidad percibida en PC y móvil
+      let autoPlayInterval = null;
+      let isPlaying = true; // Por defecto en reproducción
+
+      function getStepSize() {
+        const items = carousel.querySelectorAll(".snap-start");
+        if (!items.length) {
+          return carousel.clientWidth || 300;
+        }
+
+        const first = items[0];
+        const second = items[1];
+        let step = first.getBoundingClientRect().width;
+
+        if (second) {
+          const gap = second.offsetLeft - first.offsetLeft - first.offsetWidth;
+          if (gap > 0) {
+            step += gap;
+          }
+        }
+
+        return step;
+      }
+
+      function updatePlayPauseUI() {
+        const playIcon = playPauseBtn.querySelector('[data-icon="play"]');
+        const pauseIcon = playPauseBtn.querySelector('[data-icon="pause"]');
+        if (!playIcon || !pauseIcon) return;
+
+        if (isPlaying) {
+          playIcon.classList.add("hidden");
+          pauseIcon.classList.remove("hidden");
+          playPauseBtn.setAttribute("aria-label", "Pausar carrusel");
+        } else {
+          playIcon.classList.remove("hidden");
+          pauseIcon.classList.add("hidden");
+          playPauseBtn.setAttribute("aria-label", "Reproducir carrusel");
+        }
+      }
+
+      function pauseAutoPlay() {
+        if (autoPlayInterval) {
+          clearInterval(autoPlayInterval);
+          autoPlayInterval = null;
+        }
+        if (isPlaying) {
+          isPlaying = false;
+          updatePlayPauseUI();
+        }
+      }
+
+      function startAutoPlay() {
+        if (autoPlayInterval) {
+          clearInterval(autoPlayInterval);
+        }
+        isPlaying = true;
+        updatePlayPauseUI();
+
+        autoPlayInterval = setInterval(() => {
+          goNext(true); // movimiento automático
+        }, AUTO_PLAY_DELAY);
+      }
+
+      function handleUserInteraction() {
+        // Cualquier interacción manual detiene el autoplay
+        pauseAutoPlay();
+      }
+
+      function goNext(fromAuto = false) {
+        // Vista PC: avanzar índice de carta visible
+        if (isDesktop) {
+          if (!items.length) return;
+          currentIndex = (currentIndex + 1) % items.length;
+          updateVisibleItem();
+
+          if (!fromAuto) {
+            handleUserInteraction();
+          }
+          return;
+        }
+
+        // Vista móvil/tablet: scroll horizontal normal
+        const step = getStepSize();
+        const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+
+        if (carousel.scrollLeft >= maxScroll - step) {
+          carousel.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          carousel.scrollBy({ left: step, behavior: "smooth" });
+        }
+
+        if (!fromAuto) {
+          handleUserInteraction();
+        }
+      }
+
+      function goPrev() {
+        // Vista PC: retroceder índice de carta visible
+        if (isDesktop) {
+          if (!items.length) return;
+          currentIndex = (currentIndex - 1 + items.length) % items.length;
+          updateVisibleItem();
+          handleUserInteraction();
+          return;
+        }
+
+        // Vista móvil/tablet: scroll horizontal normal
+        const step = getStepSize();
+
+        if (carousel.scrollLeft <= step) {
+          const maxScroll = Math.max(
+            carousel.scrollWidth - carousel.clientWidth,
+            0
+          );
+          carousel.scrollTo({ left: maxScroll, behavior: "smooth" });
+        } else {
+          carousel.scrollBy({ left: -step, behavior: "smooth" });
+        }
+
+        handleUserInteraction();
+      }
+
+      // Eventos de los botones: izquierda = anterior, derecha = siguiente
+      prevBtn.addEventListener("click", () => {
+        goPrev();
+      });
+
+      nextBtn.addEventListener("click", () => {
+        goNext();
+      });
+
+      playPauseBtn.addEventListener("click", () => {
+        if (isPlaying) {
+          pauseAutoPlay();
+        } else {
+          startAutoPlay();
+        }
+      });
+
+      // Interacción manual directa con el carrusel
+      ["pointerdown", "touchstart", "wheel"].forEach((eventName) => {
+        carousel.addEventListener(
+          eventName,
+          () => {
+            handleUserInteraction();
+          },
+          { passive: true }
+        );
+      });
+
+      // Iniciar autoplay al cargar
+      startAutoPlay();
+
+      // Limpiar al salir de la página
+      window.addEventListener("beforeunload", () => {
+        if (autoPlayInterval) {
+          clearInterval(autoPlayInterval);
+        }
+      });
+    })();
+
+    // ========================================
+    // VIDEO DEBUG
+    // ========================================
+    (function () {
+      const video = document.getElementById("heroVideo");
+
+      if (video) {
+        console.log("🎬 VIDEO DEBUG - Información del video:");
+        console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
         // Detectar errores de carga
-        video.addEventListener('error', function(e) {
-            console.error('❌ ERROR AL CARGAR EL VIDEO');
-            console.error('Código de error:', video.error ? video.error.code : 'Desconocido');
-            console.error('Mensaje:', video.error ? video.error.message : 'Sin mensaje');
-            
+        video.addEventListener(
+          "error",
+          function (e) {
+            console.error("❌ ERROR AL CARGAR EL VIDEO");
+            console.error(
+              "Código de error:",
+              video.error ? video.error.code : "Desconocido"
+            );
+            console.error(
+              "Mensaje:",
+              video.error ? video.error.message : "Sin mensaje"
+            );
+
             // Intentar obtener la fuente que falló
-            const sources = video.querySelectorAll('source');
+            const sources = video.querySelectorAll("source");
             sources.forEach((source, index) => {
-                console.error(`Fuente ${index + 1}:`, source.src);
-                console.error(`Tipo:`, source.type);
+              console.error(`Fuente ${index + 1}:`, source.src);
+              console.error(`Tipo:`, source.type);
             });
-        }, true);
-        
+          },
+          true
+        );
+
         // Cuando el video se carga correctamente
-        video.addEventListener('loadeddata', function() {
-            console.log('✅ VIDEO CARGADO EXITOSAMENTE');
-            console.log('Duración:', video.duration, 'segundos');
-            console.log('Dimensiones:', video.videoWidth, 'x', video.videoHeight);
+        video.addEventListener("loadeddata", function () {
+          console.log("✅ VIDEO CARGADO EXITOSAMENTE");
+          console.log("Duración:", video.duration, "segundos");
+          console.log("Dimensiones:", video.videoWidth, "x", video.videoHeight);
         });
-        
+
         // Cuando el video empieza a reproducirse
-        video.addEventListener('playing', function() {
-            console.log('▶️ VIDEO REPRODUCIÉNDOSE');
+        video.addEventListener("playing", function () {
+          console.log("▶️ VIDEO REPRODUCIÉNDOSE");
         });
-        
+
         // Mostrar todas las fuentes de video
-        const sources = video.querySelectorAll('source');
-        console.log('📁 Fuentes de video configuradas:');
+        const sources = video.querySelectorAll("source");
+        console.log("📁 Fuentes de video configuradas:");
         sources.forEach((source, index) => {
-            console.log(`  ${index + 1}. ${source.type}:`);
-            console.log(`     ${source.src}`);
-            
-            // Verificar si la URL es accesible
-            fetch(source.src, { method: 'HEAD' })
-                .then(response => {
-                    if (response.ok) {
-                        console.log(`     ✅ Archivo accesible (${response.status})`);
-                    } else {
-                        console.error(`     ❌ Error ${response.status}: Archivo no encontrado`);
-                    }
-                })
-                .catch(err => {
-                    console.error(`     ❌ Error de red:`, err.message);
-                });
+          console.log(`  ${index + 1}. ${source.type}:`);
+          console.log(`     ${source.src}`);
+
+          // Verificar si la URL es accesible
+          fetch(source.src, { method: "HEAD" })
+            .then((response) => {
+              if (response.ok) {
+                console.log(`     ✅ Archivo accesible (${response.status})`);
+              } else {
+                console.error(
+                  `     ❌ Error ${response.status}: Archivo no encontrado`
+                );
+              }
+            })
+            .catch((err) => {
+              console.error(`     ❌ Error de red:`, err.message);
+            });
         });
-        
+
         // Mostrar poster
-        console.log('🖼️ Poster:', video.poster);
-        
+        console.log("🖼️ Poster:", video.poster);
+
         // Verificar estado de reproducción
         setTimeout(() => {
-            if (video.paused) {
-                console.warn('⚠️ El video está PAUSADO');
-                console.log('Intentando reproducir manualmente...');
-                
-                video.play()
-                    .then(() => console.log('✅ Reproducción manual exitosa'))
-                    .catch(err => console.error('❌ Error al reproducir:', err));
-            } else {
-                console.log('✅ El video se está reproduciendo automáticamente');
-            }
+          if (video.paused) {
+            console.warn("⚠️ El video está PAUSADO");
+            console.log("Intentando reproducir manualmente...");
+
+            video
+              .play()
+              .then(() => console.log("✅ Reproducción manual exitosa"))
+              .catch((err) => console.error("❌ Error al reproducir:", err));
+          } else {
+            console.log("✅ El video se está reproduciendo automáticamente");
+          }
         }, 1000);
-        
-        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    } else {
-        console.error('❌ No se encontró el elemento <video> con id="heroVideo"');
-    }
-})();
-</script>
-{% endblock %}
+
+        console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      } else {
+        console.error(
+          '❌ No se encontró el elemento <video> con id="heroVideo"'
+        );
+      }
+    })();
+  </script>
+  {% endblock %}
+</section>
