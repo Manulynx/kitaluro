@@ -2,8 +2,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.contrib import messages
-from django.db.models import Q, Avg
+from django.db.models import Q, Avg, Count
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 import json
 from .models import (Producto, Categoria, Subcategoria, Marca, Proveedor, 
                      Estatus, ProductImage, ProductVideo)
@@ -576,3 +577,293 @@ def eliminar_producto(request, producto_id):
         messages.success(request, f'Producto "{nombre}" eliminado exitosamente')
     
     return redirect('productos:admin_productos')
+
+
+# ==================== VISTAS DE TAXONOMÍAS ====================
+
+@login_required
+def admin_taxonomias(request):
+    """Vista para gestionar categorías y subcategorías"""
+    categorias = Categoria.objects.prefetch_related(
+        'subcategorias'
+    ).annotate(
+        num_subcategorias=Count('subcategorias'),
+        num_productos=Count('productos')
+    ).order_by('nombre')
+    
+    context = {
+        'categorias': categorias,
+    }
+    return render(request, 'admin_taxonomias.html', context)
+
+
+@login_required
+def crear_categoria(request):
+    """Vista para crear una nueva categoría"""
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        descripcion = request.POST.get('descripcion', '').strip()
+        
+        if not nombre:
+            messages.error(request, 'El nombre de la categoría es obligatorio')
+            return redirect('productos:admin_taxonomias')
+        
+        try:
+            # Verificar si ya existe
+            if Categoria.objects.filter(nombre__iexact=nombre).exists():
+                messages.error(request, f'Ya existe una categoría con el nombre "{nombre}"')
+                return redirect('productos:admin_taxonomias')
+            
+            # Crear categoría
+            categoria = Categoria.objects.create(
+                nombre=nombre,
+                descripcion=descripcion,
+                activo=True
+            )
+            
+            # Manejar imagen si existe
+            if 'imagen' in request.FILES:
+                categoria.imagen = request.FILES['imagen']
+                categoria.save()
+            
+            messages.success(request, f'Categoría "{nombre}" creada exitosamente')
+        except Exception as e:
+            messages.error(request, f'Error al crear la categoría: {str(e)}')
+    
+    return redirect('productos:admin_taxonomias')
+
+
+@login_required
+def editar_categoria(request, categoria_id):
+    """Vista para editar una categoría existente"""
+    categoria = get_object_or_404(Categoria, id=categoria_id)
+    
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        descripcion = request.POST.get('descripcion', '').strip()
+        
+        if not nombre:
+            messages.error(request, 'El nombre de la categoría es obligatorio')
+            return redirect('productos:admin_taxonomias')
+        
+        try:
+            # Verificar duplicados (excluyendo la categoría actual)
+            if Categoria.objects.filter(nombre__iexact=nombre).exclude(id=categoria_id).exists():
+                messages.error(request, f'Ya existe otra categoría con el nombre "{nombre}"')
+                return redirect('productos:admin_taxonomias')
+            
+            # Actualizar datos
+            categoria.nombre = nombre
+            categoria.descripcion = descripcion
+            
+            # Manejar imagen
+            if 'imagen' in request.FILES:
+                # Eliminar imagen anterior si existe
+                if categoria.imagen:
+                    categoria.imagen.delete(save=False)
+                categoria.imagen = request.FILES['imagen']
+            
+            categoria.save()
+            
+            messages.success(request, f'Categoría "{nombre}" actualizada exitosamente')
+        except Exception as e:
+            messages.error(request, f'Error al actualizar la categoría: {str(e)}')
+    
+    return redirect('productos:admin_taxonomias')
+
+
+@login_required
+def eliminar_categoria(request, categoria_id):
+    """Vista para eliminar una categoría"""
+    if request.method == 'POST':
+        categoria = get_object_or_404(Categoria, id=categoria_id)
+        nombre = categoria.nombre
+        
+        try:
+            # Verificar si tiene productos asociados
+            num_productos = categoria.productos.count()
+            num_subcategorias = categoria.subcategorias.count()
+            
+            if num_productos > 0:
+                messages.warning(
+                    request, 
+                    f'La categoría "{nombre}" tiene {num_productos} productos asociados. '
+                    f'Los productos quedarán sin categoría.'
+                )
+            
+            if num_subcategorias > 0:
+                messages.warning(
+                    request,
+                    f'La categoría "{nombre}" tiene {num_subcategorias} subcategorías. '
+                    f'Las subcategorías también serán eliminadas.'
+                )
+            
+            # Eliminar imagen si existe
+            if categoria.imagen:
+                categoria.imagen.delete(save=False)
+            
+            categoria.delete()
+            messages.success(request, f'Categoría "{nombre}" eliminada exitosamente')
+        except Exception as e:
+            messages.error(request, f'Error al eliminar la categoría: {str(e)}')
+    
+    return redirect('productos:admin_taxonomias')
+
+
+@login_required
+def crear_subcategoria(request):
+    """Vista para crear una nueva subcategoría"""
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        descripcion = request.POST.get('descripcion', '').strip()
+        categoria_id = request.POST.get('categoria_padre')
+        
+        if not nombre:
+            messages.error(request, 'El nombre de la subcategoría es obligatorio')
+            return redirect('productos:admin_taxonomias')
+        
+        if not categoria_id:
+            messages.error(request, 'Debe seleccionar una categoría padre')
+            return redirect('productos:admin_taxonomias')
+        
+        try:
+            categoria = get_object_or_404(Categoria, id=categoria_id)
+            
+            # Verificar si ya existe en esa categoría
+            if Subcategoria.objects.filter(
+                nombre__iexact=nombre, 
+                categoria=categoria
+            ).exists():
+                messages.error(
+                    request, 
+                    f'Ya existe una subcategoría "{nombre}" en la categoría "{categoria.nombre}"'
+                )
+                return redirect('productos:admin_taxonomias')
+            
+            # Crear subcategoría
+            subcategoria = Subcategoria.objects.create(
+                nombre=nombre,
+                descripcion=descripcion,
+                categoria=categoria,
+                activo=True
+            )
+            
+            messages.success(
+                request, 
+                f'Subcategoría "{nombre}" creada exitosamente en "{categoria.nombre}"'
+            )
+        except Exception as e:
+            messages.error(request, f'Error al crear la subcategoría: {str(e)}')
+    
+    return redirect('productos:admin_taxonomias')
+
+
+@login_required
+def editar_subcategoria(request, subcategoria_id):
+    """Vista para editar una subcategoría existente"""
+    subcategoria = get_object_or_404(Subcategoria, id=subcategoria_id)
+    
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        descripcion = request.POST.get('descripcion', '').strip()
+        
+        if not nombre:
+            messages.error(request, 'El nombre de la subcategoría es obligatorio')
+            return redirect('productos:admin_taxonomias')
+        
+        try:
+            # Verificar duplicados en la misma categoría (excluyendo la actual)
+            if Subcategoria.objects.filter(
+                nombre__iexact=nombre,
+                categoria=subcategoria.categoria
+            ).exclude(id=subcategoria_id).exists():
+                messages.error(
+                    request,
+                    f'Ya existe otra subcategoría "{nombre}" en esta categoría'
+                )
+                return redirect('productos:admin_taxonomias')
+            
+            # Actualizar datos
+            subcategoria.nombre = nombre
+            subcategoria.descripcion = descripcion
+            subcategoria.save()
+            
+            messages.success(request, f'Subcategoría "{nombre}" actualizada exitosamente')
+        except Exception as e:
+            messages.error(request, f'Error al actualizar la subcategoría: {str(e)}')
+    
+    return redirect('productos:admin_taxonomias')
+
+
+@login_required
+def eliminar_subcategoria(request, subcategoria_id):
+    """Vista para eliminar una subcategoría"""
+    if request.method == 'POST':
+        subcategoria = get_object_or_404(Subcategoria, id=subcategoria_id)
+        nombre = subcategoria.nombre
+        
+        try:
+            # Verificar productos asociados
+            num_productos = subcategoria.productos.count()
+            
+            if num_productos > 0:
+                messages.warning(
+                    request,
+                    f'La subcategoría "{nombre}" tiene {num_productos} productos asociados. '
+                    f'Los productos quedarán sin subcategoría.'
+                )
+            
+            subcategoria.delete()
+            messages.success(request, f'Subcategoría "{nombre}" eliminada exitosamente')
+        except Exception as e:
+            messages.error(request, f'Error al eliminar la subcategoría: {str(e)}')
+    
+    return redirect('productos:admin_taxonomias')
+
+
+@login_required
+@require_POST
+def toggle_categoria_status(request, categoria_id):
+    """Vista AJAX para cambiar el estado activo/inactivo de una categoría"""
+    try:
+        categoria = get_object_or_404(Categoria, id=categoria_id)
+        data = json.loads(request.body)
+        nuevo_estado = data.get('activo', not categoria.activo)
+        
+        categoria.activo = nuevo_estado
+        categoria.save()
+        
+        return JsonResponse({
+            'success': True,
+            'activo': categoria.activo,
+            'message': f'Categoría {"activada" if categoria.activo else "desactivada"} exitosamente'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+@login_required
+@require_POST
+def toggle_subcategoria_status(request, subcategoria_id):
+    """Vista AJAX para cambiar el estado activo/inactivo de una subcategoría"""
+    try:
+        subcategoria = get_object_or_404(Subcategoria, id=subcategoria_id)
+        data = json.loads(request.body)
+        nuevo_estado = data.get('activo', not subcategoria.activo)
+        
+        subcategoria.activo = nuevo_estado
+        subcategoria.save()
+        
+        return JsonResponse({
+            'success': True,
+            'activo': subcategoria.activo,
+            'message': f'Subcategoría {"activada" if subcategoria.activo else "desactivada"} exitosamente'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)

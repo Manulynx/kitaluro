@@ -1,0 +1,857 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Estructura del
+Catálogo - Kitaluro Admin{% endblock %} {% block extra_css %}
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap");
+
+  .font-outfit {
+    font-family: "Outfit", sans-serif;
+  }
+
+  /* Animación de hover para las tarjetas */
+  .category-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .category-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3),
+      0 8px 10px -6px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Animación de las acciones de subcategoría */
+  .subcategory-actions {
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.2s ease;
+  }
+
+  .subcategory-row:hover .subcategory-actions {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Badge de contador */
+  .count-badge {
+    background: linear-gradient(
+      135deg,
+      rgba(59, 130, 246, 0.2) 0%,
+      rgba(37, 99, 235, 0.2) 100%
+    );
+    border: 1px solid rgba(59, 130, 246, 0.3);
+  }
+
+  /* Estilo del modal */
+  .modal-backdrop {
+    backdrop-filter: blur(12px);
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .modal-content {
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Phantom Input Style para modales */
+  .phantom-input {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #404040;
+    border-radius: 0;
+    transition: all 0.3s ease;
+    padding: 0.75rem 0;
+    color: white;
+  }
+
+  .phantom-input:focus {
+    outline: none;
+    border-bottom-color: #3b82f6;
+    box-shadow: 0 1px 0 0 rgba(59, 130, 246, 0.3);
+  }
+
+  .phantom-input:focus ~ .floating-label,
+  .phantom-input:not(:placeholder-shown) ~ .floating-label {
+    transform: translateY(-1.5rem) scale(0.85);
+    color: #3b82f6;
+  }
+
+  .floating-label {
+    position: absolute;
+    left: 0;
+    top: 0.75rem;
+    color: #737373;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    font-size: 0.95rem;
+  }
+</style>
+{% endblock %} {% block content %}
+<section class="min-h-screen bg-neutral-950 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header de Sección -->
+    <div
+      class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+    >
+      <div>
+        <h1
+          class="text-3xl lg:text-4xl font-outfit font-bold text-white mb-2 tracking-tight"
+        >
+          Estructura del Catálogo
+        </h1>
+        <p class="text-neutral-400 text-sm">
+          Gestiona las categorías y subcategorías de tus productos
+        </p>
+      </div>
+
+      <!-- Botón Nueva Categoría -->
+      <button
+        onclick="openCategoryModal()"
+        class="flex items-center justify-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg shadow-red-600/20 hover:shadow-red-600/40"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2.5"
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
+        <span>Nueva Categoría Padre</span>
+      </button>
+    </div>
+
+    <!-- Mensajes -->
+    {% if messages %}
+    <div class="mb-6 space-y-2">
+      {% for message in messages %}
+      <div
+        class="p-4 rounded-lg border backdrop-blur-sm {% if message.tags == 'success' %}bg-green-500/10 border-green-500/30 text-green-300{% elif message.tags == 'error' %}bg-red-500/10 border-red-500/30 text-red-300{% elif message.tags == 'warning' %}bg-amber-500/10 border-amber-500/30 text-amber-300{% else %}bg-blue-500/10 border-blue-500/30 text-blue-300{% endif %}"
+      >
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Grid de Tarjetas de Categorías -->
+    {% if categorias %}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {% for categoria in categorias %}
+      <div
+        class="category-card bg-neutral-900 border border-white/5 rounded-xl shadow-xl overflow-hidden"
+      >
+        <!-- Cabecera de la Categoría -->
+        <div
+          class="bg-gradient-to-r from-neutral-900 to-neutral-900/50 p-6 border-b border-white/5"
+        >
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+              <h2 class="text-2xl font-outfit font-bold text-white mb-2">
+                {{ categoria.nombre }}
+              </h2>
+              {% if categoria.descripcion %}
+              <p class="text-neutral-400 text-sm">
+                {{ categoria.descripcion }}
+              </p>
+              {% endif %}
+              <div class="flex items-center gap-4 mt-3">
+                <span class="text-xs text-neutral-500">
+                  <svg
+                    class="w-4 h-4 inline-block mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                    />
+                  </svg>
+                  {{ categoria.num_subcategorias }} subcategoría{{categoria.num_subcategorias|pluralize }}
+                </span>
+                <span class="text-xs text-neutral-500">
+                  <svg
+                    class="w-4 h-4 inline-block mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    />
+                  </svg>
+                  {{ categoria.num_productos }} producto{{categoria.num_productos|pluralize }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Controles de Categoría -->
+            <div class="flex items-center gap-2 ml-4">
+              <button
+                onclick="editCategory({{ categoria.id }}, '{{ categoria.nombre|escapejs }}', '{{ categoria.descripcion|escapejs }}')"
+                class="p-2 hover:bg-white/5 rounded-lg transition-colors group"
+                title="Editar categoría"
+              >
+                <svg
+                  class="w-5 h-5 text-neutral-400 group-hover:text-blue-400 transition-colors"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+              </button>
+              <button
+                onclick="deleteCategory({{ categoria.id }}, '{{ categoria.nombre|escapejs }}', {{ categoria.num_productos }}, {{ categoria.num_subcategorias }})"
+                class="p-2 hover:bg-red-500/10 rounded-lg transition-colors group"
+                title="Eliminar categoría"
+              >
+                <svg
+                  class="w-5 h-5 text-neutral-400 group-hover:text-red-400 transition-colors"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Botón Añadir Subcategoría -->
+          <button
+            onclick="openSubcategoryModal({{ categoria.id }}, '{{ categoria.nombre|escapejs }}')"
+            class="flex items-center gap-2 px-4 py-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 hover:border-blue-400/50 rounded-lg text-blue-400 hover:text-blue-300 text-sm font-medium transition-all duration-200"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            <span>Añadir Subcategoría</span>
+          </button>
+        </div>
+
+        <!-- Lista de Subcategorías -->
+        <div class="p-4">
+          {% if categoria.subcategorias.all %}
+          <div class="space-y-1">
+            {% for subcat in categoria.subcategorias.all %}
+            <div
+              class="subcategory-row group flex items-center justify-between p-3 rounded-lg hover:bg-white/5 transition-colors"
+            >
+              <div class="flex items-center gap-3 flex-1">
+                <svg
+                  class="w-4 h-4 text-neutral-600 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+                <span class="text-neutral-300 font-medium"
+                  >{{ subcat.nombre }}</span
+                >
+                <span
+                  class="count-badge px-2.5 py-1 rounded-full text-xs text-blue-300 font-semibold"
+                >
+                  {{ subcat.count_productos }} prod
+                </span>
+              </div>
+
+              <!-- Acciones (hover) -->
+              <div class="subcategory-actions flex items-center gap-1">
+                <button
+                  onclick="editSubcategory({{ subcat.id }}, '{{ subcat.nombre|escapejs }}', '{{ subcat.descripcion|escapejs }}', {{ categoria.id }})"
+                  class="p-1.5 hover:bg-blue-500/10 rounded transition-colors"
+                  title="Editar"
+                >
+                  <svg
+                    class="w-4 h-4 text-neutral-400 hover:text-blue-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
+                </button>
+                <button
+                  onclick="deleteSubcategory({{ subcat.id }}, '{{ subcat.nombre|escapejs }}', {{ subcat.count_productos }})"
+                  class="p-1.5 hover:bg-red-500/10 rounded transition-colors"
+                  title="Eliminar"
+                >
+                  <svg
+                    class="w-4 h-4 text-neutral-400 hover:text-red-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="text-center py-8 text-neutral-500 text-sm">
+            <svg
+              class="w-12 h-12 mx-auto mb-3 opacity-30"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+              />
+            </svg>
+            No hay subcategorías creadas
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-16">
+      <div
+        class="bg-neutral-900/50 border border-white/5 rounded-2xl p-12 max-w-2xl mx-auto"
+      >
+        <svg
+          class="w-24 h-24 mx-auto mb-6 text-neutral-700"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2H6a2 2 0 00-2 2v2M7 7h10"
+          />
+        </svg>
+        <h3 class="text-2xl font-bold text-white mb-4">No hay categorías</h3>
+        <p class="text-neutral-400 mb-8">
+          Comienza creando tu primera categoría padre para organizar tu catálogo
+        </p>
+        <button
+          onclick="openCategoryModal()"
+          class="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors shadow-lg"
+        >
+          Crear Primera Categoría
+        </button>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- MODAL: Crear/Editar Categoría -->
+<div
+  id="categoryModal"
+  class="hidden fixed inset-0 z-50 modal-backdrop bg-black/60"
+>
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div
+      class="modal-content bg-neutral-900 border border-white/10 rounded-xl max-w-2xl w-full p-8 shadow-2xl"
+    >
+      <!-- Header del Modal -->
+      <div class="flex items-center justify-between mb-6">
+        <h3
+          id="categoryModalTitle"
+          class="text-2xl font-outfit font-bold text-white"
+        >
+          Nueva Categoría Padre
+        </h3>
+        <button
+          onclick="closeCategoryModal()"
+          class="text-neutral-400 hover:text-white transition-colors"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Formulario -->
+      <form
+        id="categoryForm"
+        method="POST"
+        action="{% url 'productos:crear_categoria' %}"
+        enctype="multipart/form-data"
+      >
+        {% csrf_token %}
+
+        <div class="space-y-6">
+          <!-- Nombre -->
+          <div class="relative">
+            <input
+              type="text"
+              name="nombre"
+              id="cat_nombre"
+              class="phantom-input w-full text-lg"
+              placeholder=" "
+              required
+            />
+            <label for="cat_nombre" class="floating-label"
+              >Nombre de la Categoría *</label
+            >
+          </div>
+
+          <!-- Descripción -->
+          <div class="relative">
+            <textarea
+              name="descripcion"
+              id="cat_descripcion"
+              rows="3"
+              class="w-full bg-transparent border border-neutral-700 rounded-lg p-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              placeholder="Descripción opcional de la categoría..."
+            ></textarea>
+          </div>
+
+          <!-- Imagen (opcional) -->
+          <div>
+            <label class="block text-sm text-neutral-400 mb-2"
+              >Imagen de Categoría</label
+            >
+            <input
+              type="file"
+              name="imagen"
+              accept="image/*"
+              class="w-full text-sm text-neutral-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:cursor-pointer"
+            />
+          </div>
+        </div>
+
+        <!-- Acciones del Modal -->
+        <div
+          class="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-white/5"
+        >
+          <button
+            type="button"
+            onclick="closeCategoryModal()"
+            class="px-6 py-2.5 bg-neutral-800 hover:bg-neutral-700 text-white rounded-lg transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors shadow-lg"
+          >
+            <span id="categorySubmitText">Crear Categoría</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Crear/Editar Subcategoría -->
+<div
+  id="subcategoryModal"
+  class="hidden fixed inset-0 z-50 modal-backdrop bg-black/60"
+>
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div
+      class="modal-content bg-neutral-900 border border-white/10 rounded-xl max-w-2xl w-full p-8 shadow-2xl"
+    >
+      <!-- Header del Modal -->
+      <div class="flex items-center justify-between mb-6">
+        <h3
+          id="subcategoryModalTitle"
+          class="text-2xl font-outfit font-bold text-white"
+        >
+          Nueva Subcategoría
+        </h3>
+        <button
+          onclick="closeSubcategoryModal()"
+          class="text-neutral-400 hover:text-white transition-colors"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Formulario -->
+      <form
+        id="subcategoryForm"
+        method="POST"
+        action="{% url 'productos:crear_subcategoria' %}"
+        enctype="multipart/form-data"
+      >
+        {% csrf_token %}
+        <input type="hidden" name="categoria_padre" id="categoria_padre_id" />
+
+        <div class="space-y-6">
+          <!-- Info de Categoría Padre -->
+          <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+            <p class="text-sm text-blue-300">
+              <svg
+                class="w-4 h-4 inline-block mr-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Categoría padre:
+              <span id="categoria_padre_nombre" class="font-semibold"></span>
+            </p>
+          </div>
+
+          <!-- Nombre -->
+          <div class="relative">
+            <input
+              type="text"
+              name="nombre"
+              id="subcat_nombre"
+              class="phantom-input w-full text-lg"
+              placeholder=" "
+              required
+            />
+            <label for="subcat_nombre" class="floating-label"
+              >Nombre de la Subcategoría *</label
+            >
+          </div>
+
+          <!-- Descripción -->
+          <div class="relative">
+            <textarea
+              name="descripcion"
+              id="subcat_descripcion"
+              rows="3"
+              class="w-full bg-transparent border border-neutral-700 rounded-lg p-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              placeholder="Descripción opcional de la subcategoría..."
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Acciones del Modal -->
+        <div
+          class="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-white/5"
+        >
+          <button
+            type="button"
+            onclick="closeSubcategoryModal()"
+            class="px-6 py-2.5 bg-neutral-800 hover:bg-neutral-700 text-white rounded-lg transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-lg"
+          >
+            <span id="subcategorySubmitText">Crear Subcategoría</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Confirmar Eliminación -->
+<div
+  id="deleteModal"
+  class="hidden fixed inset-0 z-50 modal-backdrop bg-black/60"
+>
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div
+      class="modal-content bg-neutral-900 border border-red-500/20 rounded-xl max-w-md w-full p-6 shadow-2xl"
+    >
+      <div class="text-center">
+        <div
+          class="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/20 flex items-center justify-center"
+        >
+          <svg
+            class="w-8 h-8 text-red-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+        </div>
+
+        <h3 class="text-xl font-bold text-white mb-2">
+          ¿Confirmar Eliminación?
+        </h3>
+        <p id="deleteMessage" class="text-neutral-400 mb-6">
+          Esta acción no se puede deshacer.
+        </p>
+
+        <form id="deleteForm" method="POST">
+          {% csrf_token %}
+          <div class="flex gap-3">
+            <button
+              type="button"
+              onclick="closeDeleteModal()"
+              class="flex-1 px-4 py-2.5 bg-neutral-800 hover:bg-neutral-700 text-white rounded-lg transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors"
+            >
+              Eliminar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %} {% block extra_js %}
+<script>
+  // Variables globales
+  let currentEditId = null;
+  let isEditMode = false;
+
+  // Funciones para manejar modales de CATEGORÍA
+  function openCategoryModal() {
+    isEditMode = false;
+    currentEditId = null;
+    document.getElementById("categoryModalTitle").textContent =
+      "Nueva Categoría Padre";
+    document.getElementById("categorySubmitText").textContent =
+      "Crear Categoría";
+    document.getElementById("categoryForm").action =
+      "{% url 'productos:crear_categoria' %}";
+    document.getElementById("cat_nombre").value = "";
+    document.getElementById("cat_descripcion").value = "";
+    document.getElementById("categoryModal").classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeCategoryModal() {
+    document.getElementById("categoryModal").classList.add("hidden");
+    document.body.style.overflow = "auto";
+  }
+
+  function editCategory(id, nombre, descripcion) {
+    isEditMode = true;
+    currentEditId = id;
+    document.getElementById("categoryModalTitle").textContent =
+      "Editar Categoría";
+    document.getElementById("categorySubmitText").textContent =
+      "Guardar Cambios";
+    document.getElementById(
+      "categoryForm"
+    ).action = `/productos/admin/taxonomias/categoria/${id}/editar/`;
+    document.getElementById("cat_nombre").value = nombre;
+    document.getElementById("cat_descripcion").value = descripcion;
+    document.getElementById("categoryModal").classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  function deleteCategory(id, nombre, numProductos, numSubcategorias) {
+    let message = `¿Estás seguro de eliminar la categoría "${nombre}"?`;
+
+    if (numProductos > 0) {
+      message += ` Tiene ${numProductos} producto(s) asociado(s).`;
+    }
+
+    if (numSubcategorias > 0) {
+      message += ` También se eliminarán ${numSubcategorias} subcategoría(s).`;
+    }
+
+    document.getElementById("deleteMessage").textContent = message;
+    document.getElementById(
+      "deleteForm"
+    ).action = `/productos/admin/taxonomias/categoria/${id}/eliminar/`;
+    document.getElementById("deleteModal").classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  // Funciones para manejar modales de SUBCATEGORÍA
+  function openSubcategoryModal(categoriaId, categoriaNombre) {
+    isEditMode = false;
+    currentEditId = null;
+    document.getElementById("subcategoryModalTitle").textContent =
+      "Nueva Subcategoría";
+    document.getElementById("subcategorySubmitText").textContent =
+      "Crear Subcategoría";
+    document.getElementById("subcategoryForm").action =
+      "{% url 'productos:crear_subcategoria' %}";
+    document.getElementById("categoria_padre_id").value = categoriaId;
+    document.getElementById("categoria_padre_nombre").textContent =
+      categoriaNombre;
+    document.getElementById("subcat_nombre").value = "";
+    document.getElementById("subcat_descripcion").value = "";
+    document.getElementById("subcategoryModal").classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeSubcategoryModal() {
+    document.getElementById("subcategoryModal").classList.add("hidden");
+    document.body.style.overflow = "auto";
+  }
+
+  function editSubcategory(id, nombre, descripcion, categoriaId) {
+    isEditMode = true;
+    currentEditId = id;
+    document.getElementById("subcategoryModalTitle").textContent =
+      "Editar Subcategoría";
+    document.getElementById("subcategorySubmitText").textContent =
+      "Guardar Cambios";
+    document.getElementById(
+      "subcategoryForm"
+    ).action = `/productos/admin/taxonomias/subcategoria/${id}/editar/`;
+    document.getElementById("categoria_padre_id").value = categoriaId;
+    document.getElementById("subcat_nombre").value = nombre;
+    document.getElementById("subcat_descripcion").value = descripcion;
+
+    // Ocultar el banner de categoría padre en modo edición
+    const parentBanner = document.querySelector(
+      "#subcategoryModal .bg-blue-500\\/10"
+    );
+    if (parentBanner) parentBanner.style.display = "none";
+
+    document.getElementById("subcategoryModal").classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  function deleteSubcategory(id, nombre, numProductos) {
+    let message = `¿Estás seguro de eliminar la subcategoría "${nombre}"?`;
+
+    if (numProductos > 0) {
+      message += ` Tiene ${numProductos} producto(s) asociado(s).`;
+    }
+
+    document.getElementById("deleteMessage").textContent = message;
+    document.getElementById(
+      "deleteForm"
+    ).action = `/productos/admin/taxonomias/subcategoria/${id}/eliminar/`;
+    document.getElementById("deleteModal").classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  // Función para cerrar modal de eliminación
+  function closeDeleteModal() {
+    document.getElementById("deleteModal").classList.add("hidden");
+    document.body.style.overflow = "auto";
+  }
+
+  // Cerrar modales con ESC
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      closeCategoryModal();
+      closeSubcategoryModal();
+      closeDeleteModal();
+    }
+  });
+
+  // Función auxiliar para obtener CSRF token
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+</script>
+{% endblock %}
