@@ -679,10 +679,7 @@ producto.descripcion_corta}}{% endblock %} {% block content %}
             </div>
           </div>
 
-          {% if not producto.dimensiones and not producto.peso and not
-          producto.origen and not producto.marca and not producto.categoria and
-          not producto.subcategoria and not producto.sku and not
-          producto.proveedor and not producto.estatus %}
+          {% if not producto.dimensiones and not producto.peso and not producto.origen and not producto.marca and not producto.categoria and not producto.subcategoria and not producto.sku and not producto.proveedor and not producto.estatus %}
           <div class="text-center py-8">
             <p class="text-neutral-600 dark:text-gray-400">
               No hay especificaciones técnicas disponibles para este producto.
