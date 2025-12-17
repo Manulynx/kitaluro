@@ -1,8 +1,6 @@
-{% extends 'base.html' %} 
-{% load static %} 
-{% block title %}{{ producto.nombre}} - Kitaluro{% endblock %} 
-{% block description %}{{ producto.descripcion_corta}}{% endblock %} 
-{% block content %}
+{% extends 'base.html' %} {% load static %} {% block title %}{{
+producto.nombre}} - Kitaluro{% endblock %} {% block description %}{{
+producto.descripcion_corta}}{% endblock %} {% block content %}
 <!-- Breadcrumb -->
 <div
   class="bg-gray-50 dark:bg-neutral-900/50 border-b border-gray-200 dark:border-neutral-800"
@@ -267,9 +265,7 @@
 
         <!-- Description -->
         <p class="text-neutral-700 dark:text-gray-300 text-lg leading-relaxed">
-          {{
-          producto.descripcion_corta|default:producto.descripcion|truncatewords:30
-          }}
+          {{producto.descripcion_corta|default:producto.descripcion|truncatewords:30}}
         </p>
 
         <!-- Tech Features -->

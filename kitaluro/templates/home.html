@@ -49,124 +49,161 @@ Future of Home{% endblock %} {% block content %}
     </div>
   </div>
 </section>
-<section id="products" class="py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-neutral-900">
-    <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-8 sm:mb-12 lg:mb-16">
-            <h2 class="reveal font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 dark:text-white mb-3 sm:mb-4 
-                       drop-shadow-sm dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]">
-                Destacados
-            </h2>
-            <p class="reveal text-neutral-600 dark:text-neutral-400 text-base sm:text-lg tracking-wide" data-delay="150">
-                Selección Premium
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8" data-stagger="150">
-            {% for producto in productos %}
-            {% if producto.destacado %}
-            <div class="reveal-scale group product-card h-[420px] sm:h-[480px] lg:h-[500px] 
-                        bg-white dark:bg-neutral-900/50 
-                        rounded-xl sm:rounded-2xl overflow-hidden 
-                        shadow-xl dark:shadow-none 
-                        border border-gray-200 dark:border-neutral-800/50 
-                        hover:shadow-2xl dark:hover:shadow-[0_0_30px_rgba(59,130,246,0.2)]
-                        transition-all duration-500 
-                        hover:scale-[1.02]">
-                <a href="{% url 'productos:detalle' producto.slug %}" class="relative h-full block">
-                    {% if producto.imagen %}
-                        <img 
-                            src="{{ producto.imagen.url }}" 
-                            alt="{{ producto.nombre }}" 
-                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                    {% elif producto.get_main_image %}
-                        <img 
-                            src="{{ producto.get_main_image.url }}" 
-                            alt="{{ producto.nombre }}" 
-                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                    {% else %}
-                        <img 
-                            src="{% static 'img/placeholder-product.jpg' %}" 
-                            alt="{{ producto.nombre }}" 
-                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                    {% endif %}
-                    
-                    {% if producto.en_oferta or producto.destacado %}
-                    <div class="absolute top-3 sm:top-4 right-3 sm:right-4 z-10">
-                        {% if producto.en_oferta %}
-                            <span class="badge-offer shadow-lg text-xs sm:text-sm">
-                                {% if producto.porcentaje_descuento %}-{{ producto.porcentaje_descuento }}% OFF{% else %}Oferta{% endif %}
-                            </span>
-                        {% elif producto.destacado %}
-                            <span class="badge-offer bg-amber-500 shadow-lg text-xs sm:text-sm">Destacado</span>
-                        {% endif %}
-                    </div>
-                    {% endif %}
-                    
-                    <div class="absolute inset-0 bg-gradient-to-t 
-                                from-neutral-900/95 via-neutral-900/50 to-transparent 
-                                dark:from-black/90 dark:via-black/30 dark:to-transparent"></div>
-                    
-                    <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-6 lg:p-8 space-y-2 sm:space-y-3 lg:space-y-4">
-                        {% if producto.categoria or producto.marca %}
-                        <span class="inline-block text-blue-400 dark:text-blue-400 text-[10px] sm:text-xs font-medium tracking-wider sm:tracking-widest uppercase">
-                            {{ producto.categoria.nombre|default_if_none:"" }}
-                            {{ producto.marca.nombre|default_if_none:"" }}
-                        </span>
-                        {% endif %}
-                        
-                        <h3 class="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-white 
-                                   group-hover:text-amber-300 dark:group-hover:text-amber-200
-                                   transition-all duration-500 
-                                   drop-shadow-lg line-clamp-2">
-                            {{ producto.nombre }}
-                        </h3>
-                        
-                        {% if producto.descripcion_corta %}
-                        <p class="text-gray-100 dark:text-neutral-300 text-xs sm:text-sm opacity-90 line-clamp-2 hidden sm:block">
-                            {{ producto.descripcion_corta }}
-                        </p>
-                        {% endif %}
-                        
-                        <div class="flex items-baseline gap-1.5 sm:gap-2">
-                            {% if producto.tiene_descuento %}
-                                <span class="text-lg sm:text-xl lg:text-2xl font-bold text-white">${{ producto.precio_oferta }}</span>
-                                <span class="text-xs sm:text-sm text-gray-300 dark:text-gray-400 line-through">${{ producto.precio }}</span>
-                            {% else %}
-                                <span class="text-lg sm:text-xl lg:text-2xl font-bold text-white">${{ producto.precio_final }}</span>
-                            {% endif %}
-                            <span class="text-gray-300 dark:text-gray-400 text-[10px] sm:text-xs">USD</span>
-                        </div>
-                        
-                        {% comment %}
-                        <div class="product-cta">
-                            <button class="btn-crimson w-full mt-1 sm:mt-2 shadow-lg text-sm sm:text-base py-2.5 sm:py-3">
-                                Ver Detalles
-                            </button>
-                        </div>
-                        {% endcomment %}
-                    </div>
-                </a>
-            </div>
-            {% endif %}
-            {% empty %}
-            <div class="col-span-full text-center py-16">
-                <div class="bg-white dark:bg-neutral-900/50 
-                            border border-gray-200 dark:border-neutral-800 
-                            rounded-2xl p-12 max-w-2xl mx-auto 
-                            shadow-xl dark:shadow-none">
-                    <svg class="w-24 h-24 mx-auto mb-6 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-                    </svg>
-                    <h3 class="text-2xl font-bold text-neutral-900 dark:text-white mb-4">No hay productos disponibles</h3>
-                    <p class="text-neutral-600 dark:text-gray-400 mb-8">Agrega productos desde el panel de administración.</p>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+<section
+  id="products"
+  class="py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-neutral-900"
+>
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-8 sm:mb-12 lg:mb-16">
+      <h2
+        class="reveal font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 dark:text-white mb-3 sm:mb-4 drop-shadow-sm dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+      >
+        Destacados
+      </h2>
+      <p
+        class="reveal text-neutral-600 dark:text-neutral-400 text-base sm:text-lg tracking-wide"
+        data-delay="150"
+      >
+        Selección Premium
+      </p>
     </div>
+
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
+      data-stagger="150"
+    >
+      {% for producto in productos %} {% if producto.destacado %}
+      <div
+        class="reveal-scale group product-card h-[420px] sm:h-[480px] lg:h-[500px] bg-white dark:bg-neutral-900/50 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl dark:shadow-none border border-gray-200 dark:border-neutral-800/50 hover:shadow-2xl dark:hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] transition-all duration-500 hover:scale-[1.02]"
+      >
+        <a
+          href="{% url 'productos:detalle' producto.slug %}"
+          class="relative h-full block"
+        >
+          {% if producto.imagen %}
+          <img
+            src="{{ producto.imagen.url }}"
+            alt="{{ producto.nombre }}"
+            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          {% elif producto.get_main_image %}
+          <img
+            src="{{ producto.get_main_image.url }}"
+            alt="{{ producto.nombre }}"
+            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          {% else %}
+          <img
+            src="{% static 'img/placeholder-product.jpg' %}"
+            alt="{{ producto.nombre }}"
+            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          {% endif %} {% if producto.en_oferta or producto.destacado %}
+          <div class="absolute top-3 sm:top-4 right-3 sm:right-4 z-10">
+            {% if producto.en_oferta %}
+            <span class="badge-offer shadow-lg text-xs sm:text-sm">
+              {% if producto.porcentaje_descuento %}-{{
+              producto.porcentaje_descuento }}% OFF{% else %}Oferta{% endif %}
+            </span>
+            {% elif producto.destacado %}
+            <span class="badge-offer bg-amber-500 shadow-lg text-xs sm:text-sm"
+              >Destacado</span
+            >
+            {% endif %}
+          </div>
+          {% endif %}
+
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-neutral-900/95 via-neutral-900/50 to-transparent dark:from-black/90 dark:via-black/30 dark:to-transparent"
+          ></div>
+
+          <div
+            class="absolute bottom-0 left-0 right-0 p-4 sm:p-6 lg:p-8 space-y-2 sm:space-y-3 lg:space-y-4"
+          >
+            {% if producto.categoria or producto.marca %}
+            <span
+              class="inline-block text-blue-400 dark:text-blue-400 text-[10px] sm:text-xs font-medium tracking-wider sm:tracking-widest uppercase"
+            >
+              {{ producto.categoria.nombre|default_if_none:"" }} {{
+              producto.marca.nombre|default_if_none:"" }}
+            </span>
+            {% endif %}
+
+            <h3
+              class="font-serif text-xl sm:text-2xl lg:text-3xl font-bold text-white group-hover:text-amber-300 dark:group-hover:text-amber-200 transition-all duration-500 drop-shadow-lg line-clamp-2"
+            >
+              {{ producto.nombre }}
+            </h3>
+
+            {% if producto.descripcion_corta %}
+            <p
+              class="text-gray-100 dark:text-neutral-300 text-xs sm:text-sm opacity-90 line-clamp-2 hidden sm:block"
+            >
+              {{ producto.descripcion_corta }}
+            </p>
+            {% endif %}
+
+            <div class="flex items-baseline gap-1.5 sm:gap-2">
+              {% if producto.tiene_descuento %}
+              <span class="text-lg sm:text-xl lg:text-2xl font-bold text-white"
+                >${{ producto.precio_oferta }}</span
+              >
+              <span
+                class="text-xs sm:text-sm text-gray-300 dark:text-gray-400 line-through"
+                >${{ producto.precio }}</span
+              >
+              {% else %}
+              <span class="text-lg sm:text-xl lg:text-2xl font-bold text-white"
+                >${{ producto.precio_final }}</span
+              >
+              {% endif %}
+              <span
+                class="text-gray-300 dark:text-gray-400 text-[10px] sm:text-xs"
+                >USD</span
+              >
+            </div>
+
+            {% comment %}
+            <div class="product-cta">
+              <button
+                class="btn-crimson w-full mt-1 sm:mt-2 shadow-lg text-sm sm:text-base py-2.5 sm:py-3"
+              >
+                Ver Detalles
+              </button>
+            </div>
+            {% endcomment %}
+          </div>
+        </a>
+      </div>
+      {% endif %} {% empty %}
+      <div class="col-span-full text-center py-16">
+        <div
+          class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-2xl p-12 max-w-2xl mx-auto shadow-xl dark:shadow-none"
+        >
+          <svg
+            class="w-24 h-24 mx-auto mb-6 text-gray-400 dark:text-gray-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+            ></path>
+          </svg>
+          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white mb-4">
+            No hay productos disponibles
+          </h3>
+          <p class="text-neutral-600 dark:text-gray-400 mb-8">
+            Agrega productos desde el panel de administración.
+          </p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 </section>
 <section
   class="reveal py-12 sm:py-16 md:py-20 lg:py-24 px-0 bg-neutral-950 overflow-hidden"
@@ -509,7 +546,7 @@ Future of Home{% endblock %} {% block content %}
         updateVisibleItem();
       });
 
-      const AUTO_PLAY_DELAY = 2000; // ms - misma velocidad percibida en PC y móvil
+      const AUTO_PLAY_DELAY = 2500; // ms - misma velocidad percibida en PC y móvil
       let autoPlayInterval = null;
       let isPlaying = true; // Por defecto en reproducción
 
@@ -572,10 +609,10 @@ Future of Home{% endblock %} {% block content %}
         }, AUTO_PLAY_DELAY);
       }
 
-      function handleUserInteraction() {
-        // Cualquier interacción manual detiene el autoplay
-        pauseAutoPlay();
-      }
+      //function handleUserInteraction() {
+      // Cualquier interacción manual detiene el autoplay
+      //pauseAutoPlay();
+      //}
 
       function goNext(fromAuto = false) {
         // Vista PC: avanzar índice de carta visible
