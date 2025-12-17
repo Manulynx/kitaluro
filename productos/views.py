@@ -3,6 +3,8 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db.models import Q, Avg
+from django.views.decorators.http import require_POST
+import json
 from .models import (Producto, Categoria, Subcategoria, Marca, Proveedor, 
                      Estatus, ProductImage, ProductVideo)
 
@@ -429,10 +431,12 @@ def guardar_producto(request, producto_id=None):
         
         # Asignar campos básicos
         producto.nombre = request.POST.get('nombre')
+        producto.sku = request.POST.get('sku', '')
         producto.descripcion_corta = request.POST.get('descripcion_corta', '')
         producto.descripcion = request.POST.get('descripcion', '')
         producto.origen = request.POST.get('origen', '')
         producto.dimensiones = request.POST.get('dimensiones', '')
+        producto.garantia = request.POST.get('garantia', '')
         
         # Asignar relaciones (ForeignKey)
         categoria_id = request.POST.get('categoria')
@@ -478,11 +482,15 @@ def guardar_producto(request, producto_id=None):
         peso = request.POST.get('peso')
         producto.peso = float(peso) if peso else None
         
-        # Asignar checkboxes
-        producto.disponible = 'disponible' in request.POST
+        # Asignar checkboxes (solo activo y destacado ahora)
         producto.activo = 'activo' in request.POST
         producto.destacado = 'destacado' in request.POST
-        producto.en_oferta = 'en_oferta' in request.POST
+        
+        # Establecer valores por defecto para disponible y en_oferta
+        producto.disponible = True  # Siempre disponible por defecto
+        
+        # En oferta se determina autom\u00e1ticamente si hay precio_oferta
+        producto.en_oferta = bool(producto.precio_oferta and producto.precio_oferta > 0)
         
         # Manejar archivos
         if 'imagen' in request.FILES:
@@ -495,9 +503,68 @@ def guardar_producto(request, producto_id=None):
             producto.ficha_tecnica = request.FILES['ficha_tecnica']
         
         producto.save()
+        
+        # Manejar eliminación de imágenes de galería
+        remove_gallery_images = request.POST.get('remove_gallery_images', '')
+        if remove_gallery_images:
+            image_ids = [int(id) for id in remove_gallery_images.split(',') if id]
+            ProductImage.objects.filter(id__in=image_ids, producto=producto).delete()
+        
+        # Manejar nuevas imágenes de galería
+        if 'imagenes_galeria' in request.FILES:
+            imagenes = request.FILES.getlist('imagenes_galeria')
+            for idx, imagen in enumerate(imagenes):
+                ProductImage.objects.create(
+                    producto=producto,
+                    image=imagen,
+                    order=idx
+                )
+        
+        # Manejar eliminación de videos
+        remove_videos = request.POST.get('remove_videos', '')
+        if remove_videos:
+            video_ids = [int(id) for id in remove_videos.split(',') if id]
+            ProductVideo.objects.filter(id__in=video_ids, producto=producto).delete()
+        
+        # Manejar nuevos videos
+        if 'videos_galeria' in request.FILES:
+            videos = request.FILES.getlist('videos_galeria')
+            for idx, video in enumerate(videos):
+                ProductVideo.objects.create(
+                    producto=producto,
+                    video=video,
+                    order=idx
+                )
+        
         messages.success(request, mensaje)
         
     return redirect('productos:admin_productos')
+
+
+@require_POST
+def toggle_producto_status(request, producto_id):
+    """Vista AJAX para cambiar el estado activo/inactivo de un producto"""
+    try:
+        producto = get_object_or_404(Producto, id=producto_id)
+        
+        # Leer el estado desde el JSON body
+        data = json.loads(request.body)
+        nuevo_estado = data.get('activo', not producto.activo)
+        
+        # Actualizar el estado
+        producto.activo = nuevo_estado
+        producto.save()
+        
+        return JsonResponse({
+            'success': True,
+            'activo': producto.activo,
+            'message': f'Producto {"activado" if producto.activo else "desactivado"} exitosamente'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
 
 
 def eliminar_producto(request, producto_id):

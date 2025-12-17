@@ -1,9 +1,6 @@
-{% extends 'base.html' %} 
-{% load static %} 
-{% block title %}{{ producto.nombre}} - Kitaluro{% endblock %} 
-{% block description %}{{ producto.descripcion_corta}}
-{% endblock %} 
-{% block content %}
+{% extends 'base.html' %} {% load static %} {% block title %}{{
+producto.nombre}} - Kitaluro{% endblock %} {% block description %}{{
+producto.descripcion_corta}} {% endblock %} {% block content %}
 <!-- Breadcrumb -->
 <div
   class="bg-gray-50 dark:bg-neutral-900/50 border-b border-gray-200 dark:border-neutral-800"
@@ -422,6 +419,35 @@
         </div>
         {% endif %}
 
+        <!-- Garantía -->
+        {% if producto.garantia %}
+        <div
+          class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-6 space-y-4 shadow-lg dark:shadow-none"
+        >
+          <h3
+            class="text-xl font-bold text-neutral-900 dark:text-white mb-4 flex items-center gap-2"
+          >
+            <svg
+              class="w-6 h-6 text-green-600 dark:text-green-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+              />
+            </svg>
+            Garantía
+          </h3>
+          <div class="text-neutral-700 dark:text-gray-300 leading-relaxed">
+            {{ producto.garantia|linebreaks }}
+          </div>
+        </div>
+        {% endif %}
+
         <!-- Quantity & Actions -->
         {% comment %}
         <div class="flex flex-col sm:flex-row gap-4">
@@ -593,12 +619,7 @@
           Reseñas (127)
         </button>
         {% endcomment %}
-        <button
-          class="tab-btn px-4 sm:px-6 py-3 text-base sm:text-lg font-semibold text-neutral-600 dark:text-gray-400 border-b-2 border-transparent hover:text-neutral-900 dark:hover:text-white transition-all whitespace-nowrap"
-          data-tab="warranty"
-        >
-          Garantía
-        </button>
+        
       </div>
 
       <!-- Tab Content -->

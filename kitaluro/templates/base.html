@@ -184,7 +184,7 @@
           <div class="flex items-center gap-16">
             <a
               href="{% url 'productos:admin_productos' %}"
-              class="{% if 'admin' in request.resolver_match.url_name %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-xl transition-all duration-300 relative group"
+              class="{% if 'admin' in request.resolver_match.url_name or request.resolver_match.url_name == 'nuevo_producto' or request.resolver_match.url_name == 'editar_producto' %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-xl transition-all duration-300 relative group"
             >
               ADMIN
               <span
@@ -202,7 +202,7 @@
             </a>
             <a
               href="{% url 'productos:index' %}"
-              class="{% if 'productos' in request.resolver_match.namespace and 'admin' not in request.resolver_match.url_name %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-xl transition-all duration-300 relative group"
+              class="{% if 'productos' in request.resolver_match.namespace and 'admin' not in request.resolver_match.url_name and request.resolver_match.url_name != 'nuevo_producto' and request.resolver_match.url_name != 'editar_producto' %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-xl transition-all duration-300 relative group"
             >
               PRODUCTOS
               <span
@@ -274,7 +274,7 @@
               <li>
                 <a
                   href="{% url 'productos:admin_productos' %}"
-                  class="flex items-center gap-4 px-4 py-3 rounded-lg {% if 'admin' in request.resolver_match.url_name %}nav-link-active{% else %}text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20{% endif %} transition-all duration-300 group"
+                  class="flex items-center gap-4 px-4 py-3 rounded-lg {% if 'admin' in request.resolver_match.url_name or request.resolver_match.url_name == 'nuevo_producto' or request.resolver_match.url_name == 'editar_producto' %}nav-link-active{% else %}text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20{% endif %} transition-all duration-300 group"
                 >
                   <svg
                     class="w-5 h-5 group-hover:tech-glow-subtle"
@@ -322,7 +322,7 @@
               <li>
                 <a
                   href="{% url 'productos:index' %}"
-                  class="flex items-center gap-4 px-4 py-3 rounded-lg {% if 'productos' in request.resolver_match.namespace and 'admin' not in request.resolver_match.url_name %}nav-link-active{% else %}text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800/50{% endif %} transition-all duration-300 group"
+                  class="flex items-center gap-4 px-4 py-3 rounded-lg {% if 'productos' in request.resolver_match.namespace and 'admin' not in request.resolver_match.url_name and request.resolver_match.url_name != 'nuevo_producto' and request.resolver_match.url_name != 'editar_producto' %}nav-link-active{% else %}text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800/50{% endif %} transition-all duration-300 group"
                 >
                   <svg
                     class="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:tech-glow-subtle"

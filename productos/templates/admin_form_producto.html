@@ -1,278 +1,1010 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{% if producto %}Editar{% else %}Nuevo{% endif %} Producto - Kitaluro{% endblock %}
+{% block title %}{% if producto %}Editar{% else %}Nuevo{% endif %} Producto - Kitaluro Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+  
+  .font-outfit {
+    font-family: 'Outfit', sans-serif;
+  }
+  
+  /* Phantom Input Style */
+  .phantom-input {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #d4d4d4;
+    border-radius: 0;
+    transition: all 0.3s ease;
+    padding: 0.75rem 0;
+    color: #171717;
+  }
+  
+  .dark .phantom-input {
+    border-bottom-color: #404040;
+    color: white;
+  }
+  
+  .phantom-input:focus {
+    outline: none;
+    border-bottom-color: #3b82f6;
+    box-shadow: 0 1px 0 0 rgba(59, 130, 246, 0.3);
+  }
+  
+  .phantom-input:focus ~ label,
+  .phantom-input:not(:placeholder-shown) ~ label {
+    transform: translateY(-1.5rem) scale(0.85);
+    color: #3b82f6;
+  }
+  
+  /* Floating Label */
+  .floating-label {
+    position: absolute;
+    left: 0;
+    top: 0.75rem;
+    color: #737373;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    font-size: 0.95rem;
+  }
+  
+  /* Toggle Switch Large */
+  .toggle-large {
+    position: relative;
+    width: 64px;
+    height: 32px;
+    background-color: #404040;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .toggle-large.active {
+    background-color: #22c55e;
+  }
+  
+  .toggle-large::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 24px;
+    height: 24px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  
+  .toggle-large.active::after {
+    transform: translateX(32px);
+  }
+  
+  /* Drag & Drop Zone */
+  .drop-zone {
+    border: 2px dashed #d4d4d4;
+    transition: all 0.3s ease;
+    min-height: 200px;
+  }
+  
+  .dark .drop-zone {
+    border-color: #404040;
+  }
+  
+  .drop-zone.drag-over {
+    border-color: #3b82f6;
+    background-color: rgba(59, 130, 246, 0.05);
+  }
+  
+  .drop-zone:hover {
+    border-color: #737373;
+  }
+  
+  /* Image Preview */
+  .image-preview {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: #e5e5e5;
+  }
+  
+  .dark .image-preview {
+    background: #262626;
+  }
+  
+  .image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .image-preview .remove-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(239, 68, 68, 0.9);
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  
+  .image-preview:hover .remove-btn {
+    opacity: 1;
+  }
+  
+  /* Sticky Footer */
+  .sticky-footer {
+    position: sticky;
+    bottom: 0;
+    background: linear-gradient(to top, #f9fafb 80%, transparent);
+    backdrop-filter: blur(8px);
+    z-index: 40;
+  }
+  
+  .dark .sticky-footer {
+    background: linear-gradient(to top, #0a0a0a 80%, transparent);
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<section class="py-16 px-4 bg-gray-50 dark:bg-neutral-900 min-h-screen">
-    <div class="max-w-5xl mx-auto">
-        <!-- Header -->
-        <div class="mb-8 flex justify-between items-center">
-            <div>
-                <h1 class="text-4xl font-serif font-bold text-neutral-900 dark:text-white mb-2">
-                    {% if producto %}Editar Producto{% else %}Nuevo Producto{% endif %}
-                </h1>
-                <p class="text-neutral-600 dark:text-gray-400">
-                    {% if producto %}Modifica los datos del producto{% else %}Completa el formulario para crear un nuevo producto{% endif %}
-                </p>
-            </div>
-            <a href="{% url 'productos:admin_productos' %}" class="px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-neutral-600 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white font-semibold rounded-lg transition-colors">
-                <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                </svg>
-                Volver
-            </a>
+<section class="min-h-screen bg-gray-50 dark:bg-neutral-950 py-8 px-4 sm:px-6 lg:px-8 pb-32">
+  <div class="max-w-7xl mx-auto">
+    
+    <!-- Header -->
+    <div class="mb-6 md:mb-8">
+      <div class="flex items-center gap-3 md:gap-4 mb-4">
+        <a href="{% url 'productos:admin_productos' %}" class="p-2 hover:bg-gray-200 dark:hover:bg-neutral-900 rounded-lg transition-colors">
+          <svg class="w-6 h-6 text-neutral-600 dark:text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </a>
+        <div>
+          <h1 class="text-2xl md:text-3xl font-outfit font-bold text-neutral-900 dark:text-white tracking-tight">
+            {% if producto %}Editar Producto{% else %}Nuevo Producto{% endif %}
+          </h1>
+          <p class="text-neutral-600 dark:text-neutral-400 text-sm mt-1">
+            {% if producto %}Actualiza la información del producto{% else %}Completa los detalles del nuevo producto{% endif %}
+          </p>
         </div>
-
-        <!-- Mensajes -->
-        {% if messages %}
-        <div class="mb-6 space-y-2">
-            {% for message in messages %}
-            <div class="p-4 rounded-lg {% if message.tags == 'success' %}bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300{% elif message.tags == 'error' %}bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300{% else %}bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300{% endif %}">
-                {{ message }}
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        <!-- Formulario -->
-        <div class="bg-white dark:bg-neutral-800 rounded-xl shadow-xl p-8">
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-
-                <!-- Grid de campos -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Nombre -->
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            Nombre del Producto *
-                        </label>
-                        <input type="text" name="nombre" value="{{ producto.nombre|default:'' }}" required 
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-
-                    <!-- Descripción Corta -->
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            Descripción Corta
-                        </label>
-                        <input type="text" name="descripcion_corta" value="{{ producto.descripcion_corta|default:'' }}" maxlength="500"
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-
-                    <!-- Descripción -->
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            Descripción Completa
-                        </label>
-                        <textarea name="descripcion" rows="4"
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">{{ producto.descripcion|default:'' }}</textarea>
-                    </div>
-
-                    <!-- Categoría -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            Categoría
-                        </label>
-                        <select name="categoria"
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option value="">Seleccionar...</option>
-                            {% for categoria in categorias %}
-                            <option value="{{ categoria.id }}" {% if producto.categoria.id == categoria.id %}selected{% endif %}>{{ categoria.nombre }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Subcategoría -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            Subcategoría
-                        </label>
-                        <select name="subcategoria"
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option value="">Seleccionar...</option>
-                            {% for subcategoria in subcategorias %}
-                            <option value="{{ subcategoria.id }}" {% if producto.subcategoria.id == subcategoria.id %}selected{% endif %}>{{ subcategoria.nombre }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Marca -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            Marca
-                        </label>
-                        <select name="marca"
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option value="">Seleccionar...</option>
-                            {% for marca in marcas %}
-                            <option value="{{ marca.id }}" {% if producto.marca.id == marca.id %}selected{% endif %}>{{ marca.nombre }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Proveedor -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            Proveedor
-                        </label>
-                        <select name="proveedor"
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option value="">Seleccionar...</option>
-                            {% for proveedor in proveedores %}
-                            <option value="{{ proveedor.id }}" {% if producto.proveedor.id == proveedor.id %}selected{% endif %}>{{ proveedor.nombre }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Estatus -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            Estatus de Procedencia
-                        </label>
-                        <select name="estatus"
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option value="">Seleccionar...</option>
-                            {% for estatus in estatus_list %}
-                            <option value="{{ estatus.id }}" {% if producto.estatus.id == estatus.id %}selected{% endif %}>{{ estatus.nombre }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Origen -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            País de Origen
-                        </label>
-                        <input type="text" name="origen" value="{{ producto.origen|default:'' }}"
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-
-                    <!-- Precio -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            Precio
-                        </label>
-                        <input type="number" name="precio" value="{{ producto.precio|default:'' }}" step="0.01" min="0"
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-
-                    <!-- Precio Oferta -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            Precio de Oferta
-                        </label>
-                        <input type="number" name="precio_oferta" value="{{ producto.precio_oferta|default:'' }}" step="0.01" min="0"
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-
-                    <!-- Stock -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            Stock
-                        </label>
-                        <input type="number" name="stock" value="{{ producto.stock|default:'0' }}" min="0"
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-
-                    <!-- Peso -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            Peso (kg)
-                        </label>
-                        <input type="number" name="peso" value="{{ producto.peso|default:'' }}" step="0.01" min="0"
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-
-                    <!-- Dimensiones -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            Dimensiones (Alto x Ancho x Largo cm)
-                        </label>
-                        <input type="text" name="dimensiones" value="{{ producto.dimensiones|default:'' }}"
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-
-                    <!-- Imagen Principal -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            Imagen Principal
-                        </label>
-                        <input type="file" name="imagen" accept="image/*"
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        {% if producto.imagen %}
-                        <div class="mt-2">
-                            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="w-32 h-32 object-cover rounded-lg">
-                        </div>
-                        {% endif %}
-                    </div>
-
-                    <!-- Video -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            Video del Producto
-                        </label>
-                        <input type="file" name="video" accept="video/*"
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        {% if producto.video %}
-                        <p class="mt-2 text-sm text-green-600 dark:text-green-400">✓ Video cargado</p>
-                        {% endif %}
-                    </div>
-
-                    <!-- Ficha Técnica -->
-                    <div>
-                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                            Ficha Técnica (PDF)
-                        </label>
-                        <input type="file" name="ficha_tecnica" accept=".pdf"
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        {% if producto.ficha_tecnica %}
-                        <p class="mt-2 text-sm text-green-600 dark:text-green-400">✓ Ficha técnica cargada</p>
-                        {% endif %}
-                    </div>
-
-                    <!-- Checkboxes -->
-                    <div class="md:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" name="disponible" {% if not producto or producto.disponible %}checked{% endif %}
-                                class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                            <span class="text-sm text-neutral-700 dark:text-neutral-300">Disponible</span>
-                        </label>
-
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" name="activo" {% if not producto or producto.activo %}checked{% endif %}
-                                class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                            <span class="text-sm text-neutral-700 dark:text-neutral-300">Activo</span>
-                        </label>
-
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" name="destacado" {% if producto.destacado %}checked{% endif %}
-                                class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                            <span class="text-sm text-neutral-700 dark:text-neutral-300">Destacado</span>
-                        </label>
-
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" name="en_oferta" {% if producto.en_oferta %}checked{% endif %}
-                                class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                            <span class="text-sm text-neutral-700 dark:text-neutral-300">En Oferta</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Botones -->
-                <div class="mt-8 flex gap-4">
-                    <button type="submit" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-lg">
-                        <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                        {% if producto %}Actualizar Producto{% else %}Crear Producto{% endif %}
-                    </button>
-                    <a href="{% url 'productos:admin_productos' %}" class="px-6 py-3 bg-gray-300 hover:bg-gray-400 dark:bg-neutral-600 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white font-semibold rounded-lg transition-colors">
-                        Cancelar
-                    </a>
-                </div>
-            </form>
-        </div>
+      </div>
     </div>
+
+    <!-- Mensajes -->
+    {% if messages %}
+    <div class="mb-6 space-y-2">
+      {% for message in messages %}
+      <div class="p-4 rounded-lg border backdrop-blur-sm {% if message.tags == 'success' %}bg-green-500/10 border-green-500/30 text-green-300{% elif message.tags == 'error' %}bg-red-500/10 border-red-500/30 text-red-300{% else %}bg-blue-500/10 border-blue-500/30 text-blue-300{% endif %}">
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Formulario -->
+    <form method="POST" enctype="multipart/form-data" id="productForm">
+      {% csrf_token %}
+      
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-8">
+        
+        <!-- Columna Izquierda: Información Principal (2/3) -->
+        <div class="xl:col-span-2 space-y-6 md:space-y-8">
+          
+          <!-- Información Básica -->
+          <div class="bg-white dark:bg-neutral-900/50 backdrop-blur-sm border border-gray-200 dark:border-white/5 rounded-xl p-4 md:p-6">
+            <h2 class="text-lg md:text-xl font-semibold text-neutral-900 dark:text-white mb-4 md:mb-6">Información Básica</h2>
+            
+            <!-- Nombre del Producto -->
+            <div class="relative mb-8">
+              <input 
+                type="text" 
+                name="nombre" 
+                id="nombre"
+                value="{{ producto.nombre|default:'' }}"
+                class="phantom-input w-full text-lg"
+                placeholder=" "
+                required
+              />
+              <label for="nombre" class="floating-label">Nombre del Producto *</label>
+            </div>
+
+            <!-- SKU -->
+            <div class="relative mb-8">
+              <input 
+                type="text" 
+                name="sku" 
+                id="sku"
+                value="{{ producto.sku|default:'' }}"
+                class="phantom-input w-full font-mono"
+                placeholder=" "
+              />
+              <label for="sku" class="floating-label">SKU / Código</label>
+            </div>
+
+            <!-- Descripción Corta -->
+            <div class="relative mb-8">
+              <input 
+                type="text" 
+                name="descripcion_corta" 
+                id="descripcion_corta"
+                value="{{ producto.descripcion_corta|default:'' }}"
+                class="phantom-input w-full"
+                placeholder=" "
+              />
+              <label for="descripcion_corta" class="floating-label">Descripción Corta</label>
+              <p class="text-xs text-neutral-500 dark:text-neutral-500 mt-1">Breve resumen para las tarjetas de producto</p>
+            </div>
+
+            <!-- Descripción Completa -->
+            <div class="relative mb-8">
+              <label for="descripcion" class="block text-sm text-neutral-600 dark:text-neutral-400 mb-2">Descripción Completa</label>
+              <textarea 
+                name="descripcion" 
+                id="descripcion"
+                rows="6"
+                class="w-full bg-transparent border border-gray-300 dark:border-neutral-700 rounded-lg p-4 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="Describe las características, beneficios y especificaciones del producto..."
+              >{{ producto.descripcion|default:'' }}</textarea>
+            </div>
+          </div>
+
+          <!-- Precios -->
+          <div class="bg-white dark:bg-neutral-900/50 backdrop-blur-sm border border-gray-200 dark:border-white/5 rounded-xl p-4 md:p-6">
+            <h2 class="text-lg md:text-xl font-semibold text-neutral-900 dark:text-white mb-4 md:mb-6">Precios e Inventario</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Precio Regular -->
+              <div class="relative">
+                <label for="precio" class="block text-sm text-neutral-600 dark:text-neutral-400 mb-2">Precio Regular *</label>
+                <div class="flex items-center gap-2">
+                  <span class="text-2xl text-neutral-500 dark:text-neutral-500">$</span>
+                  <input 
+                    type="number" 
+                    name="precio" 
+                    id="precio"
+                    value="{{ producto.precio|default:'' }}"
+                    step="0.01"
+                    min="0"
+                    class="phantom-input flex-1 text-2xl font-bold"
+                    placeholder="0.00"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Precio en Oferta -->
+              <div class="relative">
+                <label for="precio_oferta" class="block text-sm text-neutral-600 dark:text-neutral-400 mb-2">Precio en Oferta</label>
+                <div class="flex items-center gap-2">
+                  <span class="text-2xl text-green-500">$</span>
+                  <input 
+                    type="number" 
+                    name="precio_oferta" 
+                    id="precio_oferta"
+                    value="{{ producto.precio_oferta|default:'' }}"
+                    step="0.01"
+                    min="0"
+                    class="phantom-input flex-1 text-2xl font-bold text-green-400"
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+
+              <!-- Stock -->
+              <div class="relative">
+                <label for="stock" class="block text-sm text-neutral-600 dark:text-neutral-400 mb-2">Stock Disponible</label>
+                <input 
+                  type="number" 
+                  name="stock" 
+                  id="stock"
+                  value="{{ producto.stock|default:'0' }}"
+                  min="0"
+                  class="phantom-input w-full text-xl"
+                  placeholder="0"
+                />
+              </div>
+
+              <!-- Peso -->
+              <div class="relative">
+                <label for="peso" class="block text-sm text-neutral-600 dark:text-neutral-400 mb-2">Peso (kg)</label>
+                <input 
+                  type="number" 
+                  name="peso" 
+                  id="peso"
+                  value="{{ producto.peso|default:'' }}"
+                  step="0.01"
+                  min="0"
+                  class="phantom-input w-full text-xl"
+                  placeholder="0.00"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Especificaciones -->
+          <div class="bg-white dark:bg-neutral-900/50 backdrop-blur-sm border border-gray-200 dark:border-white/5 rounded-xl p-4 md:p-6">
+            <h2 class="text-lg md:text-xl font-semibold text-neutral-900 dark:text-white mb-4 md:mb-6">Especificaciones</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Dimensiones -->
+              <div class="relative">
+                <input 
+                  type="text" 
+                  name="dimensiones" 
+                  id="dimensiones"
+                  value="{{ producto.dimensiones|default:'' }}"
+                  class="phantom-input w-full"
+                  placeholder=" "
+                />
+                <label for="dimensiones" class="floating-label">Dimensiones</label>
+                <p class="text-xs text-neutral-500 dark:text-neutral-500 mt-1">Ej: 100 x 50 x 30 cm</p>
+              </div>
+
+              <!-- Origen -->
+              <div class="relative">
+                <input 
+                  type="text" 
+                  name="origen" 
+                  id="origen"
+                  value="{{ producto.origen|default:'' }}"
+                  class="phantom-input w-full"
+                  placeholder=" "
+                />
+                <label for="origen" class="floating-label">País de Origen</label>
+              </div>
+            </div>
+
+            <!-- Garantía (full width) -->
+            <div class="relative mt-6">
+              <label for="garantia" class="block text-sm text-neutral-600 dark:text-neutral-400 mb-2">Garantía del Producto</label>
+              <textarea 
+                name="garantia" 
+                id="garantia"
+                rows="4"
+                class="w-full bg-transparent border border-gray-300 dark:border-neutral-700 rounded-lg p-4 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="Describe los términos, duración y cobertura de la garantía del producto..."
+              >{{ producto.garantia|default:'' }}</textarea>
+              <p class="text-xs text-neutral-500 dark:text-neutral-500 mt-1">Esta información se mostrará en la página de detalle del producto</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Media y Organización (1/3) -->
+        <div class="xl:col-span-1 space-y-6">
+          
+          <!-- Imagen Principal -->
+          <div class="bg-white dark:bg-neutral-900/50 backdrop-blur-sm border border-gray-200 dark:border-white/5 rounded-xl p-4 md:p-6">
+            <h3 class="text-base md:text-lg font-semibold text-neutral-900 dark:text-white mb-4">Imagen Principal</h3>
+            
+            <!-- Zona de Drag & Drop -->
+            <div id="dropZone" class="drop-zone rounded-lg flex flex-col items-center justify-center p-6 cursor-pointer">
+              <svg class="w-12 h-12 text-neutral-600 dark:text-neutral-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+              </svg>
+              <p class="text-neutral-600 dark:text-neutral-400 text-sm text-center mb-2">Arrastra tu imagen de alta fidelidad aquí</p>
+              <p class="text-neutral-500 dark:text-neutral-600 text-xs">o haz clic para seleccionar</p>
+              <input type="file" name="imagen" id="imagen" accept="image/*" class="hidden" />
+            </div>
+
+            <!-- Preview de Imagen Actual -->
+            {% if producto.imagen %}
+            <div class="mt-4 image-preview">
+              <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" />
+              <button type="button" class="remove-btn" onclick="removeCurrentImage()">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+            <input type="hidden" name="remove_imagen" id="remove_imagen" value="false" />
+            {% endif %}
+
+            <!-- Preview de Nueva Imagen -->
+            <div id="imagePreview" class="hidden mt-4 image-preview">
+              <img id="previewImg" src="" alt="Preview" />
+              <button type="button" class="remove-btn" onclick="removeNewImage()">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Galería de Imágenes Secundarias -->
+          <div class="bg-white dark:bg-neutral-900/50 backdrop-blur-sm border border-gray-200 dark:border-white/5 rounded-xl p-4 md:p-6">
+            <h3 class="text-base md:text-lg font-semibold text-neutral-900 dark:text-white mb-4">Galería de Imágenes</h3>
+            <p class="text-xs text-neutral-500 dark:text-neutral-500 mb-4">Imágenes adicionales para el carrusel del producto</p>
+            
+            <!-- Zona de subida múltiple -->
+            <div id="dropZoneGallery" class="drop-zone rounded-lg flex flex-col items-center justify-center p-4 md:p-6 cursor-pointer" style="min-height: 120px;">
+              <svg class="w-10 h-10 text-neutral-600 dark:text-neutral-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              <p class="text-neutral-600 dark:text-neutral-400 text-sm text-center mb-1">Añade imágenes adicionales</p>
+              <p class="text-neutral-500 dark:text-neutral-600 text-xs">Puedes seleccionar múltiples archivos</p>
+              <input type="file" name="imagenes_galeria" id="imagenes_galeria" accept="image/*" multiple class="hidden" />
+            </div>
+
+            <!-- Previews de imágenes galería -->
+            <div id="galleryPreviews" class="mt-4 grid grid-cols-2 gap-2"></div>
+
+            <!-- Imágenes existentes -->
+            {% if producto.imagenes_galeria.all %}
+            <div class="mt-4">
+              <p class="text-xs text-neutral-600 dark:text-neutral-400 mb-2">Imágenes actuales:</p>
+              <div class="grid grid-cols-2 gap-2">
+                {% for img in producto.imagenes_galeria.all %}
+                <div class="image-preview" data-image-id="{{ img.id }}">
+                  <img src="{{ img.image.url }}" alt="{{ img.alt_text }}" />
+                  <button type="button" class="remove-btn" onclick="removeGalleryImage({{ img.id }})">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                  </button>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            <input type="hidden" name="remove_gallery_images" id="remove_gallery_images" value="" />
+            {% endif %}
+          </div>
+
+          <!-- Galería de Videos -->
+          <div class="bg-white dark:bg-neutral-900/50 backdrop-blur-sm border border-gray-200 dark:border-white/5 rounded-xl p-4 md:p-6">
+            <h3 class="text-base md:text-lg font-semibold text-neutral-900 dark:text-white mb-4">Videos del Producto</h3>
+            <p class="text-xs text-neutral-500 dark:text-neutral-500 mb-4">Videos para mostrar en el carrusel</p>
+            
+            <!-- Zona de subida de videos -->
+            <div id="dropZoneVideos" class="drop-zone rounded-lg flex flex-col items-center justify-center p-4 md:p-6 cursor-pointer" style="min-height: 120px;">
+              <svg class="w-10 h-10 text-neutral-600 dark:text-neutral-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+              </svg>
+              <p class="text-neutral-600 dark:text-neutral-400 text-sm text-center mb-1">Añade videos</p>
+              <p class="text-neutral-500 dark:text-neutral-600 text-xs">Puedes seleccionar múltiples archivos</p>
+              <input type="file" name="videos_galeria" id="videos_galeria" accept="video/*" multiple class="hidden" />
+            </div>
+
+            <!-- Previews de videos -->
+            <div id="videoPreviews" class="mt-4 space-y-2"></div>
+
+            <!-- Videos existentes -->
+            {% if producto.videos_galeria.all %}
+            <div class="mt-4">
+              <p class="text-xs text-neutral-600 dark:text-neutral-400 mb-2">Videos actuales:</p>
+              <div class="space-y-2">
+                {% for vid in producto.videos_galeria.all %}
+                <div class="flex items-center gap-2 bg-neutral-800 p-2 rounded" data-video-id="{{ vid.id }}">
+                  <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <span class="text-sm text-white flex-1">{{ vid.title|default:"Video"|truncatechars:30 }}</span>
+                  <button type="button" class="text-red-400 hover:text-red-300" onclick="removeVideo({{ vid.id }})">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                  </button>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            <input type="hidden" name="remove_videos" id="remove_videos" value="" />
+            {% endif %}
+          </div>
+
+          <!-- Organización -->
+          <div class="bg-white dark:bg-neutral-900/50 backdrop-blur-sm border border-gray-200 dark:border-white/5 rounded-xl p-4 md:p-6">
+            <h3 class="text-base md:text-lg font-semibold text-neutral-900 dark:text-white mb-4">Organización</h3>
+            
+            <!-- Categoría -->
+            <div class="mb-4">
+              <label for="categoria" class="block text-sm text-neutral-600 dark:text-neutral-400 mb-2">Categoría</label>
+              <select 
+                name="categoria" 
+                id="categoria"
+                class="w-full bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              >
+                <option value="">Sin categoría</option>
+                {% for cat in categorias %}
+                <option value="{{ cat.id }}" {% if producto.categoria.id == cat.id %}selected{% endif %}>
+                  {{ cat.nombre }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Subcategoría -->
+            <div class="mb-4">
+              <label for="subcategoria" class="block text-sm text-neutral-600 dark:text-neutral-400 mb-2">Subcategoría</label>
+              <select 
+                name="subcategoria" 
+                id="subcategoria"
+                class="w-full bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              >
+                <option value="">Sin subcategoría</option>
+                {% for subcat in subcategorias %}
+                <option value="{{ subcat.id }}" {% if producto.subcategoria.id == subcat.id %}selected{% endif %}>
+                  {{ subcat.nombre }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Marca -->
+            <div class="mb-4">
+              <label for="marca" class="block text-sm text-neutral-600 dark:text-neutral-400 mb-2">Marca</label>
+              <select 
+                name="marca" 
+                id="marca"
+                class="w-full bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              >
+                <option value="">Sin marca</option>
+                {% for m in marcas %}
+                <option value="{{ m.id }}" {% if producto.marca.id == m.id %}selected{% endif %}>
+                  {{ m.nombre }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Proveedor -->
+            <div class="mb-4">
+              <label for="proveedor" class="block text-sm text-neutral-600 dark:text-neutral-400 mb-2">Proveedor</label>
+              <select 
+                name="proveedor" 
+                id="proveedor"
+                class="w-full bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              >
+                <option value="">Sin proveedor</option>
+                {% for prov in proveedores %}
+                <option value="{{ prov.id }}" {% if producto.proveedor.id == prov.id %}selected{% endif %}>
+                  {{ prov.nombre }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Estatus -->
+            <div>
+              <label for="estatus" class="block text-sm text-neutral-600 dark:text-neutral-400 mb-2">Estatus</label>
+              <select 
+                name="estatus" 
+                id="estatus"
+                class="w-full bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              >
+                <option value="">Sin estatus</option>
+                {% for est in estatus_list %}
+                <option value="{{ est.id }}" {% if producto.estatus.id == est.id %}selected{% endif %}>
+                  {{ est.nombre }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <!-- Opciones de Publicación -->
+          <div class="bg-white dark:bg-neutral-900/50 backdrop-blur-sm border border-gray-200 dark:border-white/5 rounded-xl p-4 md:p-6">
+            <h3 class="text-base md:text-lg font-semibold text-neutral-900 dark:text-white mb-4">Opciones de Publicación</h3>
+            
+            <!-- Activo -->
+            <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-200 dark:border-neutral-800">
+              <div>
+                <p class="text-neutral-900 dark:text-white font-medium">Activo</p>
+                <p class="text-xs text-neutral-500 dark:text-neutral-500">El producto está visible en el catálogo</p>
+              </div>
+              <div 
+                class="toggle-large {% if producto.activo or not producto %}active{% endif %}" 
+                id="toggleActivo"
+                onclick="toggleSwitch('toggleActivo', 'activo')"
+              ></div>
+              <input type="checkbox" name="activo" id="activo" value="on" {% if producto.activo or not producto %}checked{% endif %} class="hidden" />
+            </div>
+
+            <!-- Destacado -->
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-neutral-900 dark:text-white font-medium">Destacado</p>
+                <p class="text-xs text-neutral-500 dark:text-neutral-500">Aparece en la sección destacada del Home</p>
+              </div>
+              <div 
+                class="toggle-large {% if producto.destacado %}active{% endif %}" 
+                id="toggleDestacado"
+                onclick="toggleSwitch('toggleDestacado', 'destacado')"
+              ></div>
+              <input type="checkbox" name="destacado" id="destacado" value="on" {% if producto.destacado %}checked{% endif %} class="hidden" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Sticky Footer con Acciones -->
+  <div class="sticky-footer">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <a 
+          href="{% url 'productos:admin_productos' %}" 
+          class="px-6 py-2.5 md:py-3 text-center text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors font-medium"
+        >
+          Cancelar
+        </a>
+        
+        <div class="flex flex-col sm:flex-row gap-2 md:gap-3">
+          {% if producto %}
+          <button 
+            type="button"
+            onclick="confirmDelete()"
+            class="px-6 py-2.5 md:py-3 bg-neutral-800 hover:bg-neutral-700 text-white rounded-lg transition-all duration-200 font-medium"
+          >
+            Eliminar Producto
+          </button>
+          {% endif %}
+          
+          <button 
+            type="submit"
+            form="productForm"
+            class="px-8 py-2.5 md:py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200 font-semibold shadow-lg shadow-red-600/20 hover:shadow-red-600/40"
+          >
+            {% if producto %}Guardar Cambios{% else %}Crear Producto{% endif %}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
+
+<!-- Modal de Confirmación de Eliminación -->
+{% if producto %}
+<div id="deleteModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="bg-white dark:bg-neutral-900 border border-gray-300 dark:border-neutral-800 rounded-xl max-w-md w-full p-4 sm:p-6 shadow-2xl">
+    <h3 class="text-lg sm:text-xl font-bold text-neutral-900 dark:text-white mb-2">Confirmar Eliminación</h3>
+    <p class="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 mb-4 sm:mb-6">¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.</p>
+    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-end">
+      <button onclick="closeDeleteModal()" class="w-full sm:w-auto px-4 py-2 bg-gray-200 dark:bg-neutral-800 hover:bg-gray-300 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white rounded-lg transition-colors duration-200">
+        Cancelar
+      </button>
+      <form method="POST" action="{% url 'productos:eliminar_producto' producto.id %}" class="w-full sm:w-auto">
+        {% csrf_token %}
+        <button type="submit" class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200">
+          Eliminar
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Toggle Switch Functionality
+function toggleSwitch(toggleId, inputId) {
+  const toggle = document.getElementById(toggleId);
+  const input = document.getElementById(inputId);
+  
+  toggle.classList.toggle('active');
+  const isActive = toggle.classList.contains('active');
+  input.checked = isActive;
+}
+
+// Drag & Drop Functionality
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('imagen');
+const imagePreview = document.getElementById('imagePreview');
+const previewImg = document.getElementById('previewImg');
+
+// Click to select file
+dropZone.addEventListener('click', () => {
+  fileInput.click();
+});
+
+// Prevent default drag behaviors
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+  dropZone.addEventListener(eventName, preventDefaults, false);
+  document.body.addEventListener(eventName, preventDefaults, false);
+});
+
+function preventDefaults(e) {
+  e.preventDefault();
+  e.stopPropagation();
+}
+
+// Highlight drop zone when dragging
+['dragenter', 'dragover'].forEach(eventName => {
+  dropZone.addEventListener(eventName, highlight, false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+  dropZone.addEventListener(eventName, unhighlight, false);
+});
+
+function highlight() {
+  dropZone.classList.add('drag-over');
+}
+
+function unhighlight() {
+  dropZone.classList.remove('drag-over');
+}
+
+// Handle dropped files
+dropZone.addEventListener('drop', handleDrop, false);
+
+function handleDrop(e) {
+  const dt = e.dataTransfer;
+  const files = dt.files;
+  handleFiles(files);
+}
+
+// Handle file input change
+fileInput.addEventListener('change', function() {
+  handleFiles(this.files);
+});
+
+function handleFiles(files) {
+  if (files.length > 0) {
+    const file = files[0];
+    if (file.type.startsWith('image/')) {
+      previewImage(file);
+    }
+  }
+}
+
+function previewImage(file) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    previewImg.src = e.target.result;
+    imagePreview.classList.remove('hidden');
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeNewImage() {
+  fileInput.value = '';
+  imagePreview.classList.add('hidden');
+  previewImg.src = '';
+}
+
+function removeCurrentImage() {
+  if (confirm('¿Deseas eliminar la imagen actual?')) {
+    document.getElementById('remove_imagen').value = 'true';
+    document.querySelector('.image-preview').style.display = 'none';
+  }
+}
+
+// Galería de Imágenes Secundarias
+const dropZoneGallery = document.getElementById('dropZoneGallery');
+const galleryInput = document.getElementById('imagenes_galeria');
+const galleryPreviews = document.getElementById('galleryPreviews');
+
+if (dropZoneGallery && galleryInput) {
+  dropZoneGallery.addEventListener('click', () => galleryInput.click());
+
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZoneGallery.addEventListener(eventName, preventDefaults, false);
+  });
+
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropZoneGallery.addEventListener(eventName, () => dropZoneGallery.classList.add('drag-over'), false);
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropZoneGallery.addEventListener(eventName, () => dropZoneGallery.classList.remove('drag-over'), false);
+  });
+
+  dropZoneGallery.addEventListener('drop', function(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    handleGalleryFiles(files);
+  }, false);
+
+  galleryInput.addEventListener('change', function() {
+    handleGalleryFiles(this.files);
+  });
+}
+
+function handleGalleryFiles(files) {
+  Array.from(files).forEach(file => {
+    if (file.type.startsWith('image/')) {
+      previewGalleryImage(file);
+    }
+  });
+}
+
+function previewGalleryImage(file) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const previewDiv = document.createElement('div');
+    previewDiv.className = 'image-preview relative';
+    previewDiv.innerHTML = `
+      <img src="${e.target.result}" alt="Preview" />
+      <button type="button" class="remove-btn" onclick="removeGalleryPreview(this)">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    `;
+    galleryPreviews.appendChild(previewDiv);
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeGalleryPreview(btn) {
+  btn.closest('.image-preview').remove();
+  // Reset input to allow re-selection
+  galleryInput.value = '';
+}
+
+function removeGalleryImage(imageId) {
+  if (confirm('¿Deseas eliminar esta imagen de la galería?')) {
+    const removeInput = document.getElementById('remove_gallery_images');
+    const currentIds = removeInput.value ? removeInput.value.split(',') : [];
+    currentIds.push(imageId.toString());
+    removeInput.value = currentIds.join(',');
+    document.querySelector(`[data-image-id="${imageId}"]`).style.display = 'none';
+  }
+}
+
+// Galería de Videos
+const dropZoneVideos = document.getElementById('dropZoneVideos');
+const videosInput = document.getElementById('videos_galeria');
+const videoPreviews = document.getElementById('videoPreviews');
+
+if (dropZoneVideos && videosInput) {
+  dropZoneVideos.addEventListener('click', () => videosInput.click());
+
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZoneVideos.addEventListener(eventName, preventDefaults, false);
+  });
+
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropZoneVideos.addEventListener(eventName, () => dropZoneVideos.classList.add('drag-over'), false);
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropZoneVideos.addEventListener(eventName, () => dropZoneVideos.classList.remove('drag-over'), false);
+  });
+
+  dropZoneVideos.addEventListener('drop', function(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    handleVideoFiles(files);
+  }, false);
+
+  videosInput.addEventListener('change', function() {
+    handleVideoFiles(this.files);
+  });
+}
+
+function handleVideoFiles(files) {
+  Array.from(files).forEach(file => {
+    if (file.type.startsWith('video/')) {
+      previewVideo(file);
+    }
+  });
+}
+
+function previewVideo(file) {
+  const previewDiv = document.createElement('div');
+  previewDiv.className = 'flex items-center gap-2 bg-neutral-800 p-2 rounded';
+  previewDiv.innerHTML = `
+    <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <span class="text-sm text-white flex-1">${file.name}</span>
+    <button type="button" class="text-red-400 hover:text-red-300" onclick="removeVideoPreview(this)">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  `;
+  videoPreviews.appendChild(previewDiv);
+}
+
+function removeVideoPreview(btn) {
+  btn.closest('div').remove();
+  // Reset input to allow re-selection
+  videosInput.value = '';
+}
+
+function removeVideo(videoId) {
+  if (confirm('¿Deseas eliminar este video?')) {
+    const removeInput = document.getElementById('remove_videos');
+    const currentIds = removeInput.value ? removeInput.value.split(',') : [];
+    currentIds.push(videoId.toString());
+    removeInput.value = currentIds.join(',');
+    document.querySelector(`[data-video-id="${videoId}"]`).style.display = 'none';
+  }
+}
+
+// Delete Modal Functions
+function confirmDelete() {
+  document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+function closeDeleteModal() {
+  document.getElementById('deleteModal').classList.add('hidden');
+}
+
+// Close modal with ESC key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeDeleteModal();
+  }
+});
+
+// Filtrar subcategorías según la categoría seleccionada
+const categoriaSelect = document.getElementById('categoria');
+const subcategoriaSelect = document.getElementById('subcategoria');
+const todasSubcategorias = Array.from(subcategoriaSelect.options);
+
+if (categoriaSelect && subcategoriaSelect) {
+  categoriaSelect.addEventListener('change', function() {
+    const categoriaId = this.value;
+    
+    // Remover todas las opciones excepto la primera
+    subcategoriaSelect.innerHTML = '<option value="">Sin subcategoría</option>';
+    
+    if (categoriaId) {
+      // Filtrar y agregar subcategorías correspondientes
+      todasSubcategorias.forEach(option => {
+        if (option.value && option.dataset.categoria === categoriaId) {
+          subcategoriaSelect.appendChild(option.cloneNode(true));
+        }
+      });
+    } else {
+      // Si no hay categoría, mostrar todas
+      todasSubcategorias.forEach(option => {
+        if (option.value) {
+          subcategoriaSelect.appendChild(option.cloneNode(true));
+        }
+      });
+    }
+  });
+}
+
+// Auto-generar SKU basado en el nombre (opcional)
+const nombreInput = document.getElementById('nombre');
+const skuInput = document.getElementById('sku');
+
+if (nombreInput && skuInput && !skuInput.value) {
+  nombreInput.addEventListener('blur', function() {
+    if (!skuInput.value && this.value) {
+      // Generar SKU: primeras 3 letras + timestamp
+      const prefix = this.value.substring(0, 3).toUpperCase().replace(/[^A-Z]/g, '');
+      const timestamp = Date.now().toString().slice(-6);
+      skuInput.value = `${prefix}-${timestamp}`;
+    }
+  });
+}
+
+// Validación antes de enviar
+document.getElementById('productForm').addEventListener('submit', function(e) {
+  const nombre = document.getElementById('nombre').value.trim();
+  const precio = document.getElementById('precio').value;
+  
+  if (!nombre) {
+    e.preventDefault();
+    alert('El nombre del producto es obligatorio');
+    document.getElementById('nombre').focus();
+    return false;
+  }
+  
+  if (!precio || parseFloat(precio) <= 0) {
+    e.preventDefault();
+    alert('El precio debe ser mayor a 0');
+    document.getElementById('precio').focus();
+    return false;
+  }
+  
+  return true;
+});
+</script>
 {% endblock %}

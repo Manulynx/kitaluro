@@ -192,6 +192,7 @@ class Producto(models.Model):
     peso = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Peso en kg", verbose_name="Peso (kg)")
     dimensiones = models.CharField(max_length=100, blank=True, help_text="Alto x Ancho x Largo en cm")
     origen = models.CharField(max_length=100, blank=True, verbose_name="País de Origen")
+    garantia = models.TextField(blank=True, verbose_name="Garantía", help_text="Detalles de la garantía del producto")
     
     # Archivos multimedia y documentación
     imagen = models.ImageField(upload_to='productos/', blank=True, null=True, verbose_name="Imagen Principal")

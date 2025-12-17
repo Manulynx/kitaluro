@@ -1,129 +1,594 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends 'base.html' %} {% load static %} {% block title %}Inventario -
+Kitaluro Admin{% endblock %} {% block extra_css %}
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap");
 
-{% block title %}Administración de Productos - Kitaluro{% endblock %}
+  .font-outfit {
+    font-family: "Outfit", sans-serif;
+  }
 
-{% block content %}
-<section class="py-16 px-4 bg-gray-50 dark:bg-neutral-900 min-h-screen">
-    <div class="max-w-7xl mx-auto">
-        <!-- Header -->
-        <div class="mb-8 flex justify-between items-center">
-            <div>
-                <h1 class="text-4xl font-serif font-bold text-neutral-900 dark:text-white mb-2">Administración de Productos</h1>
-                <p class="text-neutral-600 dark:text-gray-400">Gestiona el catálogo de productos</p>
-            </div>
-            <a href="{% url 'productos:nuevo_producto' %}" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-lg">
-                <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                Nuevo Producto
-            </a>
+  /* Toggle Switch CSS */
+  .toggle-switch {
+    position: relative;
+    width: 48px;
+    height: 24px;
+    background-color: #525252;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .toggle-switch.active {
+    background-color: #22c55e;
+  }
+
+  .toggle-switch::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+  }
+
+  .toggle-switch.active::after {
+    transform: translateX(24px);
+  }
+
+  /* Tooltip */
+  .tooltip {
+    position: relative;
+  }
+
+  .tooltip:hover::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 8px;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: white;
+    font-size: 12px;
+    white-space: nowrap;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    pointer-events: none;
+    z-index: 50;
+  }
+
+  /* Scroll horizontal suave en móvil */
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Ocultar scrollbar pero mantener funcionalidad */
+  .overflow-x-auto::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.3);
+    border-radius: 3px;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.5);
+  }
+
+  /* En desktop, aplicar min-width a las filas */
+  @media (min-width: 768px) {
+    .product-row {
+      min-width: 900px;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+<section
+  class="min-h-screen bg-gray-50 dark:bg-neutral-950 py-8 px-4 sm:px-6 lg:px-8"
+>
+  <div class="max-w-7xl mx-auto">
+    <!-- Header de Control -->
+    <div
+      class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+    >
+      <div>
+        <h1
+          class="text-2xl sm:text-3xl lg:text-4xl font-outfit font-bold text-neutral-900 dark:text-white mb-2 tracking-tight"
+        >
+          Inventario
+        </h1>
+        <p class="text-neutral-600 dark:text-neutral-400 text-sm">
+          Gestión de productos del catálogo
+        </p>
+      </div>
+
+      <div
+        class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center"
+      >
+        <!-- Barra de búsqueda Glass -->
+        <div class="relative">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Buscar productos..."
+            class="w-full sm:w-64 pl-10 pr-4 py-2.5 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-lg text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-red-600/50 focus:border-transparent transition-all duration-200"
+          />
+          <svg
+            class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500 dark:text-neutral-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
         </div>
 
-        <!-- Mensajes -->
-        {% if messages %}
-        <div class="mb-6 space-y-2">
-            {% for message in messages %}
-            <div class="p-4 rounded-lg {% if message.tags == 'success' %}bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300{% elif message.tags == 'error' %}bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300{% else %}bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300{% endif %}">
-                {{ message }}
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        <!-- Lista de Productos -->
-        <div class="bg-white dark:bg-neutral-800 rounded-xl shadow-xl overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-gray-50 dark:bg-neutral-700">
-                        <tr>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Imagen</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Nombre</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">SKU</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Precio</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Stock</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Estado</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-neutral-700">
-                        {% for producto in productos %}
-                        <tr class="hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-colors">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                {% if producto.imagen %}
-                                <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="w-16 h-16 object-cover rounded-lg">
-                                {% else %}
-                                <div class="w-16 h-16 bg-gray-200 dark:bg-neutral-600 rounded-lg flex items-center justify-center">
-                                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                    </svg>
-                                </div>
-                                {% endif %}
-                            </td>
-                            <td class="px-6 py-4">
-                                <div class="text-sm font-medium text-neutral-900 dark:text-white">{{ producto.nombre }}</div>
-                                <div class="text-xs text-neutral-500 dark:text-neutral-400">{{ producto.categoria.nombre|default:"-" }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-neutral-700 dark:text-neutral-300 font-mono">{{ producto.sku }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                {% if producto.precio_oferta %}
-                                <div class="text-sm text-neutral-500 dark:text-neutral-400 line-through">${{ producto.precio }}</div>
-                                <div class="text-sm font-bold text-green-600 dark:text-green-400">${{ producto.precio_oferta }}</div>
-                                {% elif producto.precio %}
-                                <div class="text-sm font-medium text-neutral-900 dark:text-white">${{ producto.precio }}</div>
-                                {% else %}
-                                <div class="text-sm text-neutral-500 dark:text-neutral-400">-</div>
-                                {% endif %}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-neutral-900 dark:text-white">{{ producto.stock }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex flex-wrap gap-1">
-                                    {% if producto.activo %}
-                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300">Activo</span>
-                                    {% else %}
-                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300">Inactivo</span>
-                                    {% endif %}
-                                    {% if producto.destacado %}
-                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300">Destacado</span>
-                                    {% endif %}
-                                    {% if producto.en_oferta %}
-                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300">Oferta</span>
-                                    {% endif %}
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                <div class="flex gap-2">
-                                    <a href="{% url 'productos:editar_producto' producto.id %}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300" title="Editar">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                        </svg>
-                                    </a>
-                                    <form method="POST" action="{% url 'productos:eliminar_producto' producto.id %}" onsubmit="return confirm('¿Estás seguro de eliminar este producto?');" class="inline">
-                                        {% csrf_token %}
-                                        <button type="submit" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300" title="Eliminar">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                            </svg>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7" class="px-6 py-8 text-center text-neutral-500 dark:text-neutral-400">
-                                No hay productos registrados. <a href="{% url 'productos:nuevo_producto' %}" class="text-blue-600 hover:underline">Crear el primero</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <!-- Botón Nuevo Producto -->
+        <a
+          href="{% url 'productos:nuevo_producto' %}"
+          class="flex items-center justify-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg shadow-red-600/20 hover:shadow-red-600/40"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2.5"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          <span>Nuevo Producto</span>
+        </a>
+      </div>
     </div>
+
+    <!-- Mensajes -->
+    {% if messages %}
+    <div class="mb-6 space-y-2">
+      {% for message in messages %}
+      <div
+        class="p-4 rounded-lg border backdrop-blur-sm {% if message.tags == 'success' %}bg-green-500/10 border-green-500/30 text-green-300{% elif message.tags == 'error' %}bg-red-500/10 border-red-500/30 text-red-300{% else %}bg-blue-500/10 border-blue-500/30 text-blue-300{% endif %}"
+      >
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Tabla de Productos (CSS Grid) -->
+    <div
+      class="bg-white dark:bg-neutral-900/50 backdrop-blur-sm border border-gray-200 dark:border-white/5 rounded-xl shadow-lg dark:shadow-2xl"
+    >
+      <!-- Wrapper para scroll horizontal en móvil -->
+      <div class="overflow-x-auto">
+        <!-- Cabecera -->
+        <div
+          class="hidden md:grid grid-cols-12 gap-4 px-6 py-4 bg-gray-100 dark:bg-neutral-900/80 border-b border-gray-200 dark:border-neutral-800"
+          style="min-width: 900px"
+        >
+          <div
+            class="col-span-1 text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-widest"
+          >
+            Imagen
+          </div>
+          <div
+            class="col-span-3 text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-widest"
+          >
+            Nombre
+          </div>
+          <div
+            class="col-span-2 text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-widest"
+          >
+            Precio
+          </div>
+          <div
+            class="col-span-1 text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-widest"
+          >
+            Stock
+          </div>
+          <div
+            class="col-span-2 text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-widest"
+          >
+            Estado
+          </div>
+          <div
+            class="col-span-3 text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-widest text-right"
+          >
+            Acciones
+          </div>
+        </div>
+
+        <!-- Filas de Productos -->
+        <div id="productList">
+          {% for producto in productos %}
+          <div
+            class="flex flex-col md:grid md:grid-cols-12 gap-4 px-4 md:px-6 py-4 bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-all duration-200 md:items-center product-row"
+            data-product-name="{{ producto.nombre|lower }}"
+            data-product-id="{{ producto.id }}"
+            style="min-width: auto"
+          >
+            <!-- Contenedor superior: Imagen + Nombre -->
+            <div class="flex gap-3 mb-3 md:contents">
+              <!-- Imagen -->
+              <div class="md:col-span-1">
+                {% if producto.imagen %}
+                <img
+                  src="{{ producto.imagen.url }}"
+                  alt="{{ producto.nombre }}"
+                  class="w-16 h-16 md:w-14 md:h-14 object-cover rounded-lg ring-1 ring-white/10"
+                />
+                {% else %}
+                <div
+                  class="w-16 h-16 md:w-14 md:h-14 bg-gray-200 dark:bg-neutral-800 rounded-lg flex items-center justify-center ring-1 ring-gray-300 dark:ring-white/10"
+                >
+                  <svg
+                    class="w-6 h-6 text-neutral-400 dark:text-neutral-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                {% endif %}
+              </div>
+
+              <!-- Nombre y detalles -->
+              <div class="md:col-span-3 flex-1">
+              <div
+                class="text-sm font-semibold text-neutral-900 dark:text-white mb-1"
+              >
+                {{ producto.nombre }}
+              </div>
+              <div class="text-xs text-neutral-600 dark:text-neutral-500">
+                {{ producto.categoria.nombre|default:"-" }}
+              </div>
+              <div class="text-xs text-neutral-600 font-mono">
+                SKU: {{ producto.sku }}
+              </div>
+            </div>
+            </div>
+
+            <!-- Grid para Precio, Stock, Estado -->
+            <div class="grid grid-cols-3 gap-3 mb-3 md:contents">
+            <!-- Precio -->
+            <div class="md:col-span-2">
+              <div class="text-xs text-neutral-500 dark:text-neutral-600 mb-1 md:hidden">Precio</div>
+              {% if producto.precio_oferta %}
+              <div class="text-xs text-neutral-500 line-through">
+                ${{ producto.precio }}
+              </div>
+              <div class="text-sm font-bold text-green-400">
+                ${{ producto.precio_oferta }}
+              </div>
+              {% elif producto.precio %}
+              <div
+                class="text-sm font-semibold text-neutral-900 dark:text-white"
+              >
+                ${{ producto.precio }}
+              </div>
+              {% else %}
+              <div class="text-sm text-neutral-400 dark:text-neutral-600">
+                -
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Stock -->
+            <div class="md:col-span-1">
+              <div class="text-xs text-neutral-500 dark:text-neutral-600 mb-1 md:hidden">Stock</div>
+              <div
+                class="text-sm font-semibold {% if producto.stock < 5 %}text-orange-500 dark:text-orange-400{% else %}text-neutral-900 dark:text-white{% endif %}"
+              >
+                {{ producto.stock }}
+              </div>
+              {% if producto.stock < 5 and producto.stock > 0 %}
+              <div class="text-xs text-orange-500">Bajo</div>
+              {% elif producto.stock == 0 %}
+              <div class="text-xs text-red-500">Agotado</div>
+              {% endif %}
+            </div>
+
+            <!-- Estado (Toggle Switch) -->
+            <div class="md:col-span-2">
+              <div class="text-xs text-neutral-500 dark:text-neutral-600 mb-1 md:hidden">Estado</div>
+              <div
+                class="toggle-switch {% if producto.activo %}active{% endif %}"
+                data-product-id="{{ producto.id }}"
+                data-active="{{ producto.activo|yesno:'true,false' }}"
+                onclick="toggleProductStatus({{ producto.id }}, this)"
+              ></div>
+              <div class="text-xs text-neutral-600 dark:text-neutral-500 mt-1">
+                {% if producto.activo %}Activo{% else %}Inactivo{% endif %}
+              </div>
+            </div>
+            </div>
+
+            <!-- Acciones -->
+            <div class="md:col-span-3 flex items-center justify-end gap-2 pt-3 md:pt-0 border-t md:border-t-0 border-gray-200 dark:border-neutral-800">
+              <a
+                href="{% url 'productos:editar_producto' producto.id %}"
+                class="tooltip p-2 bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white rounded-lg transition-all duration-200 group"
+                data-tooltip="Editar"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+              </a>
+
+              <button
+                onclick="confirmDelete({{ producto.id }}, '{{ producto.nombre|escapejs }}')"
+                class="tooltip p-2 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white rounded-lg transition-all duration-200 group"
+                data-tooltip="Eliminar"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+          {% empty %}
+          <div class="px-4 md:px-6 py-16 text-center">
+            <svg
+              class="w-16 h-16 mx-auto mb-4 text-neutral-400 dark:text-neutral-700"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+              />
+            </svg>
+            <p class="text-neutral-600 dark:text-neutral-400 mb-4">
+              No hay productos registrados
+            </p>
+            <a
+              href="{% url 'productos:nuevo_producto' %}"
+              class="text-red-500 hover:text-red-400 font-semibold"
+              >Crear el primero</a
+            >
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Estadísticas rápidas (opcional) -->
+    <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div
+        class="bg-white dark:bg-neutral-900/50 backdrop-blur-sm border border-gray-200 dark:border-white/5 rounded-lg p-4"
+      >
+        <div
+          class="text-neutral-600 dark:text-neutral-400 text-xs uppercase tracking-wider mb-1"
+        >
+          Total Productos
+        </div>
+        <div class="text-2xl font-bold text-neutral-900 dark:text-white">
+          {{ productos|length }}
+        </div>
+      </div>
+      <div
+        class="bg-white dark:bg-neutral-900/50 backdrop-blur-sm border border-gray-200 dark:border-white/5 rounded-lg p-4"
+      >
+        <div
+          class="text-neutral-600 dark:text-neutral-400 text-xs uppercase tracking-wider mb-1"
+        >
+          Activos
+        </div>
+        <div class="text-2xl font-bold text-green-600 dark:text-green-400">
+          {{ productos|length }}
+        </div>
+      </div>
+      <div
+        class="bg-white dark:bg-neutral-900/50 backdrop-blur-sm border border-gray-200 dark:border-white/5 rounded-lg p-4"
+      >
+        <div
+          class="text-neutral-600 dark:text-neutral-400 text-xs uppercase tracking-wider mb-1"
+        >
+          Stock Bajo
+        </div>
+        <div class="text-2xl font-bold text-orange-600 dark:text-orange-400">
+          {% with low_stock=productos|length %}0{% endwith %}
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
+
+<!-- Modal de confirmación de eliminación -->
+<div
+  id="deleteModal"
+  class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+>
+  <div
+    class="bg-white dark:bg-neutral-900 border border-gray-300 dark:border-neutral-800 rounded-xl max-w-md w-full p-4 sm:p-6 shadow-2xl"
+  >
+    <h3
+      class="text-lg sm:text-xl font-bold text-neutral-900 dark:text-white mb-2"
+    >
+      Confirmar Eliminación
+    </h3>
+    <p
+      class="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 mb-4 sm:mb-6"
+    >
+      ¿Estás seguro de que deseas eliminar el producto
+      <span
+        id="deleteProductName"
+        class="text-neutral-900 dark:text-white font-semibold"
+      ></span
+      >?
+    </p>
+    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-end">
+      <button
+        onclick="closeDeleteModal()"
+        class="w-full sm:w-auto px-4 py-2 bg-gray-200 dark:bg-neutral-800 hover:bg-gray-300 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white rounded-lg transition-colors duration-200"
+      >
+        Cancelar
+      </button>
+      <form id="deleteForm" method="POST" class="w-full sm:w-auto">
+        {% csrf_token %}
+        <button
+          type="submit"
+          class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200"
+        >
+          Eliminar
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %} {% block extra_js %}
+<script>
+  // Búsqueda en tiempo real
+  document
+    .getElementById("searchInput")
+    .addEventListener("input", function (e) {
+      const searchTerm = e.target.value.toLowerCase();
+      const productRows = document.querySelectorAll(".product-row");
+
+      productRows.forEach((row) => {
+        const productName = row.getAttribute("data-product-name");
+        if (productName.includes(searchTerm)) {
+          row.style.display = "grid";
+        } else {
+          row.style.display = "none";
+        }
+      });
+    });
+
+  // Toggle de estado con AJAX
+  function toggleProductStatus(productId, toggleElement) {
+    const isActive = toggleElement.classList.contains("active");
+    const newStatus = !isActive;
+
+    // Optimistic UI update
+    if (newStatus) {
+      toggleElement.classList.add("active");
+    } else {
+      toggleElement.classList.remove("active");
+    }
+
+    // Actualizar texto
+    const statusText = toggleElement.nextElementSibling;
+    statusText.textContent = newStatus ? "Activo" : "Inactivo";
+
+    // AJAX request
+    fetch(`/productos/admin/toggle-status/${productId}/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCookie("csrftoken"),
+        "X-Requested-With": "XMLHttpRequest",
+      },
+      body: JSON.stringify({
+        activo: newStatus,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data.success) {
+          // Revertir si falla
+          if (isActive) {
+            toggleElement.classList.add("active");
+          } else {
+            toggleElement.classList.remove("active");
+          }
+          statusText.textContent = isActive ? "Activo" : "Inactivo";
+          alert("Error al actualizar el estado del producto");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        // Revertir en caso de error
+        if (isActive) {
+          toggleElement.classList.add("active");
+        } else {
+          toggleElement.classList.remove("active");
+        }
+        statusText.textContent = isActive ? "Activo" : "Inactivo";
+      });
+  }
+
+  // Modal de confirmación de eliminación
+  function confirmDelete(productId, productName) {
+    document.getElementById("deleteProductName").textContent = productName;
+    document.getElementById(
+      "deleteForm"
+    ).action = `/productos/admin/eliminar/${productId}/`;
+    document.getElementById("deleteModal").classList.remove("hidden");
+  }
+
+  function closeDeleteModal() {
+    document.getElementById("deleteModal").classList.add("hidden");
+  }
+
+  // Cerrar modal con ESC
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      closeDeleteModal();
+    }
+  });
+
+  // Función auxiliar para obtener CSRF token
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+</script>
 {% endblock %}
