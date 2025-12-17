@@ -257,77 +257,93 @@ Kitaluro Admin{% endblock %} {% block extra_css %}
 
               <!-- Nombre y detalles -->
               <div class="md:col-span-3 flex-1">
-              <div
-                class="text-sm font-semibold text-neutral-900 dark:text-white mb-1"
-              >
-                {{ producto.nombre }}
+                <div
+                  class="text-sm font-semibold text-neutral-900 dark:text-white mb-1"
+                >
+                  {{ producto.nombre }}
+                </div>
+                <div class="text-xs text-neutral-600 dark:text-neutral-500">
+                  {{ producto.categoria.nombre|default:"-" }}
+                </div>
+                <div class="text-xs text-neutral-600 font-mono">
+                  SKU: {{ producto.sku }}
+                </div>
               </div>
-              <div class="text-xs text-neutral-600 dark:text-neutral-500">
-                {{ producto.categoria.nombre|default:"-" }}
-              </div>
-              <div class="text-xs text-neutral-600 font-mono">
-                SKU: {{ producto.sku }}
-              </div>
-            </div>
             </div>
 
             <!-- Grid para Precio, Stock, Estado -->
             <div class="grid grid-cols-3 gap-3 mb-3 md:contents">
-            <!-- Precio -->
-            <div class="md:col-span-2">
-              <div class="text-xs text-neutral-500 dark:text-neutral-600 mb-1 md:hidden">Precio</div>
-              {% if producto.precio_oferta %}
-              <div class="text-xs text-neutral-500 line-through">
-                ${{ producto.precio }}
+              <!-- Precio -->
+              <div class="md:col-span-2">
+                <div
+                  class="text-xs text-neutral-500 dark:text-neutral-600 mb-1 md:hidden"
+                >
+                  Precio
+                </div>
+                {% if producto.precio_oferta %}
+                <div class="text-xs text-neutral-500 line-through">
+                  ${{ producto.precio }}
+                </div>
+                <div class="text-sm font-bold text-green-400">
+                  ${{ producto.precio_oferta }}
+                </div>
+                {% elif producto.precio %}
+                <div
+                  class="text-sm font-semibold text-neutral-900 dark:text-white"
+                >
+                  ${{ producto.precio }}
+                </div>
+                {% else %}
+                <div class="text-sm text-neutral-400 dark:text-neutral-600">
+                  -
+                </div>
+                {% endif %}
               </div>
-              <div class="text-sm font-bold text-green-400">
-                ${{ producto.precio_oferta }}
-              </div>
-              {% elif producto.precio %}
-              <div
-                class="text-sm font-semibold text-neutral-900 dark:text-white"
-              >
-                ${{ producto.precio }}
-              </div>
-              {% else %}
-              <div class="text-sm text-neutral-400 dark:text-neutral-600">
-                -
-              </div>
-              {% endif %}
-            </div>
 
-            <!-- Stock -->
-            <div class="md:col-span-1">
-              <div class="text-xs text-neutral-500 dark:text-neutral-600 mb-1 md:hidden">Stock</div>
-              <div
-                class="text-sm font-semibold {% if producto.stock < 5 %}text-orange-500 dark:text-orange-400{% else %}text-neutral-900 dark:text-white{% endif %}"
-              >
-                {{ producto.stock }}
+              <!-- Stock -->
+              <div class="md:col-span-1">
+                <div
+                  class="text-xs text-neutral-500 dark:text-neutral-600 mb-1 md:hidden"
+                >
+                  Stock
+                </div>
+                <div
+                  class="text-sm font-semibold {% if producto.stock < 5 %}text-orange-500 dark:text-orange-400{% else %}text-neutral-900 dark:text-white{% endif %}"
+                >
+                  {{ producto.stock }}
+                </div>
+                {% if producto.stock < 5 and producto.stock > 0 %}
+                <div class="text-xs text-orange-500">Bajo</div>
+                {% elif producto.stock == 0 %}
+                <div class="text-xs text-red-500">Agotado</div>
+                {% endif %}
               </div>
-              {% if producto.stock < 5 and producto.stock > 0 %}
-              <div class="text-xs text-orange-500">Bajo</div>
-              {% elif producto.stock == 0 %}
-              <div class="text-xs text-red-500">Agotado</div>
-              {% endif %}
-            </div>
 
-            <!-- Estado (Toggle Switch) -->
-            <div class="md:col-span-2">
-              <div class="text-xs text-neutral-500 dark:text-neutral-600 mb-1 md:hidden">Estado</div>
-              <div
-                class="toggle-switch {% if producto.activo %}active{% endif %}"
-                data-product-id="{{ producto.id }}"
-                data-active="{{ producto.activo|yesno:'true,false' }}"
-                onclick="toggleProductStatus({{ producto.id }}, this)"
-              ></div>
-              <div class="text-xs text-neutral-600 dark:text-neutral-500 mt-1">
-                {% if producto.activo %}Activo{% else %}Inactivo{% endif %}
+              <!-- Estado (Toggle Switch) -->
+              <div class="md:col-span-2">
+                <div
+                  class="text-xs text-neutral-500 dark:text-neutral-600 mb-1 md:hidden"
+                >
+                  Estado
+                </div>
+                <div
+                  class="toggle-switch {% if producto.activo %}active{% endif %}"
+                  data-product-id="{{ producto.id }}"
+                  data-active="{{ producto.activo|yesno:'true,false' }}"
+                  onclick="toggleProductStatus({{ producto.id }}, this)"
+                ></div>
+                <div
+                  class="text-xs text-neutral-600 dark:text-neutral-500 mt-1"
+                >
+                  {% if producto.activo %}Activo{% else %}Inactivo{% endif %}
+                </div>
               </div>
-            </div>
             </div>
 
             <!-- Acciones -->
-            <div class="md:col-span-3 flex items-center justify-end gap-2 pt-3 md:pt-0 border-t md:border-t-0 border-gray-200 dark:border-neutral-800">
+            <div
+              class="md:col-span-3 flex items-center justify-end gap-2 pt-3 md:pt-0 border-t md:border-t-0 border-gray-200 dark:border-neutral-800"
+            >
               <a
                 href="{% url 'productos:editar_producto' producto.id %}"
                 class="tooltip p-2 bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white rounded-lg transition-all duration-200 group"
