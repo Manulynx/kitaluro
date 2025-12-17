@@ -509,66 +509,29 @@ Future of Home{% endblock %} {% block content %}
         return;
       }
 
-      // Items del carrusel y modo escritorio/móvil
       const items = carousel.querySelectorAll(".snap-start");
-      const desktopMedia = window.matchMedia("(min-width: 1024px)");
-      let isDesktop = desktopMedia.matches;
       let currentIndex = 0;
 
       function updateVisibleItem() {
         if (!items.length) return;
 
-        if (isDesktop) {
-          // Vista PC: solo una carta visible centrada, sin scroll horizontal
-          items.forEach((item, index) => {
-            item.style.display = index === currentIndex ? "block" : "none";
-          });
-          carousel.style.justifyContent = "center";
-          carousel.style.overflowX = "hidden";
-        } else {
-          // Vista móvil/tablet: carrusel horizontal normal con varias cartas
-          items.forEach((item) => {
-            item.style.display = "";
-          });
-          carousel.style.justifyContent = "";
-          carousel.style.overflowX = "scroll";
-        }
+        // Mostrar solo la carta actual, ocultar las demás
+        items.forEach((item, index) => {
+          item.style.display = index === currentIndex ? "block" : "none";
+        });
+
+        // Asegurar centrado y sin scroll
+        carousel.style.justifyContent = "center";
+        carousel.style.overflowX = "hidden";
+        carousel.style.display = "flex";
       }
 
-      // Aplicar layout inicial y escuchar cambios de tamaño
+      // Inicializar vista
       updateVisibleItem();
-      desktopMedia.addEventListener("change", (e) => {
-        isDesktop = e.matches;
-        // Asegurar índice válido al cambiar de modo
-        if (items.length) {
-          currentIndex = Math.max(0, Math.min(currentIndex, items.length - 1));
-        }
-        updateVisibleItem();
-      });
 
-      const AUTO_PLAY_DELAY = 2500; // ms - misma velocidad percibida en PC y móvil
+      const AUTO_PLAY_DELAY = 2500;
       let autoPlayInterval = null;
-      let isPlaying = true; // Por defecto en reproducción
-
-      function getStepSize() {
-        const items = carousel.querySelectorAll(".snap-start");
-        if (!items.length) {
-          return carousel.clientWidth || 300;
-        }
-
-        const first = items[0];
-        const second = items[1];
-        let step = first.getBoundingClientRect().width;
-
-        if (second) {
-          const gap = second.offsetLeft - first.offsetLeft - first.offsetWidth;
-          if (gap > 0) {
-            step += gap;
-          }
-        }
-
-        return step;
-      }
+      let isPlaying = true;
 
       function updatePlayPauseUI() {
         const playIcon = playPauseBtn.querySelector('[data-icon="play"]');
@@ -605,38 +568,18 @@ Future of Home{% endblock %} {% block content %}
         updatePlayPauseUI();
 
         autoPlayInterval = setInterval(() => {
-          goNext(true); // movimiento automático
+          goNext(true);
         }, AUTO_PLAY_DELAY);
       }
 
-      //function handleUserInteraction() {
-      // Cualquier interacción manual detiene el autoplay
-      //pauseAutoPlay();
-      //}
-      function handleUserInteraction() {}
+      function handleUserInteraction() {
+        // Opcional: pausar al interactuar
+      }
 
       function goNext(fromAuto = false) {
-        // Vista PC: avanzar índice de carta visible
-        if (isDesktop) {
-          if (!items.length) return;
-          currentIndex = (currentIndex + 1) % items.length;
-          updateVisibleItem();
-
-          if (!fromAuto) {
-            handleUserInteraction();
-          }
-          return;
-        }
-
-        // Vista móvil/tablet: scroll horizontal normal
-        const step = getStepSize();
-        const maxScroll = carousel.scrollWidth - carousel.clientWidth;
-
-        if (carousel.scrollLeft >= maxScroll - step) {
-          carousel.scrollTo({ left: 0, behavior: "smooth" });
-        } else {
-          carousel.scrollBy({ left: step, behavior: "smooth" });
-        }
+        if (!items.length) return;
+        currentIndex = (currentIndex + 1) % items.length;
+        updateVisibleItem();
 
         if (!fromAuto) {
           handleUserInteraction();
@@ -644,38 +587,19 @@ Future of Home{% endblock %} {% block content %}
       }
 
       function goPrev() {
-        // Vista PC: retroceder índice de carta visible
-        if (isDesktop) {
-          if (!items.length) return;
-          currentIndex = (currentIndex - 1 + items.length) % items.length;
-          updateVisibleItem();
-          handleUserInteraction();
-          return;
-        }
-
-        // Vista móvil/tablet: scroll horizontal normal
-        const step = getStepSize();
-
-        if (carousel.scrollLeft <= step) {
-          const maxScroll = Math.max(
-            carousel.scrollWidth - carousel.clientWidth,
-            0
-          );
-          carousel.scrollTo({ left: maxScroll, behavior: "smooth" });
-        } else {
-          carousel.scrollBy({ left: -step, behavior: "smooth" });
-        }
-
+        if (!items.length) return;
+        currentIndex = (currentIndex - 1 + items.length) % items.length;
+        updateVisibleItem();
         handleUserInteraction();
       }
 
-      // Eventos de los botones: izquierda = anterior, derecha = siguiente
+      // Corregido: Anterior -> goPrev, Siguiente -> goNext
       prevBtn.addEventListener("click", () => {
-        goNext();
+        goPrev();
       });
 
       nextBtn.addEventListener("click", () => {
-        goPrev();
+        goNext();
       });
 
       playPauseBtn.addEventListener("click", () => {
@@ -686,21 +610,41 @@ Future of Home{% endblock %} {% block content %}
         }
       });
 
-      // Interacción manual directa con el carrusel
-      ["pointerdown", "touchstart", "wheel"].forEach((eventName) => {
-        carousel.addEventListener(
-          eventName,
-          () => {
-            handleUserInteraction();
-          },
-          { passive: true }
-        );
-      });
+      // Gestos táctiles (Swipe) para móvil
+      let touchStartX = 0;
+      let touchEndX = 0;
 
-      // Iniciar autoplay al cargar
+      carousel.addEventListener(
+        "touchstart",
+        (e) => {
+          touchStartX = e.changedTouches[0].screenX;
+          handleUserInteraction();
+        },
+        { passive: true }
+      );
+
+      carousel.addEventListener(
+        "touchend",
+        (e) => {
+          touchEndX = e.changedTouches[0].screenX;
+          handleSwipe();
+        },
+        { passive: true }
+      );
+
+      function handleSwipe() {
+        const threshold = 50;
+        if (touchEndX < touchStartX - threshold) {
+          goNext(); // Swipe Left -> Next
+        }
+        if (touchEndX > touchStartX + threshold) {
+          goPrev(); // Swipe Right -> Prev
+        }
+      }
+
+      // Iniciar autoplay
       startAutoPlay();
 
-      // Limpiar al salir de la página
       window.addEventListener("beforeunload", () => {
         if (autoPlayInterval) {
           clearInterval(autoPlayInterval);
