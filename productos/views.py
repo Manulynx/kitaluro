@@ -581,7 +581,7 @@ def eliminar_producto(request, producto_id):
 
 # ==================== VISTAS DE TAXONOMÍAS ====================
 
-@login_required
+
 def admin_taxonomias(request):
     """Vista para gestionar categorías y subcategorías"""
     categorias = Categoria.objects.prefetch_related(
@@ -597,7 +597,7 @@ def admin_taxonomias(request):
     return render(request, 'admin_taxonomias.html', context)
 
 
-@login_required
+
 def crear_categoria(request):
     """Vista para crear una nueva categoría"""
     if request.method == 'POST':
@@ -633,7 +633,7 @@ def crear_categoria(request):
     return redirect('productos:admin_taxonomias')
 
 
-@login_required
+
 def editar_categoria(request, categoria_id):
     """Vista para editar una categoría existente"""
     categoria = get_object_or_404(Categoria, id=categoria_id)
@@ -672,7 +672,7 @@ def editar_categoria(request, categoria_id):
     return redirect('productos:admin_taxonomias')
 
 
-@login_required
+
 def eliminar_categoria(request, categoria_id):
     """Vista para eliminar una categoría"""
     if request.method == 'POST':
@@ -710,7 +710,7 @@ def eliminar_categoria(request, categoria_id):
     return redirect('productos:admin_taxonomias')
 
 
-@login_required
+
 def crear_subcategoria(request):
     """Vista para crear una nueva subcategoría"""
     if request.method == 'POST':
@@ -758,7 +758,7 @@ def crear_subcategoria(request):
     return redirect('productos:admin_taxonomias')
 
 
-@login_required
+
 def editar_subcategoria(request, subcategoria_id):
     """Vista para editar una subcategoría existente"""
     subcategoria = get_object_or_404(Subcategoria, id=subcategoria_id)
@@ -795,7 +795,7 @@ def editar_subcategoria(request, subcategoria_id):
     return redirect('productos:admin_taxonomias')
 
 
-@login_required
+
 def eliminar_subcategoria(request, subcategoria_id):
     """Vista para eliminar una subcategoría"""
     if request.method == 'POST':
@@ -821,7 +821,7 @@ def eliminar_subcategoria(request, subcategoria_id):
     return redirect('productos:admin_taxonomias')
 
 
-@login_required
+
 @require_POST
 def toggle_categoria_status(request, categoria_id):
     """Vista AJAX para cambiar el estado activo/inactivo de una categoría"""
@@ -845,7 +845,7 @@ def toggle_categoria_status(request, categoria_id):
         }, status=400)
 
 
-@login_required
+
 @require_POST
 def toggle_subcategoria_status(request, subcategoria_id):
     """Vista AJAX para cambiar el estado activo/inactivo de una subcategoría"""
