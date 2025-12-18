@@ -84,7 +84,7 @@
         class="backdrop-blur-md bg-white/90 dark:bg-neutral-950/90 border-b border-gray-200 dark:border-neutral-800/50 shadow-sm dark:shadow-none"
       >
         <!-- Nivel 1: Logo + Search -->
-        <div class="px-4 py-4 lg:py-8 flex items-center justify-between">
+        <div class="px-4 py-3 lg:py-5 flex items-center justify-between">
           <!-- Hamburger Menu Button (Mobile Only) -->
           <button
             id="menu-toggle"
@@ -112,7 +112,7 @@
           <!-- Logo Centrado -->
           <a
             href="{% url 'home' %}"
-            class="absolute left-1/2 transform -translate-x-1/2 font-serif text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white tracking-wide hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            class="absolute left-1/2 transform -translate-x-1/2 font-serif text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white tracking-wide hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
             KITALURO
           </a>
@@ -159,6 +159,7 @@
 
             <!-- Search Icon -->
             <button
+              id="search-toggle"
               class="text-neutral-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
               aria-label="Buscar"
             >
@@ -180,11 +181,11 @@
         </div>
 
         <!-- Nivel 2: Navigation Links (Desktop Centered) - Más separación vertical -->
-        <div class="hidden lg:flex items-center justify-center pb-6 px-4">
-          <div class="flex items-center gap-16">
+        <div class="hidden lg:flex items-center justify-center pb-4 px-4">
+          <div class="flex items-center justify-between w-full max-w-6xl">
             <a
               href="{% url 'productos:admin_productos' %}"
-              class="{% if 'admin' in request.resolver_match.url_name or request.resolver_match.url_name == 'nuevo_producto' or request.resolver_match.url_name == 'editar_producto' %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-xl transition-all duration-300 relative group"
+              class="{% if 'admin' in request.resolver_match.url_name or request.resolver_match.url_name == 'nuevo_producto' or request.resolver_match.url_name == 'editar_producto' %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-lg transition-all duration-300 relative group"
             >
               ADMIN
               <span
@@ -193,7 +194,7 @@
             </a>
             <a
               href="{% url 'home' %}"
-              class="{% if request.resolver_match.url_name == 'home' %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-xl transition-all duration-300 relative group"
+              class="{% if request.resolver_match.url_name == 'home' %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-lg transition-all duration-300 relative group"
             >
               INICIO
               <span
@@ -202,7 +203,7 @@
             </a>
             <a
               href="{% url 'productos:index' %}"
-              class="{% if 'productos' in request.resolver_match.namespace and 'admin' not in request.resolver_match.url_name and request.resolver_match.url_name != 'nuevo_producto' and request.resolver_match.url_name != 'editar_producto' %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-xl transition-all duration-300 relative group"
+              class="{% if 'productos' in request.resolver_match.namespace and 'admin' not in request.resolver_match.url_name and request.resolver_match.url_name != 'nuevo_producto' and request.resolver_match.url_name != 'editar_producto' %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-lg transition-all duration-300 relative group"
             >
               PRODUCTOS
               <span
@@ -211,7 +212,7 @@
             </a>
             <a
               href="{% url 'contacto' %}"
-              class="{% if request.resolver_match.url_name == 'contacto' %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-xl transition-all duration-300 relative group"
+              class="{% if request.resolver_match.url_name == 'contacto' %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-lg transition-all duration-300 relative group"
             >
               CONTACTO
               <span
@@ -455,6 +456,146 @@
       {% block content %}{% endblock %}
     </main>
 
+    <!-- Search Modal -->
+    <div id="search-modal" class="fixed inset-0 z-[200] pointer-events-none">
+      <!-- Overlay -->
+      <div
+        id="search-overlay"
+        class="absolute inset-0 bg-black/70 backdrop-blur-sm opacity-0 transition-opacity duration-300"
+      ></div>
+
+      <!-- Modal Content -->
+      <div
+        id="search-content"
+        class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl transform -translate-y-full transition-transform duration-500 ease-out"
+      >
+        <div
+          class="mx-4 mt-20 bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl dark:shadow-none border border-gray-200 dark:border-neutral-800 overflow-hidden"
+        >
+          <!-- Search Header -->
+          <div class="p-6 border-b border-gray-200 dark:border-neutral-800">
+            <div class="flex items-center gap-4">
+              <svg
+                class="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <input
+                type="text"
+                id="search-input"
+                placeholder="Buscar productos..."
+                class="flex-1 bg-transparent text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-lg outline-none"
+                autocomplete="off"
+              />
+              <button
+                id="search-close"
+                class="text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors flex-shrink-0"
+                aria-label="Cerrar búsqueda"
+              >
+                <svg
+                  class="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Search Results -->
+          <div id="search-results" class="max-h-[60vh] overflow-y-auto">
+            <!-- Estado inicial -->
+            <div id="search-empty" class="p-12 text-center">
+              <svg
+                class="w-16 h-16 mx-auto mb-4 text-neutral-300 dark:text-neutral-700"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <p class="text-neutral-500 dark:text-neutral-400">
+                Comienza a escribir para buscar productos
+              </p>
+            </div>
+
+            <!-- Loading -->
+            <div id="search-loading" class="hidden p-12 text-center">
+              <div
+                class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"
+              ></div>
+              <p class="mt-4 text-neutral-600 dark:text-neutral-400">
+                Buscando...
+              </p>
+            </div>
+
+            <!-- No results -->
+            <div id="search-no-results" class="hidden p-12 text-center">
+              <svg
+                class="w-16 h-16 mx-auto mb-4 text-neutral-300 dark:text-neutral-700"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <p
+                class="text-neutral-600 dark:text-neutral-400 font-medium mb-2"
+              >
+                No se encontraron productos
+              </p>
+              <p class="text-neutral-500 dark:text-neutral-500 text-sm">
+                Intenta con otros términos de búsqueda
+              </p>
+            </div>
+
+            <!-- Results list -->
+            <div
+              id="search-results-list"
+              class="divide-y divide-gray-200 dark:divide-neutral-800"
+            ></div>
+          </div>
+
+          <!-- Search Footer -->
+          <div
+            class="p-4 bg-gray-50 dark:bg-neutral-800/50 border-t border-gray-200 dark:border-neutral-800"
+          >
+            <div
+              class="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400"
+            >
+              <span id="search-count"></span>
+              <span>Presiona ESC para cerrar</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ✅ Footer corregido -->
     <footer id="main-footer" class="bg-neutral-950 border-t border-neutral-800">
       <div class="max-w-7xl mx-auto px-4 py-6">
@@ -498,6 +639,196 @@
 
     <!-- Main JavaScript -->
     <script src="{% static 'js/main.js' %}"></script>
+
+    <!-- Search Functionality -->
+    <script>
+      (function () {
+        const searchToggle = document.getElementById("search-toggle");
+        const searchModal = document.getElementById("search-modal");
+        const searchOverlay = document.getElementById("search-overlay");
+        const searchContent = document.getElementById("search-content");
+        const searchClose = document.getElementById("search-close");
+        const searchInput = document.getElementById("search-input");
+        const searchEmpty = document.getElementById("search-empty");
+        const searchLoading = document.getElementById("search-loading");
+        const searchNoResults = document.getElementById("search-no-results");
+        const searchResultsList = document.getElementById(
+          "search-results-list"
+        );
+        const searchCount = document.getElementById("search-count");
+
+        let searchTimeout = null;
+
+        // Abrir modal
+        function openSearch() {
+          searchModal.classList.remove("pointer-events-none");
+          searchModal.classList.add("pointer-events-auto");
+          document.body.style.overflow = "hidden";
+
+          setTimeout(() => {
+            searchOverlay.style.opacity = "1";
+            searchContent.style.transform = "translateX(-50%) translateY(0)";
+            searchInput.focus();
+          }, 10);
+        }
+
+        // Cerrar modal
+        function closeSearch() {
+          searchOverlay.style.opacity = "0";
+          searchContent.style.transform = "translateX(-50%) translateY(-100%)";
+
+          setTimeout(() => {
+            searchModal.classList.remove("pointer-events-auto");
+            searchModal.classList.add("pointer-events-none");
+            document.body.style.overflow = "";
+            searchInput.value = "";
+            resetSearchResults();
+          }, 300);
+        }
+
+        // Reset resultados
+        function resetSearchResults() {
+          searchEmpty.classList.remove("hidden");
+          searchLoading.classList.add("hidden");
+          searchNoResults.classList.add("hidden");
+          searchResultsList.innerHTML = "";
+          searchCount.textContent = "";
+        }
+
+        // Buscar productos
+        function buscarProductos(query) {
+          if (!query || query.length < 2) {
+            resetSearchResults();
+            return;
+          }
+
+          // Mostrar loading
+          searchEmpty.classList.add("hidden");
+          searchLoading.classList.remove("hidden");
+          searchNoResults.classList.add("hidden");
+          searchResultsList.innerHTML = "";
+
+          // Hacer petición
+          fetch(`/productos/api/buscar/?q=${encodeURIComponent(query)}`)
+            .then((response) => response.json())
+            .then((data) => {
+              searchLoading.classList.add("hidden");
+
+              if (data.success && data.productos.length > 0) {
+                // Mostrar resultados
+                searchCount.textContent = `${data.count} producto${
+                  data.count !== 1 ? "s" : ""
+                } encontrado${data.count !== 1 ? "s" : ""}`;
+                searchResultsList.innerHTML = data.productos
+                  .map(
+                    (producto) => `
+                  <a href="${
+                    producto.url
+                  }" class="flex gap-4 p-4 hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-colors group">
+                    <div class="flex-shrink-0 w-20 h-20 bg-gray-200 dark:bg-neutral-800 rounded-lg overflow-hidden">
+                      ${
+                        producto.imagen
+                          ? `
+                        <img src="${producto.imagen}" alt="${producto.nombre}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                      `
+                          : `
+                        <div class="w-full h-full flex items-center justify-center text-neutral-400 dark:text-neutral-600">
+                          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                      `
+                      }
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-start justify-between gap-2 mb-1">
+                        <h3 class="font-semibold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">
+                          ${producto.nombre}
+                        </h3>
+                        ${
+                          producto.destacado
+                            ? '<span class="text-xs px-2 py-1 bg-amber-500 text-white rounded-full flex-shrink-0">★</span>'
+                            : ""
+                        }
+                      </div>
+                      ${
+                        producto.descripcion_corta
+                          ? `<p class="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2 mb-2">${producto.descripcion_corta}</p>`
+                          : ""
+                      }
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-baseline gap-2">
+                          ${
+                            producto.precio_oferta
+                              ? `
+                            <span class="text-lg font-bold text-neutral-900 dark:text-white">$${producto.precio_oferta}</span>
+                            <span class="text-sm text-neutral-500 dark:text-neutral-500 line-through">$${producto.precio}</span>
+                          `
+                              : `
+                            <span class="text-lg font-bold text-neutral-900 dark:text-white">$${producto.precio}</span>
+                          `
+                          }
+                        </div>
+                        <div class="flex items-center gap-2 text-xs">
+                          ${
+                            producto.categoria
+                              ? `<span class="text-neutral-500 dark:text-neutral-400">${producto.categoria}</span>`
+                              : ""
+                          }
+                          ${
+                            producto.marca
+                              ? `<span class="text-blue-600 dark:text-blue-400">${producto.marca}</span>`
+                              : ""
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+                `
+                  )
+                  .join("");
+              } else {
+                // No hay resultados
+                searchNoResults.classList.remove("hidden");
+                searchCount.textContent = "";
+              }
+            })
+            .catch((error) => {
+              console.error("Error al buscar:", error);
+              searchLoading.classList.add("hidden");
+              searchNoResults.classList.remove("hidden");
+            });
+        }
+
+        // Event listeners
+        searchToggle?.addEventListener("click", openSearch);
+        searchClose?.addEventListener("click", closeSearch);
+        searchOverlay?.addEventListener("click", closeSearch);
+
+        // Búsqueda con debounce
+        searchInput?.addEventListener("input", (e) => {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            buscarProductos(e.target.value.trim());
+          }, 300);
+        });
+
+        // Cerrar con ESC
+        document.addEventListener("keydown", (e) => {
+          if (
+            e.key === "Escape" &&
+            !searchModal.classList.contains("pointer-events-none")
+          ) {
+            closeSearch();
+          }
+        });
+
+        // Cerrar al hacer clic en un resultado
+        searchResultsList?.addEventListener("click", () => {
+          setTimeout(closeSearch, 100);
+        });
+      })();
+    </script>
 
     {% block extra_js %}{% endblock %}
   </body>

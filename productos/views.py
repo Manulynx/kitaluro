@@ -867,3 +867,66 @@ def toggle_subcategoria_status(request, subcategoria_id):
             'success': False,
             'error': str(e)
         }, status=400)
+
+
+def buscar_productos(request):
+    """Vista para búsqueda de productos con AJAX"""
+    query = request.GET.get('q', '').strip()
+    
+    if not query or len(query) < 2:
+        return JsonResponse({
+            'success': False,
+            'message': 'Ingresa al menos 2 caracteres para buscar',
+            'productos': []
+        })
+    
+    # Buscar en múltiples campos
+    productos = Producto.objects.filter(
+        Q(nombre__icontains=query) |
+        Q(descripcion_corta__icontains=query) |
+        Q(descripcion__icontains=query) |
+        Q(sku__icontains=query) |
+        Q(categoria__nombre__icontains=query) |
+        Q(subcategoria__nombre__icontains=query) |
+        Q(marca__nombre__icontains=query),
+        activo=True,
+        disponible=True
+    ).select_related(
+        'categoria', 
+        'subcategoria', 
+        'marca'
+    ).prefetch_related('imagenes_galeria')[:20]
+    
+    # Serializar resultados
+    resultados = []
+    for producto in productos:
+        # Obtener imagen principal
+        imagen_url = None
+        if producto.imagen:
+            imagen_url = producto.imagen.url
+        elif producto.imagenes_galeria.exists():
+            imagen_url = producto.imagenes_galeria.first().imagen.url
+        
+        resultados.append({
+            'id': producto.id,
+            'nombre': producto.nombre,
+            'slug': producto.slug,
+            'descripcion_corta': producto.descripcion_corta or '',
+            'precio': str(producto.precio_final),
+            'precio_oferta': str(producto.precio_oferta) if producto.tiene_descuento else None,
+            'descuento': producto.porcentaje_descuento if producto.en_oferta else None,
+            'imagen': imagen_url,
+            'categoria': producto.categoria.nombre if producto.categoria else '',
+            'marca': producto.marca.nombre if producto.marca else '',
+            'url': f'/productos/{producto.slug}/',
+            'stock': producto.stock,
+            'destacado': producto.destacado,
+            'en_oferta': producto.en_oferta,
+        })
+    
+    return JsonResponse({
+        'success': True,
+        'count': len(resultados),
+        'query': query,
+        'productos': resultados
+    })

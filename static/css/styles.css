@@ -802,13 +802,18 @@ html {
 
 .lux-hero-banner {
   width: 100%;
-  background: radial-gradient(circle at top, #111827 0%, #020617 55%, #020617 100%);
-  color: #f9fafb;
+  background: radial-gradient(circle at top, #f3f4f6 0%, #e5e7eb 55%, #d1d5db 100%);
+  color: #111827;
   display: flex;
   justify-content: center;
   align-items: center;
   padding-inline: 1.5rem;
   padding-top: 1.5rem;
+}
+
+.dark .lux-hero-banner {
+  background: radial-gradient(circle at top, #111827 0%, #020617 55%, #020617 100%);
+  color: #f9fafb;
 }
 
 .lux-hero-media {
@@ -817,9 +822,16 @@ html {
   max-width: 1440px;
   margin-inline: auto;
   height: clamp(320px, 60vh, 620px);
-  background: #000;
+  background: #f9fafb;
   overflow: hidden;
   border-radius: 1.5rem;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(148, 163, 184, 0.25);
+}
+
+.dark .lux-hero-media {
+  background: #000;
   box-shadow:
     0 24px 60px rgba(0, 0, 0, 0.8),
     0 0 0 1px rgba(148, 163, 184, 0.15);
@@ -832,6 +844,10 @@ html {
   height: 100%;
   object-fit: contain;
   object-position: center center;
+  background: #f9fafb;
+}
+
+.dark .lux-hero-video {
   background: #000;
 }
 
@@ -851,11 +867,20 @@ html {
   padding: 1.75rem 1.5rem;
   background: linear-gradient(
     90deg,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(255, 255, 255, 0.45) 40%,
+    transparent 75%
+  );
+  border-radius: inherit;
+}
+
+.dark .lux-hero-overlay {
+  background: linear-gradient(
+    90deg,
     rgba(0, 0, 0, 0.70) 0%,
     rgba(0, 0, 0, 0.40) 40%,
     transparent 75%
   );
-  border-radius: inherit;
 }
 
 .lux-hero-content {
@@ -867,8 +892,12 @@ html {
   font-size: 0.75rem;
   letter-spacing: 0.35em;
   text-transform: uppercase;
-  color: #9ca3af;
+  color: #6b7280;
   margin-bottom: 0.75rem;
+}
+
+.dark .lux-hero-kicker {
+  color: #9ca3af;
 }
 
 .lux-hero-title {
@@ -877,6 +906,13 @@ html {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   margin-bottom: 0.9rem;
+  color: #854d0e;
+  text-shadow:
+    0 0 25px rgba(217, 119, 6, 0.25),
+    0 18px 35px rgba(0, 0, 0, 0.15);
+}
+
+.dark .lux-hero-title {
   color: #fefce8;
   text-shadow:
     0 0 25px rgba(250, 204, 21, 0.35),
@@ -887,9 +923,13 @@ html {
   font-family: 'Outfit', system-ui, sans-serif;
   font-size: 0.95rem;
   line-height: 1.7;
-  color: #f9fafb;
+  color: #374151;
   max-width: 30rem;
   margin-bottom: 1.5rem;
+}
+
+.dark .lux-hero-subtitle {
+  color: #f9fafb;
 }
 
 .lux-hero-actions {
@@ -979,11 +1019,20 @@ html {
     padding: 1.5rem 1.25rem;
     background: linear-gradient(
       180deg,
+      rgba(255, 255, 255, 0.78) 0%,
+      rgba(255, 255, 255, 0.45) 40%,
+      transparent 85%
+    );
+    align-items: flex-end;
+  }
+
+  .dark .lux-hero-overlay {
+    background: linear-gradient(
+      180deg,
       rgba(0, 0, 0, 0.72) 0%,
       rgba(0, 0, 0, 0.40) 40%,
       transparent 85%
     );
-    align-items: flex-end;
   }
 
   .lux-hero-title {

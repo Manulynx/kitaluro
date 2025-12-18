@@ -206,18 +206,18 @@ Future of Home{% endblock %} {% block content %}
   </div>
 </section>
 <section
-  class="reveal py-12 sm:py-16 md:py-20 lg:py-24 px-0 bg-neutral-950 overflow-hidden"
+  class="reveal py-12 sm:py-16 md:py-20 lg:py-24 px-0 bg-gray-100 dark:bg-neutral-950 overflow-hidden"
 >
   <div class="max-w-7xl mx-auto">
     {% if productos %}
     <div class="text-center mb-8 sm:mb-10 lg:mb-12 px-4 sm:px-6">
       <h2
-        class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-4 drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+        class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 dark:text-white mb-3 sm:mb-4 drop-shadow-sm dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]"
       >
         Otros Productos
       </h2>
       <p
-        class="text-neutral-400 text-sm sm:text-base lg:text-lg tracking-wide max-w-2xl mx-auto px-4"
+        class="text-neutral-600 dark:text-neutral-400 text-sm sm:text-base lg:text-lg tracking-wide max-w-2xl mx-auto px-4"
       >
         Desliza para descubrir más
       </p>
@@ -226,11 +226,11 @@ Future of Home{% endblock %} {% block content %}
 
     <div class="relative">
       <div
-        class="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-neutral-950 to-transparent z-10 pointer-events-none hidden md:block"
+        class="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-gray-100 dark:from-neutral-950 to-transparent z-10 pointer-events-none hidden md:block"
       ></div>
 
       <div
-        class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-neutral-950 to-transparent z-10 pointer-events-none hidden md:block"
+        class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-gray-100 dark:from-neutral-950 to-transparent z-10 pointer-events-none hidden md:block"
       ></div>
 
       <div
@@ -244,10 +244,10 @@ Future of Home{% endblock %} {% block content %}
         >
           <a
             href="{% url 'productos:detalle' producto.slug %}"
-            class="block bg-neutral-900 rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl hover:shadow-[0_0_40px_rgba(59,130,246,0.3)] transition-all duration-500 hover:scale-[1.02] border border-neutral-800 hover:border-blue-500/30 h-full flex flex-col"
+            class="block bg-white dark:bg-neutral-900 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl dark:shadow-2xl hover:shadow-2xl dark:hover:shadow-[0_0_40px_rgba(59,130,246,0.3)] transition-all duration-500 hover:scale-[1.02] border border-gray-200 dark:border-neutral-800 hover:border-blue-500/30 dark:hover:border-blue-500/30 h-full flex flex-col"
           >
             <div
-              class="relative h-[280px] sm:h-[320px] md:h-[280px] lg:h-[300px] overflow-hidden bg-neutral-800 flex-shrink-0"
+              class="relative h-[280px] sm:h-[320px] md:h-[280px] lg:h-[300px] overflow-hidden bg-gray-200 dark:bg-neutral-800 flex-shrink-0"
             >
               {% if producto.imagen %}
               <img
@@ -304,28 +304,36 @@ Future of Home{% endblock %} {% block content %}
             </div>
 
             <div
-              class="p-4 sm:p-5 lg:p-5 space-y-2 sm:space-y-2.5 bg-neutral-900 flex-grow flex flex-col"
+              class="p-4 sm:p-5 lg:p-5 space-y-2 sm:space-y-2.5 bg-white dark:bg-neutral-900 flex-grow flex flex-col"
             >
               <h3
-                class="font-serif text-base sm:text-lg md:text-xl font-bold text-white group-hover:text-blue-400 transition-colors duration-300 line-clamp-2 leading-tight"
+                class="font-serif text-base sm:text-lg md:text-xl font-bold text-neutral-900 dark:text-white group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors duration-300 line-clamp-2 leading-tight"
               >
                 {{ producto.nombre }}
               </h3>
 
               <div class="flex items-baseline gap-2">
                 {% if producto.tiene_descuento %}
-                <span class="text-lg sm:text-xl font-bold text-white">
+                <span
+                  class="text-lg sm:text-xl font-bold text-neutral-900 dark:text-white"
+                >
                   ${{ producto.precio_oferta }}
                 </span>
-                <span class="text-sm text-neutral-500 line-through">
+                <span
+                  class="text-sm text-neutral-500 dark:text-neutral-500 line-through"
+                >
                   ${{ producto.precio }}
                 </span>
                 {% else %}
-                <span class="text-lg sm:text-xl font-bold text-white">
+                <span
+                  class="text-lg sm:text-xl font-bold text-neutral-900 dark:text-white"
+                >
                   ${{ producto.precio_final }}
                 </span>
                 {% endif %}
-                <span class="text-neutral-500 text-xs">USD</span>
+                <span class="text-neutral-500 dark:text-neutral-500 text-xs"
+                  >USD</span
+                >
               </div>
 
               {% comment %}
@@ -339,14 +347,16 @@ Future of Home{% endblock %} {% block content %}
                 <div
                   class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"
                 ></div>
-                <span class="text-neutral-400">
+                <span class="text-neutral-600 dark:text-neutral-400">
                   {{ producto.stock }} disponibles
                 </span>
               </div>
               {% else %}
               <div class="flex items-center gap-1.5 text-xs">
                 <div class="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
-                <span class="text-neutral-500"> Agotado </span>
+                <span class="text-neutral-500 dark:text-neutral-500">
+                  Agotado
+                </span>
               </div>
               {% endif %}
             </div>
@@ -357,10 +367,10 @@ Future of Home{% endblock %} {% block content %}
           class="snap-start flex-shrink-0 w-[85vw] sm:w-[70vw] md:w-[45vw] lg:w-[32%]"
         >
           <div
-            class="bg-neutral-900 rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center border border-neutral-800"
+            class="bg-white dark:bg-neutral-900 rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center border border-gray-200 dark:border-neutral-800"
           >
             <svg
-              class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 text-neutral-700"
+              class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 text-gray-400 dark:text-neutral-700"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -372,10 +382,14 @@ Future of Home{% endblock %} {% block content %}
                 d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
               ></path>
             </svg>
-            <h3 class="text-lg sm:text-xl font-bold text-white mb-2">
+            <h3
+              class="text-lg sm:text-xl font-bold text-neutral-900 dark:text-white mb-2"
+            >
               No hay productos
             </h3>
-            <p class="text-neutral-500 text-sm sm:text-base">
+            <p
+              class="text-neutral-600 dark:text-neutral-500 text-sm sm:text-base"
+            >
               Agrega productos desde el panel de administración
             </p>
           </div>
@@ -460,7 +474,7 @@ Future of Home{% endblock %} {% block content %}
       </button>
 
       <div
-        class="hidden lg:flex items-center justify-center gap-2 mt-6 sm:mt-8 text-neutral-600"
+        class="hidden lg:flex items-center justify-center gap-2 mt-6 sm:mt-8 text-neutral-500 dark:text-neutral-600"
       >
         <svg
           class="w-4 h-4 sm:w-5 sm:h-5 animate-bounce-horizontal"

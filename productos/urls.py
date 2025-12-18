@@ -25,6 +25,7 @@ urlpatterns = [
     
     # APIs
     path('api/productos/', views.get_productos_json, name='api_productos'),
+    path('api/buscar/', views.buscar_productos, name='buscar_productos'),
     path('<slug:slug>/json/', views.get_producto_detalle_json, name='detalle_json'),
     path('<slug:slug>/', views.detalle, name='detalle'),
 ]
