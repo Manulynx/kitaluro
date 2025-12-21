@@ -529,9 +529,35 @@ Future of Home{% endblock %} {% block content %}
       function updateVisibleItem() {
         if (!items.length) return;
 
-        // Mostrar solo la carta actual, ocultar las demás
+        // Animación suave y lujosa: fade out actual, fade in siguiente
         items.forEach((item, index) => {
-          item.style.display = index === currentIndex ? "block" : "none";
+          if (index === currentIndex) {
+            // Mostrar nuevo item con fade in + slide
+            item.style.display = "block";
+            item.style.opacity = "0";
+            item.style.transform = "translateX(30px) scale(0.95)";
+
+            // Forzar reflow para que la animación funcione
+            void item.offsetWidth;
+
+            item.style.transition =
+              "opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)";
+            item.style.opacity = "1";
+            item.style.transform = "translateX(0) scale(1)";
+          } else {
+            // Ocultar items no actuales con fade out
+            item.style.transition =
+              "opacity 0.6s ease-out, transform 0.6s ease-out";
+            item.style.opacity = "0";
+            item.style.transform = "translateX(-30px) scale(0.95)";
+
+            // Ocultar completamente después de la animación
+            setTimeout(() => {
+              if (index !== currentIndex) {
+                item.style.display = "none";
+              }
+            }, 600);
+          }
         });
 
         // Asegurar centrado y sin scroll
@@ -587,12 +613,14 @@ Future of Home{% endblock %} {% block content %}
       }
 
       function handleUserInteraction() {
-        // Opcional: pausar al interactuar
+        // Pausar autoplay cuando el usuario interactúa
+        pauseAutoPlay();
+        console.log("⏸️ Autoplay pausado por interacción del usuario");
       }
 
       function goNext(fromAuto = false) {
         if (!items.length) return;
-        currentIndex = (currentIndex + 1) % items.length;
+        currentIndex = (currentIndex - 1 + items.length) % items.length;
         updateVisibleItem();
 
         if (!fromAuto) {
@@ -602,17 +630,19 @@ Future of Home{% endblock %} {% block content %}
 
       function goPrev() {
         if (!items.length) return;
-        currentIndex = (currentIndex - 1 + items.length) % items.length;
+        currentIndex = (currentIndex + 1) % items.length;
         updateVisibleItem();
         handleUserInteraction();
       }
 
       // Corregido: Anterior -> goPrev, Siguiente -> goNext
       prevBtn.addEventListener("click", () => {
+        handleUserInteraction();
         goPrev();
       });
 
       nextBtn.addEventListener("click", () => {
+        handleUserInteraction();
         goNext();
       });
 
@@ -632,7 +662,6 @@ Future of Home{% endblock %} {% block content %}
         "touchstart",
         (e) => {
           touchStartX = e.changedTouches[0].screenX;
-          handleUserInteraction();
         },
         { passive: true }
       );
@@ -649,9 +678,11 @@ Future of Home{% endblock %} {% block content %}
       function handleSwipe() {
         const threshold = 50;
         if (touchEndX < touchStartX - threshold) {
+          handleUserInteraction();
           goNext(); // Swipe Left -> Next
         }
         if (touchEndX > touchStartX + threshold) {
+          handleUserInteraction();
           goPrev(); // Swipe Right -> Prev
         }
       }
