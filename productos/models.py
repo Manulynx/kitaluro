@@ -6,6 +6,10 @@ import random
 import string
 import uuid
 from datetime import datetime
+from PIL import Image
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
+import sys
 
 # Create your models here.
 
@@ -225,12 +229,61 @@ class Producto(models.Model):
         return self.nombre
     
     def save(self, *args, **kwargs):
-        """Generar slug y SKU automáticamente si no existen"""
+        # Optimizar imagen principal antes de guardar
+        if self.imagen:
+            self.imagen = self.optimize_image(self.imagen)
+        
+        # Generar slug si no existe
         if not self.slug:
-            self.slug = slugify(self.nombre)
-        if not self.sku:
-            self.sku = self.generar_sku()
+            base_slug = slugify(self.nombre)
+            slug = base_slug
+            counter = 1
+            while Producto.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        
+        # Calcular automáticamente si está en oferta
+        if self.precio_oferta and self.precio_oferta > 0:
+            self.en_oferta = True
+        else:
+            self.en_oferta = False
+            
         super().save(*args, **kwargs)
+    
+    @staticmethod
+    def optimize_image(image_field, max_size=(1200, 1200), quality=90):
+        """Optimiza la imagen manteniendo calidad y aspecto"""
+        try:
+            img = Image.open(image_field)
+            
+            # Convertir RGBA a RGB si es necesario
+            if img.mode in ('RGBA', 'LA', 'P'):
+                background = Image.new('RGB', img.size, (255, 255, 255))
+                if img.mode == 'P':
+                    img = img.convert('RGBA')
+                background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
+                img = background
+            
+            # Redimensionar manteniendo aspecto
+            img.thumbnail(max_size, Image.Resampling.LANCZOS)
+            
+            # Guardar optimizada
+            output = BytesIO()
+            img.save(output, format='JPEG', quality=quality, optimize=True)
+            output.seek(0)
+            
+            return InMemoryUploadedFile(
+                output,
+                'ImageField',
+                f"{image_field.name.split('.')[0]}.jpg",
+                'image/jpeg',
+                sys.getsizeof(output),
+                None
+            )
+        except Exception as e:
+            print(f"Error optimizando imagen: {e}")
+            return image_field
     
     def generar_sku(self):
         """Genera un SKU único para el producto con formato PROV-CAT-YYMMDD-HHMM-UUID4"""
@@ -391,6 +444,10 @@ class ProductImage(models.Model):
         verbose_name_plural = "Imágenes de Galería"
 
     def save(self, *args, **kwargs):
+        # Optimizar imagen antes de guardar
+        if self.image:
+            self.image = Producto.optimize_image(self.image)
+        
         # Si es imagen principal, desmarcar otras como principales
         if self.is_main:
             ProductImage.objects.filter(producto=self.producto, is_main=True).exclude(pk=self.pk).update(is_main=False)

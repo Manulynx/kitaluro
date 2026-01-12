@@ -142,7 +142,7 @@ Kitaluro Admin{% endblock %} {% block extra_css %}
           class="group flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg text-neutral-300 hover:text-white transition-all duration-300 backdrop-blur-sm"
         >
           <svg
-            class="w-5 h-5 text-neutral-400 group-hover:text-blue-400 transition-colors"
+            class="w-5 h-5 text-neutral-400 group-hover:text-white transition-colors"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -187,7 +187,7 @@ Kitaluro Admin{% endblock %} {% block extra_css %}
     <div class="mb-6 space-y-2">
       {% for message in messages %}
       <div
-        class="p-4 rounded-lg border backdrop-blur-sm {% if message.tags == 'success' %}bg-green-500/10 border-green-500/30 text-green-300{% elif message.tags == 'error' %}bg-red-500/10 border-red-500/30 text-red-300{% else %}bg-blue-500/10 border-blue-500/30 text-blue-300{% endif %}"
+        class="p-4 rounded-lg border backdrop-blur-sm {% if message.tags == 'success' %}bg-green-500/10 border-green-500/30 text-green-300{% elif message.tags == 'error' %}bg-red-500/10 border-red-500/30 text-red-300{% else %}bg-neutral-500/10 border-neutral-500/30 text-neutral-300{% endif %}"
       >
         {{ message }}
       </div>
@@ -197,10 +197,10 @@ Kitaluro Admin{% endblock %} {% block extra_css %}
 
     <!-- Tabla de Productos (CSS Grid) -->
     <div
-      class="bg-white dark:bg-neutral-900/50 backdrop-blur-sm border border-gray-200 dark:border-white/5 rounded-xl shadow-lg dark:shadow-2xl"
+      class="bg-white dark:bg-neutral-900/50 backdrop-blur-sm border border-gray-200 dark:border-white/5 rounded-xl shadow-lg dark:shadow-2xl overflow-hidden"
     >
-      <!-- Wrapper para scroll horizontal en móvil -->
-      <div class="overflow-x-auto">
+      <!-- Wrapper para scroll horizontal en móvil con mejor UX -->
+      <div class="overflow-x-auto table-wrapper" id="tableWrapper">
         <!-- Cabecera -->
         <div
           class="hidden md:grid grid-cols-12 gap-4 px-6 py-4 bg-gray-100 dark:bg-neutral-900/80 border-b border-gray-200 dark:border-neutral-800"
@@ -248,54 +248,70 @@ Kitaluro Admin{% endblock %} {% block extra_css %}
             style="min-width: auto"
           >
             <!-- Contenedor superior: Imagen + Nombre -->
-            <div class="flex gap-3 mb-3 md:contents">
+            <div class="flex items-center gap-3 md:contents">
               <!-- Imagen -->
-              <div class="md:col-span-1">
-                {% if producto.imagen %}
-                <img
-                  src="{{ producto.imagen.url }}"
-                  alt="{{ producto.nombre }}"
-                  class="w-16 h-16 md:w-14 md:h-14 object-cover rounded-lg ring-1 ring-white/10"
-                />
-                {% else %}
+              <div class="md:col-span-1 flex-shrink-0">
                 <div
-                  class="w-16 h-16 md:w-14 md:h-14 bg-gray-200 dark:bg-neutral-800 rounded-lg flex items-center justify-center ring-1 ring-gray-300 dark:ring-white/10"
+                  class="w-14 h-14 md:w-16 md:h-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700"
                 >
-                  <svg
-                    class="w-6 h-6 text-neutral-400 dark:text-neutral-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                  {% if producto.imagen %}
+                  <img
+                    src="{{ producto.imagen.url }}"
+                    alt="{{ producto.nombre }}"
+                    class="w-full h-full object-cover"
+                  />
+                  {% elif producto.get_main_image %}
+                  <img
+                    src="{{ producto.get_main_image.url }}"
+                    alt="{{ producto.nombre }}"
+                    class="w-full h-full object-cover"
+                  />
+                  {% else %}
+                  <div
+                    class="w-full h-full flex items-center justify-center text-neutral-400 dark:text-neutral-700"
                   >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
+                    <svg
+                      class="w-6 h-6 md:w-8 md:h-8"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
+                  {% endif %}
                 </div>
-                {% endif %}
               </div>
 
-              <!-- Nombre y detalles -->
-              <div class="md:col-span-3 flex-1">
+              <!-- Nombre -->
+              <div class="md:col-span-3 flex-1 min-w-0">
                 <div
-                  class="text-sm font-semibold text-neutral-900 dark:text-white mb-1"
+                  class="text-xs text-neutral-500 dark:text-neutral-600 mb-1 md:hidden"
+                >
+                  Nombre
+                </div>
+                <div
+                  class="text-sm md:text-base font-semibold text-neutral-900 dark:text-white line-clamp-2"
                 >
                   {{ producto.nombre }}
                 </div>
-                <div class="text-xs text-neutral-600 dark:text-neutral-500">
-                  {{ producto.categoria.nombre|default:"-" }}
+                {% if producto.categoria %}
+                <div
+                  class="text-xs text-neutral-500 dark:text-neutral-500 mt-1 truncate"
+                >
+                  {{ producto.categoria.nombre }}
                 </div>
-                <div class="text-xs text-neutral-600 font-mono">
-                  SKU: {{ producto.sku }}
-                </div>
+                {% endif %}
               </div>
             </div>
 
-            <!-- Grid para Precio, Stock, Estado -->
-            <div class="grid grid-cols-3 gap-3 mb-3 md:contents">
+            <!-- Contenedor inferior: Resto de información -->
+            <div class="grid grid-cols-2 md:contents gap-4 mt-2 md:mt-0">
               <!-- Precio -->
               <div class="md:col-span-2">
                 <div
@@ -303,21 +319,25 @@ Kitaluro Admin{% endblock %} {% block extra_css %}
                 >
                   Precio
                 </div>
-                {% if producto.precio_oferta %}
-                <div class="text-xs text-neutral-500 line-through">
-                  ${{ producto.precio }}
-                </div>
-                <div class="text-sm font-bold text-green-400">
-                  ${{ producto.precio_oferta }}
+                {% if producto.en_oferta and producto.precio_oferta %}
+                <div class="flex flex-col gap-1">
+                  <div
+                    class="text-sm md:text-base font-bold text-green-600 dark:text-green-400"
+                  >
+                    ${{ producto.precio_oferta }}
+                  </div>
+                  <div class="text-xs text-neutral-500 line-through">
+                    ${{ producto.precio }}
+                  </div>
                 </div>
                 {% elif producto.precio %}
                 <div
-                  class="text-sm font-semibold text-neutral-900 dark:text-white"
+                  class="text-sm md:text-base font-semibold text-neutral-900 dark:text-white"
                 >
                   ${{ producto.precio }}
                 </div>
                 {% else %}
-                <div class="text-sm text-neutral-400 dark:text-neutral-600">
+                <div class="text-sm text-neutral-500 dark:text-neutral-600">
                   -
                 </div>
                 {% endif %}
@@ -331,12 +351,14 @@ Kitaluro Admin{% endblock %} {% block extra_css %}
                   Stock
                 </div>
                 <div
-                  class="text-sm font-semibold {% if producto.stock < 5 %}text-orange-500 dark:text-orange-400{% else %}text-neutral-900 dark:text-white{% endif %}"
+                  class="text-sm font-semibold {% if producto.stock < 5 %}text-neutral-500 dark:text-neutral-400{% else %}text-neutral-900 dark:text-white{% endif %}"
                 >
                   {{ producto.stock }}
                 </div>
                 {% if producto.stock < 5 and producto.stock > 0 %}
-                <div class="text-xs text-orange-500">Bajo</div>
+                <div class="text-xs text-neutral-500 dark:text-neutral-400">
+                  Bajo
+                </div>
                 {% elif producto.stock == 0 %}
                 <div class="text-xs text-red-500">Agotado</div>
                 {% endif %}
@@ -349,80 +371,55 @@ Kitaluro Admin{% endblock %} {% block extra_css %}
                 >
                   Estado
                 </div>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="toggle-switch {% if producto.activo %}active{% endif %}"
+                    onclick="toggleProductStatus('{{ producto.id }}', this)"
+                    data-product-id="{{ producto.id }}"
+                  ></div>
+                  <span
+                    class="text-xs font-medium {% if producto.activo %}text-green-600 dark:text-green-400{% else %}text-neutral-500 dark:text-neutral-600{% endif %}"
+                  >
+                    {% if producto.activo %}Activo{% else %}Inactivo{% endif %}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Acciones -->
+              <div class="md:col-span-3 col-span-2">
                 <div
-                  class="toggle-switch {% if producto.activo %}active{% endif %}"
-                  data-product-id="{{ producto.id }}"
-                  data-active="{{ producto.activo|yesno:'true,false' }}"
-                  onclick="toggleProductStatus({{ producto.id }}, this)"
-                ></div>
-                <div
-                  class="text-xs text-neutral-600 dark:text-neutral-500 mt-1"
+                  class="text-xs text-neutral-500 dark:text-neutral-600 mb-1 md:hidden"
                 >
-                  {% if producto.activo %}Activo{% else %}Inactivo{% endif %}
+                  Acciones
+                </div>
+                <div
+                  class="flex flex-wrap md:flex-nowrap items-center gap-2 md:justify-end"
+                >
+                  <a
+                    href="{% url 'productos:detalle' producto.slug %}"
+                    class="flex-1 md:flex-initial px-3 py-2 bg-neutral-700 hover:bg-neutral-600 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-white rounded-lg transition-colors duration-200 text-center text-sm whitespace-nowrap"
+                    target="_blank"
+                  >
+                    Ver
+                  </a>
+                  <a
+                    href="{% url 'productos:editar_producto' producto.id %}"
+                    class="flex-1 md:flex-initial px-3 py-2 bg-neutral-700 hover:bg-neutral-600 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-white rounded-lg transition-colors duration-200 text-center text-sm whitespace-nowrap"
+                  >
+                    Editar
+                  </a>
+                  <button
+                    onclick="openDeleteModal('{{ producto.id }}', '{{ producto.nombre|escapejs }}')"
+                    class="flex-1 md:flex-initial px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200 text-sm whitespace-nowrap"
+                  >
+                    Eliminar
+                  </button>
                 </div>
               </div>
             </div>
-
-            <!-- Acciones -->
-            <div
-              class="md:col-span-3 flex items-center justify-end gap-2 pt-3 md:pt-0 border-t md:border-t-0 border-gray-200 dark:border-neutral-800"
-            >
-              <a
-                href="{% url 'productos:editar_producto' producto.id %}"
-                class="tooltip p-2 bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white rounded-lg transition-all duration-200 group"
-                data-tooltip="Editar"
-              >
-                <svg
-                  class="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                  />
-                </svg>
-              </a>
-
-              <button
-                onclick="confirmDelete({{ producto.id }}, '{{ producto.nombre|escapejs }}')"
-                class="tooltip p-2 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white rounded-lg transition-all duration-200 group"
-                data-tooltip="Eliminar"
-              >
-                <svg
-                  class="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
-                </svg>
-              </button>
-            </div>
           </div>
           {% empty %}
-          <div class="px-4 md:px-6 py-16 text-center">
-            <svg
-              class="w-16 h-16 mx-auto mb-4 text-neutral-400 dark:text-neutral-700"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-              />
-            </svg>
+          <div class="p-8 md:p-12 text-center">
             <p class="text-neutral-600 dark:text-neutral-400 mb-4">
               No hay productos registrados
             </p>
@@ -438,7 +435,7 @@ Kitaluro Admin{% endblock %} {% block extra_css %}
     </div>
 
     <!-- Estadísticas rápidas (opcional) -->
-    <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div
         class="bg-white dark:bg-neutral-900/50 backdrop-blur-sm border border-gray-200 dark:border-white/5 rounded-lg p-4"
       >
@@ -459,20 +456,11 @@ Kitaluro Admin{% endblock %} {% block extra_css %}
         >
           Activos
         </div>
-        <div class="text-2xl font-bold text-green-600 dark:text-green-400">
-          {{ productos|length }}
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-neutral-900/50 backdrop-blur-sm border border-gray-200 dark:border-white/5 rounded-lg p-4"
-      >
         <div
-          class="text-neutral-600 dark:text-neutral-400 text-xs uppercase tracking-wider mb-1"
+          id="activeCount"
+          class="text-2xl font-bold text-green-600 dark:text-green-400"
         >
-          Stock Bajo
-        </div>
-        <div class="text-2xl font-bold text-orange-600 dark:text-orange-400">
-          {% with low_stock=productos|length %}0{% endwith %}
+          0
         </div>
       </div>
     </div>
@@ -524,6 +512,18 @@ Kitaluro Admin{% endblock %} {% block extra_css %}
 
 {% endblock %} {% block extra_js %}
 <script>
+  // Función para actualizar contador de productos activos
+  function updateActiveCount() {
+    const activeSwitches = document.querySelectorAll(".toggle-switch.active");
+    const activeCount = activeSwitches.length;
+    document.getElementById("activeCount").textContent = activeCount;
+  }
+
+  // Actualizar contadores al cargar la página
+  document.addEventListener("DOMContentLoaded", function () {
+    updateActiveCount();
+  });
+
   // Búsqueda en tiempo real
   document
     .getElementById("searchInput")
@@ -571,7 +571,10 @@ Kitaluro Admin{% endblock %} {% block extra_css %}
     })
       .then((response) => response.json())
       .then((data) => {
-        if (!data.success) {
+        if (data.success) {
+          // Actualizar contador de activos
+          updateActiveCount();
+        } else {
           // Revertir si falla
           if (isActive) {
             toggleElement.classList.add("active");
@@ -591,6 +594,8 @@ Kitaluro Admin{% endblock %} {% block extra_css %}
           toggleElement.classList.remove("active");
         }
         statusText.textContent = isActive ? "Activo" : "Inactivo";
+        // Actualizar contador después de revertir
+        updateActiveCount();
       });
   }
 
@@ -628,6 +633,28 @@ Kitaluro Admin{% endblock %} {% block extra_css %}
       }
     }
     return cookieValue;
+  }
+
+  // Detectar si se llegó al final del scroll horizontal
+  const tableWrapper = document.getElementById("tableWrapper");
+  if (tableWrapper) {
+    tableWrapper.addEventListener("scroll", function () {
+      const isScrolledToEnd =
+        this.scrollLeft >= this.scrollWidth - this.clientWidth - 10;
+      if (isScrolledToEnd) {
+        this.classList.add("scrolled-end");
+      } else {
+        this.classList.remove("scrolled-end");
+      }
+    });
+
+    // Verificar inicialmente
+    const isInitiallyScrolledToEnd =
+      tableWrapper.scrollLeft >=
+      tableWrapper.scrollWidth - tableWrapper.clientWidth - 10;
+    if (isInitiallyScrolledToEnd) {
+      tableWrapper.classList.add("scrolled-end");
+    }
   }
 </script>
 {% endblock %}

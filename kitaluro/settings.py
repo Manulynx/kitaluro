@@ -127,6 +127,14 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Image optimization settings
+IMAGE_QUALITY = 90
+MAX_IMAGE_SIZE = (1200, 1200)
+THUMBNAIL_SIZE = (300, 300)
+
+# Allowed image formats
+ALLOWED_IMAGE_FORMATS = ['JPEG', 'JPG', 'PNG', 'WEBP']
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 

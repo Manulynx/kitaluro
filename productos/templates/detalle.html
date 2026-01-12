@@ -61,43 +61,61 @@
         <!-- Main Display Area -->
         <div
           id="mainDisplay"
-          class="relative bg-white dark:bg-neutral-900 overflow-hidden rounded-xl border border-gray-200 dark:border-neutral-800 shadow-xl dark:shadow-none aspect-square group"
+          class="relative bg-white dark:bg-neutral-900 overflow-hidden rounded-xl border border-gray-200 dark:border-neutral-800 shadow-xl dark:shadow-none aspect-square group w-full"
         >
           {% if producto.imagen %}
           <img
             id="mainImage"
             src="{{ producto.imagen.url }}"
             alt="{{ producto.nombre }}"
-            class="w-full h-full object-cover"
+            class="w-full h-full object-contain p-4"
           />
           <video
             id="mainVideo"
             controls
-            class="w-full h-full object-cover hidden"
+            class="w-full h-full object-contain hidden"
           ></video>
           {% elif producto.get_main_image %}
           <img
             id="mainImage"
             src="{{ producto.get_main_image.url }}"
             alt="{{ producto.nombre }}"
-            class="w-full h-full object-cover"
+            class="w-full h-full object-contain p-4"
           />
           <video
             id="mainVideo"
             controls
-            class="w-full h-full object-cover hidden"
+            class="w-full h-full object-contain hidden"
+          ></video>
+          {% elif producto.videos_galeria.first %}
+          <video
+            id="mainVideo"
+            src="{{ producto.videos_galeria.first.video.url }}"
+            controls
+            class="w-full h-full object-contain"
+          ></video>
+          <img
+            id="mainImage"
+            src="{% static 'img/placeholder-product.jpg' %}"
+            alt="{{ producto.nombre }}"
+            class="w-full h-full object-contain hidden"
+          />
+          <video
+            id="mainVideo"
+            controls
+            class="w-full h-full object-contain hidden"
           ></video>
           {% else %}
           <img
             id="mainImage"
             src="{% static 'img/placeholder-product.jpg' %}"
             alt="{{ producto.nombre }}"
-            class="w-full h-full object-cover"
+            class="w-full h-full object-contain"
           />
           <video
             id="mainVideo"
             controls
-            class="w-full h-full object-cover hidden"
+            class="w-full h-full object-contain hidden"
           ></video>
           {% endif %}
 
@@ -142,91 +160,106 @@
           </button>
         </div>
 
-        <!-- Thumbnail Gallery (Images + Videos) -->
-        <div class="grid grid-cols-4 gap-4" id="galleryThumbnails">
-          <!-- Imagen principal como primer thumbnail -->
-          {% if producto.imagen or producto.get_main_image %}
-          <button
-            class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-blue-600 dark:border-blue-400 shadow-lg dark:shadow-none"
-            onclick="showImage('{{ producto.imagen.url|default:producto.get_main_image.url }}')"
+        <!-- Thumbnails Gallery - Horizontal Scroll -->
+        <div class="relative w-full">
+          <div
+            id="thumbnailGallery"
+            class="flex gap-2 sm:gap-3 overflow-x-auto hide-scrollbar pb-2 scroll-smooth"
+            style="scroll-snap-type: x mandatory"
           >
-            <img
-              src="{{ producto.imagen.url|default:producto.get_main_image.url }}"
-              alt="{{ producto.nombre }}"
-              class="w-full h-full object-cover"
-            />
-          </button>
-          {% endif %}
-
-          <!-- Imágenes de la galería -->
-          {% for imagen in producto.imagenes_galeria.all %}
-          <button
-            class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-gray-300 dark:border-transparent hover:border-blue-400 dark:hover:border-blue-400/50 transition-all shadow-md dark:shadow-none"
-            onclick="showImage('{{ imagen.image.url }}')"
-          >
-            <img
-              src="{{ imagen.image.url }}"
-              alt="{{ imagen.alt_text|default:producto.nombre }}"
-              class="w-full h-full object-cover"
-            />
-          </button>
-          {% endfor %}
-
-          <!-- Videos de la galería -->
-          {% for video in producto.videos_galeria.all %}
-          <button
-            class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-gray-300 dark:border-transparent hover:border-blue-400 dark:hover:border-blue-400/50 transition-all shadow-md dark:shadow-none relative"
-            onclick="showVideo('{{ video.video.url }}', '{{ video.title|default:producto.nombre }}')"
-          >
-            <div
-              class="w-full h-full bg-gray-800 flex items-center justify-center"
+            <!-- Imagen principal -->
+            {% if producto.imagen or producto.get_main_image %}
+            <button
+              class="thumbnail-btn flex-shrink-0 bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-blue-600 dark:border-blue-400 shadow-lg dark:shadow-none w-16 sm:w-20 md:w-24"
+              style="scroll-snap-align: start"
+              onclick="showImage('{{ producto.imagen.url|default:producto.get_main_image.url }}')"
             >
-              <svg
-                class="w-12 h-12 text-white"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"
-                />
-              </svg>
-            </div>
-            {% if video.title %}
-            <div
-              class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-xs p-1 truncate"
-            >
-              {{ video.title }}
-            </div>
+              <img
+                src="{{ producto.imagen.url|default:producto.get_main_image.url }}"
+                alt="{{ producto.nombre }}"
+                class="w-full h-full object-cover"
+              />
+            </button>
             {% endif %}
-          </button>
-          {% endfor %}
 
-          <!-- Video principal si existe -->
-          {% if producto.video %}
-          <button
-            class="thumbnail-btn bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-gray-300 dark:border-transparent hover:border-blue-400 dark:hover:border-blue-400/50 transition-all shadow-md dark:shadow-none relative"
-            onclick="showVideo('{{ producto.video.url }}', '{{ producto.nombre }}')"
-          >
-            <div
-              class="w-full h-full bg-gray-800 flex items-center justify-center"
+            <!-- Imágenes de la galería -->
+            {% for imagen in producto.imagenes_galeria.all %}
+            <button
+              class="thumbnail-btn flex-shrink-0 bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-gray-300 dark:border-transparent hover:border-blue-400 dark:hover:border-blue-400/50 transition-all shadow-md dark:shadow-none w-16 sm:w-20 md:w-24"
+              style="scroll-snap-align: start"
+              onclick="showImage('{{ imagen.image.url }}')"
             >
-              <svg
-                class="w-12 h-12 text-white"
-                fill="currentColor"
-                viewBox="0 0 20 20"
+              <img
+                src="{{ imagen.image.url }}"
+                alt="{{ imagen.alt_text|default:producto.nombre }}"
+                class="w-full h-full object-cover"
+              />
+            </button>
+            {% endfor %}
+
+            <!-- Videos de la galería -->
+            {% for video in producto.videos_galeria.all %}
+            <button
+              class="thumbnail-btn flex-shrink-0 bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-gray-300 dark:border-transparent hover:border-blue-400 dark:hover:border-blue-400/50 transition-all shadow-md dark:shadow-none relative w-16 sm:w-20 md:w-24"
+              style="scroll-snap-align: start"
+              onclick="showVideo('{{ video.video.url }}', '{{ video.title|default:producto.nombre }}')"
+            >
+              <div
+                class="w-full h-full bg-gray-800 flex items-center justify-center"
               >
-                <path
-                  d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"
-                />
-              </svg>
-            </div>
-            <div
-              class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-xs p-1 truncate"
+                <svg
+                  class="w-8 sm:w-10 md:w-12 h-8 sm:h-10 md:h-12 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"
+                  />
+                </svg>
+              </div>
+              {% if video.title %}
+              <div
+                class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-xs p-1 truncate"
+              >
+                {{ video.title }}
+              </div>
+              {% endif %}
+            </button>
+            {% endfor %}
+
+            <!-- Video principal si existe -->
+            {% if producto.video %}
+            <button
+              class="thumbnail-btn flex-shrink-0 bg-white dark:bg-neutral-900 rounded-lg overflow-hidden aspect-square border-2 border-gray-300 dark:border-transparent hover:border-blue-400 dark:hover:border-blue-400/50 transition-all shadow-md dark:shadow-none relative w-16 sm:w-20 md:w-24"
+              style="scroll-snap-align: start"
+              onclick="showVideo('{{ producto.video.url }}', '{{ producto.nombre }}')"
             >
-              Video
-            </div>
-          </button>
-          {% endif %}
+              <div
+                class="w-full h-full bg-gray-800 flex items-center justify-center"
+              >
+                <svg
+                  class="w-8 sm:w-10 md:w-12 h-8 sm:h-10 md:h-12 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"
+                  />
+                </svg>
+              </div>
+              <div
+                class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-xs p-1 truncate"
+              >
+                Video Principal
+              </div>
+            </button>
+            {% endif %}
+          </div>
+
+          <!-- Indicador de scroll -->
+          <div class="mt-2 flex justify-center gap-1" id="scrollIndicator">
+            <!-- Generado dinámicamente con JavaScript -->
+          </div>
         </div>
       </div>
 
@@ -616,10 +649,7 @@
             </div>
           </div>
 
-          {% if not producto.dimensiones and not producto.peso and not
-          producto.origen and not producto.marca and not producto.categoria and
-          not producto.subcategoria and not producto.sku and not
-          producto.proveedor and not producto.estatus %}
+          {% if not producto.dimensiones and not producto.peso and not producto.origen and not producto.marca and not producto.categoria and not producto.subcategoria and not producto.sku and not producto.proveedor and not producto.estatus %}
           <div class="text-center py-8">
             <p class="text-neutral-600 dark:text-gray-400">
               No hay especificaciones técnicas disponibles para este producto.
@@ -820,7 +850,7 @@
       </div>
     </div>
 
-    <!-- Related Products - Carrusel Compacto -->
+    <!-- Related Products Carousel -->
     <div class="relative group">
       <h2
         class="reveal text-2xl sm:text-3xl lg:text-4xl font-serif mb-6 sm:mb-8 text-neutral-900 dark:text-white drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]"
@@ -828,206 +858,199 @@
         Productos Relacionados
       </h2>
 
-      <!-- Navigation Buttons -->
-      <button
-        id="related-prev"
-        class="absolute left-0 top-[60%] -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-      >
-        <svg
-          class="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+      <!-- Wrapper con overflow controlado -->
+      <div class="relative overflow-hidden -mx-4 px-4">
+        <div
+          id="related-carousel"
+          class="flex overflow-x-scroll snap-x snap-mandatory hide-scrollbar gap-4 pb-4"
+          style="scroll-padding: 0 1rem"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 19l-7-7 7-7"
-          ></path>
-        </svg>
-      </button>
-      <button
-        id="related-next"
-        class="absolute right-0 top-[60%] -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-      >
-        <svg
-          class="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 5l7 7-7 7"
-          ></path>
-        </svg>
-      </button>
-
-      <div
-        id="related-carousel"
-        class="flex overflow-x-scroll snap-x snap-mandatory hide-scrollbar gap-4 pb-4"
-        style="scroll-padding: 0 1rem"
-      >
-        {% for prod in productos_relacionados %}
-        <!-- Related Product Mini Card: {{ prod.nombre }} -->
-        <a
-          href="{% url 'productos:detalle' prod.slug %}"
-          class="snap-start flex-shrink-0 w-48 sm:w-56 group block rounded-xl overflow-hidden bg-white dark:bg-neutral-900/80 border border-gray-200 dark:border-neutral-800/50 shadow-lg dark:shadow-none hover:shadow-xl dark:hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] transition-all duration-300 hover:scale-[1.03]"
-        >
-          <!-- Imagen cuadrada -->
-          <div
-            class="relative aspect-square overflow-hidden bg-gray-100 dark:bg-neutral-800"
+          {% for prod in productos_relacionados %}
+          <a
+            href="{% url 'productos:detalle' prod.slug %}"
+            class="snap-start flex-shrink-0 w-48 sm:w-56 md:w-64 group block rounded-xl overflow-hidden bg-white dark:bg-neutral-900/80 border border-gray-200 dark:border-neutral-800/50 shadow-lg dark:shadow-none hover:shadow-xl dark:hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] transition-all duration-300 hover:scale-[1.03]"
           >
-            {% if prod.imagen %}
-            <img
-              src="{{ prod.imagen.url }}"
-              alt="{{ prod.nombre }}"
-              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              loading="lazy"
-            />
-            {% elif prod.get_main_image %}
-            <img
-              src="{{ prod.get_main_image.url }}"
-              alt="{{ prod.nombre }}"
-              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              loading="lazy"
-            />
-            {% else %}
-            <img
-              src="{% static 'img/placeholder-product.jpg' %}"
-              alt="{{ prod.nombre }}"
-              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              loading="lazy"
-            />
-            {% endif %}
-
-            <!-- Badge si está en oferta -->
-            {% if prod.en_oferta %}
-            <div class="absolute top-2 right-2">
-              <span
-                class="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow"
-                >OFERTA</span
-              >
-            </div>
-            {% endif %}
-          </div>
-
-          <!-- Info compacta -->
-          <div class="p-3 space-y-1">
-            {% if prod.marca or prod.categoria %}
-            <span
-              class="text-blue-600 dark:text-blue-400 text-[10px] font-medium uppercase tracking-wider"
-              >{{ prod.marca.nombre|default:prod.categoria.nombre }}</span
+            <div
+              class="relative aspect-square overflow-hidden bg-gray-100 dark:bg-neutral-800"
             >
-            {% endif %}
-
-            <h3
-              class="text-sm font-semibold text-neutral-900 dark:text-white line-clamp-2 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
-            >
-              {{ prod.nombre }}
-            </h3>
-
-            <div class="flex items-baseline gap-1.5 pt-1">
-              {% if prod.tiene_descuento %}
-              <span class="text-2xl font-bold text-white"
-                >${{ prod.precio_oferta }}</span
-              >
+              {% if prod.imagen %}
+              <img
+                src="{{ prod.imagen.url }}"
+                alt="{{ prod.nombre }}"
+                class="w-full h-full object-contain p-2 group-hover:scale-110 transition-transform duration-500"
+                loading="lazy"
+              />
+              {% elif prod.get_main_image %}
+              <img
+                src="{{ prod.get_main_image.url }}"
+                alt="{{ prod.nombre }}"
+                class="w-full h-full object-contain p-2 group-hover:scale-110 transition-transform duration-500"
+                loading="lazy"
+              />
               {% else %}
-              <span class="text-2xl font-bold text-white"
-                >${{ prod.precio_final }}</span
+              <div
+                class="w-full h-full flex items-center justify-center text-neutral-400 dark:text-neutral-600"
               >
-              {% endif %} {% if prod.tiene_descuento %}
-              <span class="text-base font-bold text-neutral-900 dark:text-white"
-                >${{ prod.precio_oferta }}</span
+                <svg
+                  class="w-16 h-16"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              {% endif %} {% if prod.en_oferta %}
+              <div
+                class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded"
               >
-              <span
-                class="text-xs text-gray-500 dark:text-gray-400 line-through"
-                >${{ prod.precio }}</span
-              >
-              {% else %}
-              <span class="text-base font-bold text-neutral-900 dark:text-white"
-                >${{ prod.precio_final }}</span
-              >
+                OFERTA
+              </div>
               {% endif %}
-              <span class="text-gray-400 dark:text-gray-500 text-[10px]"
-                >USD</span
-              >
             </div>
-          </div>
-        </a>
-        {% empty %}
-        <div class="flex-shrink-0 w-full text-center py-8">
-          <p class="text-neutral-600 dark:text-gray-400">
-            No hay productos relacionados disponibles
-          </p>
-        </div>
-        {% endfor %}
-      </div>
 
-      <!-- Indicador de scroll -->
-      {% if productos_relacionados %}
-      <div
-        class="flex items-center justify-center gap-2 mt-4 text-neutral-500 dark:text-neutral-600"
-      >
-        <svg
-          class="w-4 h-4 animate-pulse"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+            <div class="p-3 sm:p-4">
+              <h3
+                class="font-semibold text-sm sm:text-base text-neutral-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
+              >
+                {{ prod.nombre }}
+              </h3>
+
+              <div class="flex items-baseline gap-2 flex-wrap">
+                {% if prod.tiene_descuento %}
+                <span
+                  class="text-base sm:text-lg font-bold text-neutral-900 dark:text-white"
+                  >${{ prod.precio_oferta }}</span
+                >
+                <span class="text-xs sm:text-sm text-gray-500 line-through"
+                  >${{ prod.precio }}</span
+                >
+                {% else %}
+                <span
+                  class="text-base sm:text-lg font-bold text-neutral-900 dark:text-white"
+                  >${{ prod.precio }}</span
+                >
+                {% endif %}
+              </div>
+
+              {% if prod.categoria %}
+              <p
+                class="text-xs text-neutral-600 dark:text-neutral-400 mt-2 truncate"
+              >
+                {{ prod.categoria.nombre }}
+              </p>
+              {% endif %}
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+
+        <!-- Navigation Buttons -->
+        <button
+          id="related-prev"
+          class="absolute left-0 top-[60%] -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 19l-7-7 7-7"
-          ></path>
-        </svg>
-        <span class="text-xs uppercase tracking-widest">Desliza</span>
-        <svg
-          class="w-4 h-4 animate-pulse"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            ></path>
+          </svg>
+        </button>
+        <button
+          id="related-next"
+          class="absolute right-0 top-[60%] -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 5l7 7-7 7"
-          ></path>
-        </svg>
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            ></path>
+          </svg>
+        </button>
       </div>
-      {% endif %}
     </div>
   </div>
 </section>
 {% endblock %} {% block extra_js %}
 <script>
   // ========================================
-  // AUTOPLAY CAROUSEL - Productos Relacionados
+  // Gallery Scroll Indicator
+  // ========================================
+  (function () {
+    const gallery = document.getElementById("thumbnailGallery");
+    const indicator = document.getElementById("scrollIndicator");
+
+    if (gallery && indicator) {
+      const items = gallery.children.length;
+      const dotsCount = Math.min(items, 10); // Máximo 10 puntos
+
+      // Crear dots
+      for (let i = 0; i < dotsCount; i++) {
+        const dot = document.createElement("div");
+        dot.className =
+          "w-2 h-2 rounded-full bg-gray-300 dark:bg-neutral-700 transition-all duration-300";
+        if (i === 0)
+          dot.classList.add("!bg-blue-600", "dark:!bg-blue-400", "w-4");
+        indicator.appendChild(dot);
+      }
+
+      // Actualizar dots al hacer scroll
+      gallery.addEventListener("scroll", () => {
+        const scrollPercentage =
+          gallery.scrollLeft / (gallery.scrollWidth - gallery.clientWidth);
+        const activeDot = Math.round(scrollPercentage * (dotsCount - 1));
+
+        Array.from(indicator.children).forEach((dot, index) => {
+          if (index === activeDot) {
+            dot.classList.add("!bg-blue-600", "dark:!bg-blue-400", "w-4");
+          } else {
+            dot.classList.remove("!bg-blue-600", "dark:!bg-blue-400", "w-4");
+          }
+        });
+      });
+    }
+  })();
+
+  // ========================================
+  // Related Products Smooth Scroll
   // ========================================
   (function () {
     const carousel = document.getElementById("related-carousel");
     const prevBtn = document.getElementById("related-prev");
     const nextBtn = document.getElementById("related-next");
 
-    if (carousel) {
+    if (carousel && prevBtn && nextBtn) {
       let scrollSpeed = 1;
       let isHovering = false;
       let animationId = null;
 
       function autoScroll() {
         if (!isHovering) {
-          // Si llega al final, volver al principio
           if (
             carousel.scrollLeft >=
             carousel.scrollWidth - carousel.clientWidth - 2
           ) {
             carousel.scrollTo({ left: 0, behavior: "smooth" });
-            // Pausa breve al reiniciar
             setTimeout(() => {
               animationId = requestAnimationFrame(autoScroll);
             }, 1000);
@@ -1038,7 +1061,6 @@
         animationId = requestAnimationFrame(autoScroll);
       }
 
-      // Event Listeners para Hover/Touch
       carousel.addEventListener("mouseenter", () => (isHovering = true));
       carousel.addEventListener("mouseleave", () => (isHovering = false));
       carousel.addEventListener("touchstart", () => (isHovering = true), {
@@ -1050,23 +1072,22 @@
         { passive: true }
       );
 
-      // Botones de Navegación
       if (prevBtn && nextBtn) {
         prevBtn.addEventListener("click", () => {
-          carousel.scrollBy({ left: -300, behavior: "smooth" });
+          const scrollAmount = carousel.clientWidth * 0.8;
+          carousel.scrollBy({ left: -scrollAmount, behavior: "smooth" });
         });
         nextBtn.addEventListener("click", () => {
-          carousel.scrollBy({ left: 300, behavior: "smooth" });
+          const scrollAmount = carousel.clientWidth * 0.8;
+          carousel.scrollBy({ left: scrollAmount, behavior: "smooth" });
         });
 
-        // Pausar al usar botones
         [prevBtn, nextBtn].forEach((btn) => {
           btn.addEventListener("mouseenter", () => (isHovering = true));
           btn.addEventListener("mouseleave", () => (isHovering = false));
         });
       }
 
-      // Iniciar
       setTimeout(() => {
         animationId = requestAnimationFrame(autoScroll);
       }, 2000);
@@ -1076,188 +1097,5 @@
       });
     }
   })();
-
-  // ========================================
-  // Image & Video Gallery Functions
-  // ========================================
-
-  let currentMediaIndex = 0;
-  let mediaItems = [];
-
-  document.addEventListener("DOMContentLoaded", () => {
-    // Inicializar lista de medios desde los thumbnails
-    const thumbnails = document.querySelectorAll(".thumbnail-btn");
-    thumbnails.forEach((btn, index) => {
-      // Determinar si es video o imagen basado en el onclick
-      const onclickAttr = btn.getAttribute("onclick");
-      let type = "image";
-      let src = "";
-      let title = "";
-
-      if (onclickAttr.includes("showVideo")) {
-        type = "video";
-        // Extraer argumentos de showVideo('url', 'title')
-        const matches = onclickAttr.match(
-          /showVideo\('([^']*)',\s*'([^']*)'\)/
-        );
-        if (matches) {
-          src = matches[1];
-          title = matches[2];
-        }
-      } else {
-        // Extraer argumentos de showImage('url')
-        const matches = onclickAttr.match(/showImage\('([^']*)'\)/);
-        if (matches) {
-          src = matches[1];
-        }
-      }
-
-      mediaItems.push({
-        index: index,
-        type: type,
-        src: src,
-        title: title,
-        element: btn,
-      });
-
-      // Asignar índice al elemento para referencia rápida
-      btn.dataset.index = index;
-
-      // Sobrescribir onclick para usar nuestra lógica unificada
-      btn.onclick = (e) => {
-        e.preventDefault();
-        setMedia(index);
-      };
-    });
-
-    // Marcar el primero como activo si existe
-    if (mediaItems.length > 0) {
-      updateActiveThumbnail(mediaItems[0].element);
-    }
-  });
-
-  function setMedia(index) {
-    if (index < 0 || index >= mediaItems.length) return;
-
-    currentMediaIndex = index;
-    const item = mediaItems[index];
-    const mainImage = document.getElementById("mainImage");
-    const mainVideo = document.getElementById("mainVideo");
-
-    if (item.type === "video") {
-      mainVideo.src = item.src;
-      mainVideo.classList.remove("hidden");
-      mainImage.classList.add("hidden");
-      // mainVideo.play(); // Opcional: auto-reproducir
-    } else {
-      mainImage.src = item.src;
-      mainImage.classList.remove("hidden");
-      mainVideo.classList.add("hidden");
-      mainVideo.pause();
-    }
-
-    updateActiveThumbnail(item.element);
-  }
-
-  function prevMedia() {
-    let newIndex = currentMediaIndex - 1;
-    if (newIndex < 0) newIndex = mediaItems.length - 1; // Loop
-    setMedia(newIndex);
-  }
-
-  function nextMedia() {
-    let newIndex = currentMediaIndex + 1;
-    if (newIndex >= mediaItems.length) newIndex = 0; // Loop
-    setMedia(newIndex);
-  }
-
-  // Mantener compatibilidad con llamadas directas si las hubiera (aunque las hemos sobrescrito)
-  function showImage(src) {
-    // Buscar el item con este src
-    const index = mediaItems.findIndex(
-      (item) => item.src === src && item.type === "image"
-    );
-    if (index !== -1) setMedia(index);
-  }
-
-  function showVideo(src, title) {
-    const index = mediaItems.findIndex(
-      (item) => item.src === src && item.type === "video"
-    );
-    if (index !== -1) setMedia(index);
-  }
-
-  function updateActiveThumbnail(activeBtn) {
-    // Remove active state from all thumbnails
-    document.querySelectorAll(".thumbnail-btn").forEach((btn) => {
-      btn.classList.remove(
-        "border-blue-600",
-        "dark:border-blue-400",
-        "shadow-lg"
-      );
-      btn.classList.add("border-gray-300", "dark:border-transparent");
-    });
-
-    // Add active state to clicked thumbnail
-    if (activeBtn) {
-      activeBtn.classList.add(
-        "border-blue-600",
-        "dark:border-blue-400",
-        "shadow-lg"
-      );
-      activeBtn.classList.remove("border-gray-300", "dark:border-transparent");
-    }
-  }
-
-  // Legacy function for backwards compatibility
-  function changeImage(src) {
-    showImage(src);
-  }
-
-  // Tabs
-  document.addEventListener("DOMContentLoaded", function () {
-    const tabBtns = document.querySelectorAll(".tab-btn");
-    const tabContents = document.querySelectorAll(".tab-content");
-
-    tabBtns.forEach((btn) => {
-      btn.addEventListener("click", function () {
-        const tabId = this.dataset.tab;
-
-        // Update button states
-        tabBtns.forEach((b) => {
-          b.classList.remove(
-            "active",
-            "text-neutral-900",
-            "dark:text-white",
-            "border-blue-600",
-            "dark:border-blue-400"
-          );
-          b.classList.add(
-            "text-neutral-600",
-            "dark:text-gray-400",
-            "border-transparent"
-          );
-        });
-        this.classList.add(
-          "active",
-          "text-neutral-900",
-          "dark:text-white",
-          "border-blue-600",
-          "dark:border-blue-400"
-        );
-        this.classList.remove(
-          "text-neutral-600",
-          "dark:text-gray-400",
-          "border-transparent"
-        );
-
-        // Show corresponding content
-        tabContents.forEach((content) => {
-          content.classList.add("hidden");
-        });
-        document.getElementById(tabId).classList.remove("hidden");
-      });
-    });
-  });
 </script>
 {% endblock %}
