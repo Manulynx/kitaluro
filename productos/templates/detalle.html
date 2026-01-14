@@ -53,11 +53,12 @@
 </div>
 
 <!-- Product Detail -->
-<section class="py-16 px-4 bg-gray-50 dark:bg-neutral-900">
+<section class="py-8 px-4 bg-gray-50 dark:bg-neutral-900">
   <div class="max-w-7xl mx-auto">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+    <!-- Main Product Section: Image + Title/Price -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
       <!-- Image & Video Gallery -->
-      <div class="reveal-left space-y-4">
+      <div class="reveal-left space-y-3 max-w-md">
         <!-- Main Display Area -->
         <div
           id="mainDisplay"
@@ -263,15 +264,16 @@
         </div>
       </div>
 
-      <!-- Product Info -->
-      <div class="reveal-right space-y-6" data-delay="200">
+      <!-- Product Info - Title, Price & Short Description -->
+      <div class="reveal-right space-y-4" data-delay="200">
         <!-- Badge & Category -->
         <div class="flex items-center gap-3">
           {% if producto.en_oferta %}
           <span class="badge-offer shadow-lg">Oferta</span>
           {% elif producto.destacado %}
           <span class="badge-offer shadow-lg">Destacado</span>
-          {% endif %} {% if producto.marca or producto.categoria %}
+          {% endif %} 
+          {% if producto.marca or producto.categoria %}
           <span class="text-blue-600 dark:text-blue-400 text-sm font-semibold"
             >{{ producto.marca.nombre|default:producto.categoria.nombre }}</span
           >
@@ -285,150 +287,129 @@
           {{ producto.nombre }}
         </h1>
 
-        <!-- Rating & Reviews -->
-        {% comment %}
-        <div class="flex items-center gap-4">
-          <div class="flex items-center gap-1">
-            {% with promedio=producto.valoraciones.all|length %} {% if promedio
-            > 0 %} {% for i in "12345" %}
-            <svg
-              class="w-5 h-5 text-yellow-400 fill-current"
-              viewBox="0 0 20 20"
-            >
-              <path
-                d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"
-              />
-            </svg>
-            {% endfor %} {% else %} {% for i in "12345" %}
-            <svg class="w-5 h-5 text-gray-600 fill-current" viewBox="0 0 20 20">
-              <path
-                d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"
-              />
-            </svg>
-            {% endfor %} {% endif %} {% endwith %}
-          </div>
-          <span class="text-gray-400"
-            >({{ producto.valoraciones.count }} reseñas)</span
-          >
-        </div>
-        {% endcomment %}
-
-        <!-- Price -->
-        <div class="flex flex-wrap items-baseline gap-2 sm:gap-3">
+        <!-- Price - Destacado -->
+        <div class="flex flex-wrap items-baseline gap-3">
           {% if producto.tiene_descuento %}
           <span
-            class="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white"
+            class="text-4xl sm:text-5xl font-bold text-neutral-900 dark:text-white"
             >${{ producto.precio_oferta }}</span
           >
           <span
-            class="text-xl sm:text-2xl text-gray-500 dark:text-gray-400 line-through"
+            class="text-2xl text-gray-500 dark:text-gray-400 line-through"
             >${{ producto.precio }}</span
           >
           {% if producto.porcentaje_descuento %}
           <span class="badge-offer shadow-lg"
             >-{{ producto.porcentaje_descuento }}%</span
           >
-          {% endif %} {% else %}
+          {% endif %} 
+          {% else %}
           <span
-            class="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white"
+            class="text-4xl sm:text-5xl font-bold text-neutral-900 dark:text-white"
             >${{ producto.precio_final }}</span
           >
           {% endif %}
         </div>
 
-        <!-- Description -->
-        <p class="text-neutral-700 dark:text-gray-300 text-lg leading-relaxed">
+        <!-- Short Description -->
+        <p class="text-neutral-700 dark:text-gray-300 text-base leading-relaxed">
           {{producto.descripcion_corta|default:producto.descripcion|truncatewords:30}}
         </p>
 
-        <!-- Tech Features -->
-        {% if producto.descripcion %}
+        <!-- Especificaciones Técnicas -->
         <div
-          class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-6 space-y-4 shadow-lg dark:shadow-none"
+          class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-4 shadow-lg dark:shadow-none"
         >
-          <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">
-            Descripción Completa
+          <h3 class="text-base font-bold text-neutral-900 dark:text-white mb-3">
+            Especificaciones Técnicas
           </h3>
-          <div class="text-neutral-700 dark:text-gray-300 leading-relaxed">
-            {{ producto.descripcion|linebreaks }}
+          <div class="space-y-2">
+            {% if producto.dimensiones %}
+            <div class="flex justify-between py-1.5 border-b border-gray-200 dark:border-neutral-700">
+              <span class="text-neutral-600 dark:text-gray-400 text-sm">Dimensiones</span>
+              <span class="text-neutral-900 dark:text-white font-semibold text-sm">{{ producto.dimensiones }}</span>
+            </div>
+            {% endif %}
+            {% if producto.peso %}
+            <div class="flex justify-between py-1.5 border-b border-gray-200 dark:border-neutral-700">
+              <span class="text-neutral-600 dark:text-gray-400 text-sm">Peso</span>
+              <span class="text-neutral-900 dark:text-white font-semibold text-sm">{{ producto.peso }} kg</span>
+            </div>
+            {% endif %}
+            {% if producto.origen %}
+            <div class="flex justify-between py-1.5 border-b border-gray-200 dark:border-neutral-700">
+              <span class="text-neutral-600 dark:text-gray-400 text-sm">País de Origen</span>
+              <span class="text-neutral-900 dark:text-white font-semibold text-sm">{{ producto.origen }}</span>
+            </div>
+            {% endif %}
+            {% if producto.marca %}
+            <div class="flex justify-between py-1.5 border-b border-gray-200 dark:border-neutral-700">
+              <span class="text-neutral-600 dark:text-gray-400 text-sm">Marca</span>
+              <span class="text-neutral-900 dark:text-white font-semibold text-sm">{{ producto.marca.nombre }}</span>
+            </div>
+            {% endif %}
+            {% if producto.categoria %}
+            <div class="flex justify-between py-1.5 border-b border-gray-200 dark:border-neutral-700">
+              <span class="text-neutral-600 dark:text-gray-400 text-sm">Categoría</span>
+              <span class="text-neutral-900 dark:text-white font-semibold text-sm">{{ producto.categoria.nombre }}</span>
+            </div>
+            {% endif %}
+            {% if producto.subcategoria %}
+            <div class="flex justify-between py-1.5 border-b border-gray-200 dark:border-neutral-700">
+              <span class="text-neutral-600 dark:text-gray-400 text-sm">Subcategoría</span>
+              <span class="text-neutral-900 dark:text-white font-semibold text-sm">{{ producto.subcategoria.nombre }}</span>
+            </div>
+            {% endif %}
+            {% if producto.proveedor %}
+            <div class="flex justify-between py-1.5 border-b border-gray-200 dark:border-neutral-700">
+              <span class="text-neutral-600 dark:text-gray-400 text-sm">Proveedor</span>
+              <span class="text-neutral-900 dark:text-white font-semibold text-sm">{{ producto.proveedor.nombre }}</span>
+            </div>
+            {% endif %}
+            {% if producto.estatus %}
+            <div class="flex justify-between py-1.5 border-b border-gray-200 dark:border-neutral-700">
+              <span class="text-neutral-600 dark:text-gray-400 text-sm">Estado</span>
+              <span class="text-neutral-900 dark:text-white font-semibold text-sm">{{ producto.estatus.nombre }}</span>
+            </div>
+            {% endif %}
+            
+            {% if not producto.dimensiones and not producto.peso and not producto.origen and not producto.marca and not producto.categoria and not producto.subcategoria and not producto.proveedor and not producto.estatus %}
+            <p class="text-neutral-600 dark:text-gray-400 text-sm py-2">
+              No hay especificaciones técnicas disponibles.
+            </p>
+            {% endif %}
           </div>
         </div>
-        {% endif %}
+      </div>
+    </div>
 
-        <!-- Additional Info -->
-        {% if producto.stock or producto.sku or producto.origen %}
+    <!-- Detailed Information Section -->
+    <div class="reveal space-y-4" data-delay="400">
+
+        <!-- Descripción Completa -->
+        {% if producto.descripcion %}
         <div
-          class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-6 space-y-3 shadow-lg dark:shadow-none"
+          class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-5 shadow-lg dark:shadow-none"
         >
-          <h3 class="text-xl font-bold text-neutral-900 dark:text-white mb-4">
-            Información Adicional
+          <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-3">
+            Descripción Completa
           </h3>
-
-          {% if producto.origen %}
-          <div class="flex items-center gap-3">
-            <svg
-              class="w-5 h-5 text-blue-600 dark:text-blue-400"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
-            <span class="text-neutral-700 dark:text-gray-300"
-              >Origen: {{ producto.origen }}</span
-            >
+          <div class="text-neutral-700 dark:text-gray-300 leading-relaxed text-sm">
+            {{ producto.descripcion|linebreaks }}
           </div>
-          {% endif %} {% if producto.peso %}
-          <div class="flex items-center gap-3">
-            <svg
-              class="w-5 h-5 text-blue-600 dark:text-blue-400"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
-            <span class="text-neutral-700 dark:text-gray-300"
-              >Peso: {{ producto.peso }} kg</span
-            >
-          </div>
-          {% endif %} {% if producto.dimensiones %}
-          <div class="flex items-center gap-3">
-            <svg
-              class="w-5 h-5 text-blue-600 dark:text-blue-400"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
-            <span class="text-neutral-700 dark:text-gray-300"
-              >Dimensiones: {{ producto.dimensiones }}</span
-            >
-          </div>
-          {% endif %}
         </div>
         {% endif %}
 
         <!-- Garantía -->
         {% if producto.garantia %}
         <div
-          class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-6 space-y-4 shadow-lg dark:shadow-none"
+          class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-5 shadow-lg dark:shadow-none"
         >
           <h3
-            class="text-xl font-bold text-neutral-900 dark:text-white mb-4 flex items-center gap-2"
+            class="text-lg font-bold text-neutral-900 dark:text-white mb-3 flex items-center gap-2"
           >
             <svg
-              class="w-6 h-6 text-green-600 dark:text-green-400"
+              class="w-5 h-5 text-green-600 dark:text-green-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -442,418 +423,20 @@
             </svg>
             Garantía
           </h3>
-          <div class="text-neutral-700 dark:text-gray-300 leading-relaxed">
+          <div class="text-neutral-700 dark:text-gray-300 leading-relaxed text-sm">
             {{ producto.garantia|linebreaks }}
           </div>
         </div>
         {% endif %}
 
-        <!-- Quantity & Actions -->
-        {% comment %}
-        <div class="flex flex-col sm:flex-row gap-4">
-          <div
-            class="flex items-center gap-3 card-premium px-4 py-3 rounded-lg"
-          >
-            <button
-              class="text-gray-400 hover:text-white transition-colors"
-              onclick="decreaseQuantity()"
-            >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M20 12H4"
-                ></path>
-              </svg>
-            </button>
-            <input
-              type="number"
-              id="quantity"
-              value="1"
-              min="1"
-              class="w-16 bg-transparent text-center text-white text-lg font-bold focus:outline-none"
-              readonly
-            />
-            <button
-              class="text-gray-400 hover:text-white transition-colors"
-              onclick="increaseQuantity()"
-            >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 4v16m8-8H4"
-                ></path>
-              </svg>
-            </button>
-          </div>
-
-          <button class="btn-crimson flex-1 px-8 py-4 text-lg">
-            Agregar al Carrito
-          </button>
-
-          <button class="btn-premium px-6 py-4">
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-              ></path>
-            </svg>
-          </button>
-        </div>
-        {% endcomment %}
-
         <!-- Shipping Info -->
       </div>
     </div>
 
-    <!-- Tabs Section -->
-    <div class="mb-16">
-      <!-- Tab Headers -->
-      <div
-        class="flex gap-2 sm:gap-4 border-b border-gray-200 dark:border-neutral-800 mb-8 overflow-x-auto"
-      >
-        <button
-          class="tab-btn active px-4 sm:px-6 py-3 text-base sm:text-lg font-semibold text-neutral-900 dark:text-white border-b-2 border-blue-600 dark:border-blue-400 transition-all whitespace-nowrap"
-          data-tab="specs"
-        >
-          Especificaciones
-        </button>
-        {% comment %}
-        <button
-          class="tab-btn px-4 sm:px-6 py-3 text-base sm:text-lg font-semibold text-neutral-600 dark:text-gray-400 border-b-2 border-transparent hover:text-neutral-900 dark:hover:text-white transition-all whitespace-nowrap"
-          data-tab="reviews"
-        >
-          Reseñas (127)
-        </button>
-        {% endcomment %}
-      </div>
-
-      <!-- Tab Content -->
-      <div id="specs" class="tab-content">
-        <div
-          class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-8 shadow-lg dark:shadow-none"
-        >
-          <h3
-            class="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white mb-6"
-          >
-            Especificaciones Técnicas
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            <div class="space-y-4">
-              {% if producto.dimensiones %}
-              <div
-                class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700"
-              >
-                <span class="text-neutral-600 dark:text-gray-400"
-                  >Dimensiones</span
-                >
-                <span class="text-neutral-900 dark:text-white font-semibold"
-                  >{{ producto.dimensiones }}</span
-                >
-              </div>
-              {% endif %} {% if producto.peso %}
-              <div
-                class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700"
-              >
-                <span class="text-neutral-600 dark:text-gray-400">Peso</span>
-                <span class="text-neutral-900 dark:text-white font-semibold"
-                  >{{ producto.peso }} kg</span
-                >
-              </div>
-              {% endif %} {% if producto.origen %}
-              <div
-                class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700"
-              >
-                <span class="text-neutral-600 dark:text-gray-400"
-                  >País de Origen</span
-                >
-                <span class="text-neutral-900 dark:text-white font-semibold"
-                  >{{ producto.origen }}</span
-                >
-              </div>
-              {% endif %} {% if producto.marca %}
-              <div
-                class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700"
-              >
-                <span class="text-neutral-600 dark:text-gray-400">Marca</span>
-                <span class="text-neutral-900 dark:text-white font-semibold"
-                  >{{ producto.marca.nombre }}</span
-                >
-              </div>
-              {% endif %} {% if producto.categoria %}
-              <div
-                class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700"
-              >
-                <span class="text-neutral-600 dark:text-gray-400"
-                  >Categoría</span
-                >
-                <span class="text-neutral-900 dark:text-white font-semibold"
-                  >{{ producto.categoria.nombre }}</span
-                >
-              </div>
-              {% endif %}
-            </div>
-            <div class="space-y-4">
-              {% if producto.subcategoria %}
-              <div
-                class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700"
-              >
-                <span class="text-neutral-600 dark:text-gray-400"
-                  >Subcategoría</span
-                >
-                <span class="text-neutral-900 dark:text-white font-semibold"
-                  >{{ producto.subcategoria.nombre }}</span
-                >
-              </div>
-              {% endif %} {% if producto.proveedor %}
-              <div
-                class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700"
-              >
-                <span class="text-neutral-600 dark:text-gray-400"
-                  >Proveedor</span
-                >
-                <span class="text-neutral-900 dark:text-white font-semibold"
-                  >{{ producto.proveedor.nombre }}</span
-                >
-              </div>
-              {% endif %} {% if producto.estatus %}
-              <div
-                class="flex justify-between py-3 border-b border-gray-200 dark:border-neutral-700"
-              >
-                <span class="text-neutral-600 dark:text-gray-400">Estado</span>
-                <span class="text-neutral-900 dark:text-white font-semibold"
-                  >{{ producto.estatus.nombre }}</span
-                >
-              </div>
-              {% endif %}
-            </div>
-          </div>
-
-          {% if not producto.dimensiones and not producto.peso and not producto.origen and not producto.marca and not producto.categoria and not producto.subcategoria and not producto.sku and not producto.proveedor and not producto.estatus %}
-          <div class="text-center py-8">
-            <p class="text-neutral-600 dark:text-gray-400">
-              No hay especificaciones técnicas disponibles para este producto.
-            </p>
-          </div>
-          {% endif %}
-        </div>
-      </div>
-
-      {% comment %}
-      <div id="reviews" class="tab-content hidden">
-        <div class="space-y-6">
-          {% if producto.valoraciones.all %}
-          <!-- Review Summary -->
-          <div class="card-premium p-8">
-            <div class="flex flex-col md:flex-row gap-8 items-center">
-              <div class="text-center">
-                <div class="text-6xl font-bold text-white mb-2">
-                  {% widthratio producto.valoraciones.all|length 1 5 as
-                  avg_rating %} {{ avg_rating|default:"0" }}
-                </div>
-                <div class="flex items-center justify-center gap-1 mb-2">
-                  {% for i in "12345" %}
-                  <svg
-                    class="w-5 h-5 text-yellow-400 fill-current"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"
-                    />
-                  </svg>
-                  {% endfor %}
-                </div>
-                <div class="text-gray-400">
-                  {{ producto.valoraciones.count }} reseñas
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Individual Reviews -->
-          {% for valoracion in producto.valoraciones.all|slice:":10" %}
-          <div class="card-premium p-6">
-            <div class="flex items-start gap-4">
-              <div
-                class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold"
-              >
-                {{ valoracion.usuario.username|slice:":2"|upper|default:"AN" }}
-              </div>
-              <div class="flex-1">
-                <div class="flex items-center justify-between mb-2">
-                  <div>
-                    <h4 class="text-white font-semibold">
-                      {{
-                      valoracion.usuario.get_full_name|default:valoracion.usuario.username
-                      }}
-                    </h4>
-                    <div class="flex items-center gap-1 mt-1">
-                      {% for i in "12345" %} {% if i|add:"0" <=
-                      valoracion.puntuacion %}
-                      <svg
-                        class="w-4 h-4 text-yellow-400 fill-current"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"
-                        />
-                      </svg>
-                      {% else %}
-                      <svg
-                        class="w-4 h-4 text-gray-600 fill-current"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"
-                        />
-                      </svg>
-                      {% endif %} {% endfor %}
-                    </div>
-                  </div>
-                  <span class="text-gray-400 text-sm"
-                    >{{ valoracion.fecha_creacion|timesince }}</span
-                  >
-                </div>
-                {% if valoracion.titulo %}
-                <h5 class="text-white font-semibold mb-2">
-                  {{ valoracion.titulo }}
-                </h5>
-                {% endif %} {% if valoracion.comentario %}
-                <p class="text-gray-300 leading-relaxed">
-                  {{ valoracion.comentario }}
-                </p>
-                {% endif %} {% if valoracion.verificado %}
-                <div class="mt-2">
-                  <span
-                    class="text-xs px-2 py-1 bg-blue-500/20 border border-blue-400/30 rounded text-blue-300"
-                  >
-                    ✓ Compra Verificada
-                  </span>
-                </div>
-                {% endif %}
-              </div>
-            </div>
-          </div>
-          {% endfor %} {% else %}
-          <!-- No Reviews -->
-          <div class="card-premium p-12 text-center">
-            <svg
-              class="w-16 h-16 mx-auto mb-4 text-gray-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
-              ></path>
-            </svg>
-            <h3 class="text-xl font-bold text-white mb-2">
-              Aún no hay reseñas
-            </h3>
-            <p class="text-gray-400">
-              Sé el primero en dejar una reseña de este producto
-            </p>
-          </div>
-          {% endif %}
-        </div>
-      </div>
-      {% endcomment %}
-
-      <div id="warranty" class="tab-content hidden">
-        <div
-          class="bg-white dark:bg-neutral-900/50 border border-gray-200 dark:border-neutral-800 rounded-xl p-8 shadow-lg dark:shadow-none"
-        >
-          <h3 class="text-2xl font-bold text-neutral-900 dark:text-white mb-6">
-            Información de Garantía
-          </h3>
-          <div
-            class="space-y-6 text-neutral-700 dark:text-gray-300 leading-relaxed"
-          >
-            <div>
-              <h4
-                class="text-xl font-semibold text-neutral-900 dark:text-white mb-3"
-              >
-                Cobertura
-              </h4>
-              <p>
-                Este producto incluye una garantía extendida de 3 años que cubre
-                defectos de fabricación y fallos en componentes electrónicos. La
-                garantía incluye mano de obra y repuestos originales.
-              </p>
-            </div>
-            <div>
-              <h4
-                class="text-xl font-semibold text-neutral-900 dark:text-white mb-3"
-              >
-                Qué está cubierto
-              </h4>
-              <ul class="list-disc list-inside space-y-2">
-                <li>Defectos de fabricación en materiales y mano de obra</li>
-                <li>Fallos en el sistema de refrigeración</li>
-                <li>Problemas con componentes electrónicos</li>
-                <li>Defectos en el compresor</li>
-                <li>Reparaciones con repuestos originales</li>
-              </ul>
-            </div>
-            <div>
-              <h4
-                class="text-xl font-semibold text-neutral-900 dark:text-white mb-3"
-              >
-                Qué NO está cubierto
-              </h4>
-              <ul class="list-disc list-inside space-y-2">
-                <li>Daños por mal uso o instalación incorrecta</li>
-                <li>Daños cosméticos o estéticos</li>
-                <li>Daños causados por fenómenos naturales</li>
-                <li>Modificaciones no autorizadas</li>
-                <li>Desgaste normal por uso</li>
-              </ul>
-            </div>
-            <div>
-              <h4
-                class="text-xl font-semibold text-neutral-900 dark:text-white mb-3"
-              >
-                Cómo hacer válida tu garantía
-              </h4>
-              <p>
-                Para hacer válida tu garantía, contacta nuestro servicio de
-                atención al cliente con tu número de serie y factura de compra.
-                Un técnico especializado se comunicará contigo en menos de 24
-                horas.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Related Products Carousel -->
-    <div class="relative group">
+    <div class="relative group mt-8">
       <h2
-        class="reveal text-2xl sm:text-3xl lg:text-4xl font-serif mb-6 sm:mb-8 text-neutral-900 dark:text-white drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+        class="reveal text-2xl sm:text-3xl font-serif mb-4 text-neutral-900 dark:text-white drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]"
       >
         Productos Relacionados
       </h2>
