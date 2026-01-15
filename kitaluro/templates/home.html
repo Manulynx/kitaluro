@@ -124,8 +124,7 @@ Future of Home{% endblock %} {% block content %}
             <span
               class="inline-block text-blue-400 dark:text-blue-400 text-[10px] sm:text-xs font-medium tracking-wider sm:tracking-widest uppercase"
             >
-              {{ producto.categoria.nombre|default_if_none:"" }} {{
-              producto.marca.nombre|default_if_none:"" }}
+              {{ producto.categoria.nombre|default_if_none:"" }} {{ producto.marca.nombre|default_if_none:"" }}
             </span>
             {% endif %}
 
