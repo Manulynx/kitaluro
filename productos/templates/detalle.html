@@ -577,6 +577,111 @@
 {% endblock %} {% block extra_js %}
 <script>
   // ========================================
+  // Gallery Media Navigation
+  // ========================================
+  (function () {
+    const mainImage = document.getElementById("mainImage");
+    const mainVideo = document.getElementById("mainVideo");
+    const thumbnails = document.querySelectorAll(".thumbnail-btn");
+    
+    // Array para almacenar todos los medios
+    let mediaItems = [];
+    let currentIndex = 0;
+
+    // Construir array de medios desde los thumbnails
+    thumbnails.forEach((thumb, index) => {
+      const onclickAttr = thumb.getAttribute("onclick");
+      if (onclickAttr) {
+        if (onclickAttr.includes("showImage")) {
+          const url = onclickAttr.match(/showImage\('([^']+)'\)/)[1];
+          mediaItems.push({ type: 'image', url: url, element: thumb });
+        } else if (onclickAttr.includes("showVideo")) {
+          const matches = onclickAttr.match(/showVideo\('([^']+)',\s*'([^']*)'\)/);
+          mediaItems.push({ 
+            type: 'video', 
+            url: matches[1], 
+            title: matches[2],
+            element: thumb 
+          });
+        }
+      }
+    });
+
+    // Función para mostrar imagen
+    window.showImage = function(url) {
+      if (mainImage && mainVideo) {
+        mainImage.src = url;
+        mainImage.classList.remove("hidden");
+        mainVideo.classList.add("hidden");
+        mainVideo.pause();
+        
+        // Actualizar índice actual
+        currentIndex = mediaItems.findIndex(item => item.type === 'image' && item.url === url);
+        updateThumbnailBorders();
+      }
+    };
+
+    // Función para mostrar video
+    window.showVideo = function(url, title) {
+      if (mainVideo && mainImage) {
+        mainVideo.src = url;
+        mainVideo.classList.remove("hidden");
+        mainImage.classList.add("hidden");
+        
+        // Actualizar índice actual
+        currentIndex = mediaItems.findIndex(item => item.type === 'video' && item.url === url);
+        updateThumbnailBorders();
+      }
+    };
+
+    // Función para avanzar al siguiente medio
+    window.nextMedia = function() {
+      if (mediaItems.length === 0) return;
+      
+      currentIndex = (currentIndex + 1) % mediaItems.length;
+      showMedia(currentIndex);
+    };
+
+    // Función para retroceder al medio anterior
+    window.prevMedia = function() {
+      if (mediaItems.length === 0) return;
+      
+      currentIndex = (currentIndex - 1 + mediaItems.length) % mediaItems.length;
+      showMedia(currentIndex);
+    };
+
+    // Función auxiliar para mostrar medio por índice
+    function showMedia(index) {
+      const media = mediaItems[index];
+      if (!media) return;
+
+      if (media.type === 'image') {
+        showImage(media.url);
+      } else if (media.type === 'video') {
+        showVideo(media.url, media.title || '');
+      }
+    }
+
+    // Actualizar bordes de thumbnails
+    function updateThumbnailBorders() {
+      thumbnails.forEach((thumb, index) => {
+        if (index === currentIndex) {
+          thumb.classList.remove('border-gray-300', 'dark:border-transparent');
+          thumb.classList.add('border-blue-600', 'dark:border-blue-400');
+        } else {
+          thumb.classList.remove('border-blue-600', 'dark:border-blue-400');
+          thumb.classList.add('border-gray-300', 'dark:border-transparent');
+        }
+      });
+    }
+
+    // Inicializar el primer thumbnail como activo
+    if (mediaItems.length > 0) {
+      updateThumbnailBorders();
+    }
+  })();
+
+  // ========================================
   // Gallery Scroll Indicator
   // ========================================
   (function () {
