@@ -1481,14 +1481,14 @@ html {
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(255, 255, 255, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -1502,10 +1502,12 @@ html {
 }
 
 .gallery-controls:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(0, 0, 0, 0.15);
   box-shadow: 
-    0 12px 40px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
+    0 12px 40px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
 .dark .gallery-controls:hover {
@@ -1527,9 +1529,13 @@ html {
   border: none;
   cursor: pointer;
   background: transparent;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(31, 41, 55, 0.85);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
+}
+
+.dark .gallery-control-btn {
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .gallery-control-btn::before {
@@ -1537,14 +1543,22 @@ html {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(59, 130, 246, 0.08);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
+.dark .gallery-control-btn::before {
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .gallery-control-btn:hover {
-  color: #ffffff;
+  color: #1f2937;
   transform: scale(1.1);
+}
+
+.dark .gallery-control-btn:hover {
+  color: #ffffff;
 }
 
 .gallery-control-btn:hover::before {
@@ -1557,8 +1571,12 @@ html {
 
 /* Focus state for accessibility */
 .gallery-control-btn:focus-visible {
-  outline: 2px solid #facc15;
+  outline: 2px solid #3b82f6;
   outline-offset: 2px;
+}
+
+.dark .gallery-control-btn:focus-visible {
+  outline-color: #facc15;
 }
 
 /* --- Icon Styling --- */
@@ -1576,11 +1594,15 @@ html {
 
 /* --- Navigation Arrows (Prev/Next) --- */
 .gallery-nav-btn {
+  color: rgba(31, 41, 55, 0.7);
+}
+
+.dark .gallery-nav-btn {
   color: rgba(255, 255, 255, 0.7);
 }
 
 .gallery-nav-btn:hover {
-  color: #60a5fa;
+  color: #2563eb;
 }
 
 .dark .gallery-nav-btn:hover {
@@ -1612,24 +1634,27 @@ html {
   width: 3rem;
   height: 3rem;
   margin: 0 0.25rem;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(59, 130, 246, 0.1) 100%);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.08) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.25);
   box-shadow: 
-    0 0 15px rgba(59, 130, 246, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 0 15px rgba(59, 130, 246, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .gallery-playpause-btn:hover {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(59, 130, 246, 0.2) 100%);
-  border-color: rgba(59, 130, 246, 0.5);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(59, 130, 246, 0.15) 100%);
+  border-color: rgba(59, 130, 246, 0.4);
   box-shadow: 
-    0 0 25px rgba(59, 130, 246, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    0 0 25px rgba(59, 130, 246, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .dark .gallery-playpause-btn {
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.05) 100%);
   border-color: rgba(59, 130, 246, 0.25);
+  box-shadow: 
+    0 0 15px rgba(59, 130, 246, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .dark .gallery-playpause-btn:hover {
@@ -1698,7 +1723,7 @@ html {
 .gallery-control-divider {
   width: 1px;
   height: 1.5rem;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.1);
   margin: 0 0.25rem;
 }
 
