@@ -193,12 +193,16 @@
 
   // ========================================
   // INTERSECTION OBSERVER (Performance)
-  // Pause autoplay when carousel is not visible
+  // Pause/resume autoplay based on visibility
   // ========================================
   const visibilityObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach(entry => {
-        if (!entry.isIntersecting && isPlaying) {
+        if (entry.isIntersecting && !isPlaying && !autoPlayInterval) {
+          // Resume autoplay when carousel becomes visible
+          startAutoPlay();
+        } else if (!entry.isIntersecting && isPlaying) {
+          // Pause when not visible
           pauseAutoPlay();
         }
       });
@@ -210,8 +214,12 @@
   // ========================================
   // INITIALIZATION
   // ========================================
-  // Show first item
+  // Show first item and start autoplay immediately
   items[0].classList.add("is-active", "is-playing");
+  
+  // Ensure autoplay starts immediately on page load
+  isPlaying = true;
+  updatePlayPauseUI();
   startAutoPlay();
 
   // Cleanup on page unload
