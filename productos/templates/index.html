@@ -28,7 +28,9 @@
 <section class="py-16 px-4 bg-gray-50 dark:bg-neutral-900">
   <div class="max-w-7xl mx-auto">
     <!-- Results Counter & Search Bar -->
-    <div class="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    <div
+      class="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
+    >
       <!-- Results Counter -->
       <p class="reveal text-neutral-600 dark:text-gray-400 text-lg">
         Mostrando
@@ -39,7 +41,7 @@
         >
         productos
       </p>
-      
+
       <!-- Search Bar -->
       <div class="w-full lg:w-auto lg:max-w-md">
         <div class="relative">
@@ -89,19 +91,31 @@
         <img
           src="{{ producto.imagen.url }}"
           alt="{{ producto.nombre }}"
-          class="w-full h-full object-cover"
+          class="w-full h-full object-contain bg-gray-100 dark:bg-neutral-800"
+          style="
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+          "
         />
         {% elif producto.get_main_image %}
         <img
           src="{{ producto.get_main_image.url }}"
           alt="{{ producto.nombre }}"
-          class="w-full h-full object-cover"
+          class="w-full h-full object-contain bg-gray-100 dark:bg-neutral-800"
+          style="
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+          "
         />
         {% else %}
         <img
           src="{% static 'img/placeholder-product.jpg' %}"
           alt="{{ producto.nombre }}"
-          class="w-full h-full object-cover"
+          class="w-full h-full object-contain bg-gray-100 dark:bg-neutral-800"
+          style="
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+          "
         />
         {% endif %}
 
@@ -263,8 +277,7 @@
     </a>
   </div>
 </section>
-{% endblock %}
-
+{% endblock %} 
 {% block extra_js %}
 <script>
   document.addEventListener("DOMContentLoaded", function () {

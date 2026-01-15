@@ -84,19 +84,22 @@ Future of Home{% endblock %} {% block content %}
           <img
             src="{{ producto.imagen.url }}"
             alt="{{ producto.nombre }}"
-            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            class="w-full h-full object-contain bg-gray-100 dark:bg-neutral-800 transition-transform duration-500 group-hover:scale-102"
+            style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;"
           />
           {% elif producto.get_main_image %}
           <img
             src="{{ producto.get_main_image.url }}"
             alt="{{ producto.nombre }}"
-            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            class="w-full h-full object-contain bg-gray-100 dark:bg-neutral-800 transition-transform duration-500 group-hover:scale-102"
+            style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;"
           />
           {% else %}
           <img
             src="{% static 'img/placeholder-product.jpg' %}"
             alt="{{ producto.nombre }}"
-            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            class="w-full h-full object-contain bg-gray-100 dark:bg-neutral-800 transition-transform duration-500 group-hover:scale-102"
+            style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;"
           />
           {% endif %} {% if producto.en_oferta or producto.destacado %}
           <div class="absolute top-3 sm:top-4 right-3 sm:right-4 z-10">
@@ -243,21 +246,24 @@ Future of Home{% endblock %} {% block content %}
               <img
                 src="{{ producto.imagen.url }}"
                 alt="{{ producto.nombre }}"
-                class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                class="w-full h-full object-contain bg-gray-100 dark:bg-neutral-800 transform group-hover:scale-102 transition-transform duration-700"
+                style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;"
                 loading="lazy"
               />
               {% elif producto.get_main_image %}
               <img
                 src="{{ producto.get_main_image.url }}"
                 alt="{{ producto.nombre }}"
-                class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                class="w-full h-full object-contain bg-gray-100 dark:bg-neutral-800 transform group-hover:scale-102 transition-transform duration-700"
+                style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;"
                 loading="lazy"
               />
               {% else %}
               <img
                 src="{% static 'img/placeholder-product.jpg' %}"
                 alt="{{ producto.nombre }}"
-                class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                class="w-full h-full object-contain bg-gray-100 dark:bg-neutral-800 transform group-hover:scale-102 transition-transform duration-700"
+                style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;"
                 loading="lazy"
               />
               {% endif %}
@@ -530,21 +536,21 @@ Future of Home{% endblock %} {% block content %}
 
     /* Active card image effects */
     .carousel-item.is-active img {
-      transform: scale(1.02);
-      filter: contrast(1.05) saturate(1.15);
+      transform: scale(1);
+      filter: contrast(1.02) saturate(1.05);
       transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     /* Inactive card image */
     .carousel-item:not(.is-active) img {
       transform: scale(1);
-      filter: contrast(0.95) saturate(0.9);
+      filter: contrast(1) saturate(1);
       transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     /* Hover effects only on active card */
     .carousel-item.is-active:hover {
-      transform: scale(1.08) translateZ(10px);
+      transform: scale(1.02) translateZ(10px);
     }
 
     .carousel-item.is-active:hover a {
@@ -553,8 +559,8 @@ Future of Home{% endblock %} {% block content %}
     }
 
     .carousel-item.is-active:hover img {
-      transform: scale(1.08);
-      filter: contrast(1.1) saturate(1.2) brightness(1.02);
+      transform: scale(1.02);
+      filter: contrast(1.05) saturate(1.08) brightness(1.01);
     }
 
     /* Luxury glow animation for active card */
