@@ -183,6 +183,7 @@
         <!-- Nivel 2: Navigation Links (Desktop Centered) - Más separación vertical -->
         <div class="hidden lg:flex items-center justify-center pb-4 px-4">
           <div class="flex items-center justify-between w-full max-w-6xl">
+            {% if request.user.is_authenticated and request.user.is_superuser %}
             <a
               href="{% url 'productos:admin_productos' %}"
               class="{% if 'admin' in request.resolver_match.url_name or request.resolver_match.url_name == 'nuevo_producto' or request.resolver_match.url_name == 'editar_producto' %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-lg transition-all duration-300 relative group"
@@ -192,6 +193,7 @@
                 class="nav-underline absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"
               ></span>
             </a>
+            {% endif %}
             <a
               href="{% url 'home' %}"
               class="{% if request.resolver_match.url_name == 'home' %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-lg transition-all duration-300 relative group"
@@ -272,10 +274,12 @@
           <!-- Navigation Links -->
           <nav class="p-6">
             <ul class="space-y-2">
+              {% if request.user.is_authenticated and request.user.is_superuser %}
               <li>
                 <a
                   href="{% url 'productos:admin_productos' %}"
-                  class="flex items-center gap-4 px-4 py-3 rounded-lg {% if 'admin' in request.resolver_match.url_name or request.resolver_match.url_name == 'nuevo_producto' or request.resolver_match.url_name == 'editar_producto' %}nav-link-active{% else %}text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20{% endif %} transition-all duration-300 group"
+                  class="flex items-center gap-4 px-4 py-3 rounded-lg 
+                  {% if 'admin' in request.resolver_match.url_name or request.resolver_match.url_name == 'nuevo_producto' or request.resolver_match.url_name == 'editar_producto' %}nav-link-active{% else %}text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20{% endif %} transition-all duration-300 group"
                 >
                   <svg
                     class="w-5 h-5 group-hover:tech-glow-subtle"
@@ -299,6 +303,7 @@
                   <span class="font-bold">ADMIN</span>
                 </a>
               </li>
+              {% endif %}
               <li>
                 <a
                   href="{% url 'home' %}"

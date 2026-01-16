@@ -5,9 +5,84 @@ from django.contrib import messages
 from django.db.models import Q, Avg, Count
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from functools import wraps
 import json
 from .models import (Producto, Categoria, Subcategoria, Marca, Proveedor, 
                      Estatus, ProductImage, ProductVideo)
+
+
+# ==================== DECORADORES DE AUTENTICACIÓN ====================
+
+def admin_required(view_func):
+    """
+    Decorador personalizado para verificar acceso de superusuario.
+    Solo permite acceso a usuarios autenticados con is_superuser=True.
+    """
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        # Verificar si el usuario está autenticado y es superusuario
+        if not request.user.is_authenticated:
+            messages.error(request, 'Debes iniciar sesión para acceder al área de administración.')
+            return redirect('productos:admin_login')
+        
+        if not request.user.is_superuser:
+            messages.error(request, 'No tienes permisos para acceder a esta área.')
+            return redirect('home')
+        
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+
+# ==================== VISTAS DE AUTENTICACIÓN ====================
+
+def admin_login(request):
+    """Vista de login para área de administración - Solo superusuarios"""
+    # Si ya está autenticado como superuser, redirigir al admin
+    if request.user.is_authenticated and request.user.is_superuser:
+        return redirect('productos:admin_productos')
+    
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+        
+        if not username or not password:
+            messages.error(request, 'Por favor completa todos los campos.')
+            return render(request, 'admin_login.html')
+        
+        # Autenticar usando el sistema de Django
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            # Verificar que sea superusuario
+            if user.is_superuser:
+                # Login exitoso
+                login(request, user)
+                messages.success(request, f'¡Bienvenido {user.get_full_name() or user.username}!')
+                
+                # Redirigir a la página solicitada o al admin
+                next_url = request.GET.get('next', 'productos:admin_productos')
+                if next_url.startswith('/'):
+                    return redirect(next_url)
+                return redirect('productos:admin_productos')
+            else:
+                messages.error(request, 'No tienes permisos de administrador.')
+        else:
+            messages.error(request, 'Credenciales incorrectas. Verifica tu usuario y contraseña.')
+    
+    return render(request, 'admin_login.html')
+
+
+def admin_logout(request):
+    """Vista para cerrar sesión del admin"""
+    username = request.user.username if request.user.is_authenticated else 'Usuario'
+    logout(request)  # Usa la función logout de Django
+    messages.success(request, f'Sesión cerrada exitosamente, {username}.')
+    return redirect('home')
+
+
+# ==================== VISTAS PÚBLICAS ====================
 
 def index(request):
     """Vista para mostrar la lista de productos"""
@@ -360,6 +435,7 @@ def get_producto_detalle_json(request, slug):
 
 # ==================== VISTAS DE ADMINISTRACIÓN ====================
 
+@admin_required
 def admin_productos(request):
     """Vista para listar productos en el admin"""
     productos = Producto.objects.all().select_related(
@@ -372,6 +448,7 @@ def admin_productos(request):
     return render(request, 'admin_lista_productos.html', context)
 
 
+@admin_required
 def nuevo_producto(request):
     """Vista para crear un nuevo producto"""
     if request.method == 'POST':
@@ -394,6 +471,7 @@ def nuevo_producto(request):
     return render(request, 'admin_form_producto.html', context)
 
 
+@admin_required
 def editar_producto(request, producto_id):
     """Vista para editar un producto existente"""
     producto = get_object_or_404(Producto, id=producto_id)
@@ -419,6 +497,7 @@ def editar_producto(request, producto_id):
     return render(request, 'admin_form_producto.html', context)
 
 
+@admin_required
 def guardar_producto(request, producto_id=None):
     """Vista para guardar (crear o actualizar) un producto"""
     if request.method == 'POST':
@@ -542,6 +621,7 @@ def guardar_producto(request, producto_id=None):
     return redirect('productos:admin_productos')
 
 
+@admin_required
 @require_POST
 def toggle_producto_status(request, producto_id):
     """Vista AJAX para cambiar el estado activo/inactivo de un producto"""
@@ -568,6 +648,7 @@ def toggle_producto_status(request, producto_id):
         }, status=400)
 
 
+@admin_required
 def eliminar_producto(request, producto_id):
     """Vista para eliminar un producto"""
     if request.method == 'POST':
@@ -582,6 +663,7 @@ def eliminar_producto(request, producto_id):
 # ==================== VISTAS DE TAXONOMÍAS ====================
 
 
+@admin_required
 def admin_taxonomias(request):
     """Vista para gestionar categorías y subcategorías"""
     categorias = Categoria.objects.prefetch_related(
@@ -597,7 +679,7 @@ def admin_taxonomias(request):
     return render(request, 'admin_taxonomias.html', context)
 
 
-
+@admin_required
 def crear_categoria(request):
     """Vista para crear una nueva categoría"""
     if request.method == 'POST':
@@ -633,7 +715,7 @@ def crear_categoria(request):
     return redirect('productos:admin_taxonomias')
 
 
-
+@admin_required
 def editar_categoria(request, categoria_id):
     """Vista para editar una categoría existente"""
     categoria = get_object_or_404(Categoria, id=categoria_id)
@@ -672,7 +754,7 @@ def editar_categoria(request, categoria_id):
     return redirect('productos:admin_taxonomias')
 
 
-
+@admin_required
 def eliminar_categoria(request, categoria_id):
     """Vista para eliminar una categoría"""
     if request.method == 'POST':
@@ -710,7 +792,7 @@ def eliminar_categoria(request, categoria_id):
     return redirect('productos:admin_taxonomias')
 
 
-
+@admin_required
 def crear_subcategoria(request):
     """Vista para crear una nueva subcategoría"""
     if request.method == 'POST':
@@ -758,7 +840,7 @@ def crear_subcategoria(request):
     return redirect('productos:admin_taxonomias')
 
 
-
+@admin_required
 def editar_subcategoria(request, subcategoria_id):
     """Vista para editar una subcategoría existente"""
     subcategoria = get_object_or_404(Subcategoria, id=subcategoria_id)
@@ -795,7 +877,7 @@ def editar_subcategoria(request, subcategoria_id):
     return redirect('productos:admin_taxonomias')
 
 
-
+@admin_required
 def eliminar_subcategoria(request, subcategoria_id):
     """Vista para eliminar una subcategoría"""
     if request.method == 'POST':
@@ -822,6 +904,7 @@ def eliminar_subcategoria(request, subcategoria_id):
 
 
 
+@admin_required
 @require_POST
 def toggle_categoria_status(request, categoria_id):
     """Vista AJAX para cambiar el estado activo/inactivo de una categoría"""
@@ -846,6 +929,7 @@ def toggle_categoria_status(request, categoria_id):
 
 
 
+@admin_required
 @require_POST
 def toggle_subcategoria_status(request, subcategoria_id):
     """Vista AJAX para cambiar el estado activo/inactivo de una subcategoría"""

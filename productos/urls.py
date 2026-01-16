@@ -5,6 +5,12 @@ app_name = 'productos'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    
+    # Autenticación Admin
+    path('admin/login/', views.admin_login, name='admin_login'),
+    path('admin/logout/', views.admin_logout, name='admin_logout'),
+    
+    # Administración de Productos
     path('admin/', views.admin_productos, name='admin_productos'),
     path('admin/nuevo/', views.nuevo_producto, name='nuevo_producto'),
     path('admin/editar/<int:producto_id>/', views.editar_producto, name='editar_producto'),

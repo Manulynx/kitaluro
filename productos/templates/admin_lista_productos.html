@@ -1,5 +1,7 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Inventario -
-Kitaluro Admin{% endblock %} {% block extra_css %}
+{% extends 'base.html' %} 
+{% load static %} 
+{% block title %}Inventario - Kitaluro Admin{% endblock %} 
+{% block extra_css %}
 <style>
   @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap");
 
@@ -90,7 +92,8 @@ Kitaluro Admin{% endblock %} {% block extra_css %}
     }
   }
 </style>
-{% endblock %} {% block content %}
+{% endblock %} 
+{% block content %}
 <section
   class="min-h-screen bg-gray-50 dark:bg-neutral-950 py-8 px-4 sm:px-6 lg:px-8"
 >
@@ -135,6 +138,27 @@ Kitaluro Admin{% endblock %} {% block extra_css %}
             />
           </svg>
         </div>
+
+        <!-- Botón Cerrar Sesión -->
+        <a
+          href="{% url 'productos:admin_logout' %}"
+          class="group flex items-center gap-2 px-5 py-2.5 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 hover:border-neutral-600 rounded-lg text-neutral-300 hover:text-white transition-all duration-300"
+        >
+          <svg
+            class="w-5 h-5 text-neutral-400 group-hover:text-red-400 transition-colors"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+            ></path>
+          </svg>
+          <span class="font-medium tracking-wide text-sm">Cerrar Sesión</span>
+        </a>
 
         <!-- Botón Categorías -->
         <a
@@ -510,7 +534,8 @@ Kitaluro Admin{% endblock %} {% block extra_css %}
   </div>
 </div>
 
-{% endblock %} {% block extra_js %}
+{% endblock %} 
+{% block extra_js %}
 <script>
   // Función para actualizar contador de productos activos
   function updateActiveCount() {
