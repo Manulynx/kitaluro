@@ -1,5 +1,7 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Kitaluro | The
-Future of Home{% endblock %} {% block content %}
+{% extends 'base.html' %} 
+{% load static %} 
+{% block title %}Kitaluro | The Future of Home{% endblock %} 
+{% block content %}
 
 <!-- ========================================================================== -->
 <!-- HERO BANNER - VIDEO COMPLETO SIN RECORTE -->
@@ -130,7 +132,7 @@ Future of Home{% endblock %} {% block content %}
               <span
                 class="inline-block text-blue-500 dark:text-blue-400 text-[10px] sm:text-xs font-medium tracking-wider sm:tracking-widest uppercase mb-1"
               >
-                {{ producto.categoria.nombre|default_if_none:"" }} {{ producto.marca.nombre|default_if_none:"" }}
+                {% if producto.categoria %}{{ producto.categoria.nombre }}{% endif %}{% if producto.subcategoria %} · {{ producto.subcategoria.nombre }}{% endif %}{% if producto.marca %} · {{ producto.marca.nombre }}{% endif %}
               </span>
               {% endif %}
 
@@ -142,7 +144,7 @@ Future of Home{% endblock %} {% block content %}
 
               {% if producto.descripcion_corta %}
               <p
-                class="text-neutral-600 dark:text-neutral-400 text-xs sm:text-sm mt-1 line-clamp-1 hidden sm:block"
+                class="text-neutral-600 dark:text-neutral-400 text-xs sm:text-sm mt-1 line-clamp-2"
               >
                 {{ producto.descripcion_corta }}
               </p>
