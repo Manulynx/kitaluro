@@ -514,7 +514,10 @@ def guardar_producto(request, producto_id=None):
         producto.sku = request.POST.get('sku', '')
         producto.descripcion_corta = request.POST.get('descripcion_corta', '')
         producto.descripcion = request.POST.get('descripcion', '')
-        producto.origen = request.POST.get('origen', '')
+        origen_raw = request.POST.get('origen', '') or ''
+        # Mantener solo letras y separadores comunes (espacios/guion/apóstrofe)
+        origen_clean = ''.join(ch for ch in origen_raw if ch.isalpha() or ch in " -'")
+        producto.origen = ' '.join(origen_clean.split())
         producto.dimensiones = request.POST.get('dimensiones', '')
         producto.garantia = request.POST.get('garantia', '')
         

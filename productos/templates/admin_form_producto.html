@@ -149,6 +149,16 @@
   .dark .sticky-footer {
     background: linear-gradient(to top, #0a0a0a 80%, transparent);
   }
+
+  /* Form validation helpers */
+  .field-error {
+    border-bottom-color: #ef4444 !important;
+  }
+
+  .field-error:focus {
+    border-bottom-color: #ef4444 !important;
+    box-shadow: 0 1px 0 0 rgba(239, 68, 68, 0.35) !important;
+  }
 </style>
 {% endblock %}
 
@@ -186,8 +196,15 @@
     </div>
     {% endif %}
 
+    <!-- Errores del formulario (cliente) -->
+    <div id="formErrors" class="hidden mb-6 p-4 rounded-lg border border-red-500/30 bg-red-500/10 text-red-200">
+      <p class="font-semibold mb-1">Revisa estos campos antes de guardar:</p>
+      <p class="text-xs text-red-200/80 mb-3">Tip: los campos con borde rojo son los que faltan o tienen un formato incorrecto.</p>
+      <ul id="formErrorsList" class="list-disc pl-5 space-y-1 text-sm"></ul>
+    </div>
+
     <!-- Formulario -->
-    <form method="POST" enctype="multipart/form-data" id="productForm">
+    <form method="POST" enctype="multipart/form-data" id="productForm" novalidate>
       {% csrf_token %}
       
       <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-8">
@@ -209,6 +226,7 @@
                 class="phantom-input w-full text-lg"
                 placeholder=" "
                 required
+                data-help="Usa un nombre claro y descriptivo. Ej: ‘Mesa de comedor Roble 6 puestos’."
               />
               <label for="nombre" class="floating-label">Nombre del Producto *</label>
             </div>
@@ -269,10 +287,11 @@
                     id="precio"
                     value="{{ producto.precio|default:'' }}"
                     step="0.01"
-                    min="0"
+                    min="0.01"
                     class="phantom-input flex-1 text-2xl font-bold"
                     placeholder="0.00"
                     required
+                    data-help="Ingresa el precio regular (mayor a 0). Puedes usar decimales: 199.99"
                   />
                 </div>
               </div>
@@ -354,6 +373,8 @@
                   value="{{ producto.origen|default:'' }}"
                   class="phantom-input w-full"
                   placeholder=" "
+                  pattern="^[A-Za-zÀ-ÖØ-öø-ÿ\s'\-]+$"
+                  title="Solo letras (sin números). Puedes usar espacios y guiones."
                 />
                 <label for="origen" class="floating-label">País de Origen</label>
               </div>
@@ -985,6 +1006,37 @@ if (categoriaSelect && subcategoriaSelect) {
 const nombreInput = document.getElementById('nombre');
 const skuInput = document.getElementById('sku');
 
+// País de origen: solo letras (sin números)
+const origenInput = document.getElementById('origen');
+function sanitizarOrigen(value) {
+  return (value || '')
+    .replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s'\-]/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trimStart();
+}
+
+if (origenInput) {
+  // Sanitizar valor inicial (por si ya venía con números)
+  origenInput.value = sanitizarOrigen(origenInput.value);
+
+  origenInput.addEventListener('input', function() {
+    const cleaned = sanitizarOrigen(this.value);
+    if (cleaned !== this.value) this.value = cleaned;
+  });
+
+  origenInput.addEventListener('paste', function(e) {
+    e.preventDefault();
+    const pasteText = (e.clipboardData || window.clipboardData).getData('text');
+    const cleaned = sanitizarOrigen(pasteText);
+    const start = this.selectionStart || 0;
+    const end = this.selectionEnd || 0;
+    const next = (this.value || '').slice(0, start) + cleaned + (this.value || '').slice(end);
+    this.value = sanitizarOrigen(next);
+    const caret = start + cleaned.length;
+    this.setSelectionRange(caret, caret);
+  });
+}
+
 if (nombreInput && skuInput && !skuInput.value) {
   nombreInput.addEventListener('blur', function() {
     if (!skuInput.value && this.value) {
@@ -996,26 +1048,107 @@ if (nombreInput && skuInput && !skuInput.value) {
   });
 }
 
-// Validación antes de enviar
-document.getElementById('productForm').addEventListener('submit', function(e) {
-  const nombre = document.getElementById('nombre').value.trim();
-  const precio = document.getElementById('precio').value;
-  
-  if (!nombre) {
-    e.preventDefault();
-    alert('El nombre del producto es obligatorio');
-    document.getElementById('nombre').focus();
-    return false;
+const productForm = document.getElementById('productForm');
+const errorBox = document.getElementById('formErrors');
+const errorList = document.getElementById('formErrorsList');
+
+function getFieldLabel(el) {
+  if (!el) return 'Campo';
+  if (el.id) {
+    const lbl = document.querySelector(`label[for="${el.id}"]`);
+    if (lbl) return lbl.textContent.replace('*', '').trim();
   }
-  
-  if (!precio || parseFloat(precio) <= 0) {
-    e.preventDefault();
-    alert('El precio debe ser mayor a 0');
-    document.getElementById('precio').focus();
-    return false;
+  return (el.name || el.id || 'Campo').toString();
+}
+
+function markField(el, isError) {
+  if (!el) return;
+  const isPhantom = el.classList && el.classList.contains('phantom-input');
+  if (isError) {
+    if (isPhantom) {
+      el.classList.add('field-error');
+    } else {
+      el.classList.add('border-red-500', 'ring-2', 'ring-red-500');
+    }
+    el.setAttribute('aria-invalid', 'true');
+  } else {
+    el.classList.remove('field-error', 'border-red-500', 'ring-2', 'ring-red-500');
+    el.removeAttribute('aria-invalid');
   }
-  
-  return true;
-});
+}
+
+function clearErrors(form) {
+  if (errorList) errorList.innerHTML = '';
+  if (errorBox) errorBox.classList.add('hidden');
+  if (form) {
+    form.querySelectorAll('[aria-invalid="true"], .field-error, .border-red-500, .ring-red-500').forEach(el => markField(el, false));
+  }
+}
+
+function showErrors(items) {
+  if (!errorBox || !errorList) return;
+  errorList.innerHTML = '';
+  items.forEach(({ label, message, help }) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="font-semibold">${label}:</span> ${message}${help ? ` <span class="text-xs text-red-200/80">(${help})</span>` : ''}`;
+    errorList.appendChild(li);
+  });
+  errorBox.classList.remove('hidden');
+}
+
+function renderFormErrors(form) {
+  // Sanitizar origen antes de validar
+  if (origenInput) {
+    origenInput.value = sanitizarOrigen(origenInput.value);
+  }
+
+  clearErrors(form);
+
+  const invalids = Array.from(form.querySelectorAll(':invalid'));
+  if (invalids.length === 0) return true;
+
+  invalids.forEach(el => markField(el, true));
+  const items = invalids.map(el => ({
+    label: getFieldLabel(el),
+    message: el.validationMessage || 'Revisa este campo.',
+    help: el.dataset ? el.dataset.help : ''
+  }));
+  showErrors(items);
+  if (invalids[0] && typeof invalids[0].focus === 'function') invalids[0].focus();
+  return false;
+}
+
+// Validación antes de enviar (custom)
+if (productForm) {
+  productForm.addEventListener('submit', function(e) {
+    // Con novalidate el navegador no bloquea el submit; lo controlamos aquí.
+    if (!this.checkValidity()) {
+      e.preventDefault();
+      renderFormErrors(this);
+      return false;
+    }
+    clearErrors(this);
+    return true;
+  });
+
+  // Si alguna acción dispara invalidación, mostrar nuestro panel (evita UI nativa)
+  productForm.addEventListener('invalid', function(e) {
+    e.preventDefault();
+    // Esperar un tick para que :invalid refleje el estado actual
+    setTimeout(() => renderFormErrors(productForm), 0);
+  }, true);
+
+  // Limpiar marcado al corregir campos
+  ['input', 'change', 'blur'].forEach(evt => {
+    productForm.addEventListener(evt, function(ev) {
+      const el = ev.target;
+      if (!el || !el.willValidate) return;
+      if (el.checkValidity()) {
+        el.classList.remove('field-error', 'border-red-500', 'ring-2', 'ring-red-500');
+        el.removeAttribute('aria-invalid');
+      }
+    }, true);
+  });
+}
 </script>
 {% endblock %}
