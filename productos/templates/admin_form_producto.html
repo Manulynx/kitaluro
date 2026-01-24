@@ -528,7 +528,7 @@
               >
                 <option value="">Sin subcategoría</option>
                 {% for subcat in subcategorias %}
-                <option value="{{ subcat.id }}" {% if producto.subcategoria.id == subcat.id %}selected{% endif %}>
+                <option value="{{ subcat.id }}" data-categoria="{{ subcat.categoria.id }}" {% if producto.subcategoria.id == subcat.id %}selected{% endif %}>
                   {{ subcat.nombre }}
                 </option>
                 {% endfor %}
@@ -945,31 +945,40 @@ document.addEventListener('keydown', function(e) {
 // Filtrar subcategorías según la categoría seleccionada
 const categoriaSelect = document.getElementById('categoria');
 const subcategoriaSelect = document.getElementById('subcategoria');
-const todasSubcategorias = Array.from(subcategoriaSelect.options);
+const todasSubcategorias = subcategoriaSelect ? Array.from(subcategoriaSelect.options) : [];
+
+function filtrarSubcategoriasPorCategoria() {
+  if (!categoriaSelect || !subcategoriaSelect) return;
+
+  const categoriaId = categoriaSelect.value;
+  const subcategoriaSeleccionada = subcategoriaSelect.value;
+
+  // Remover todas las opciones excepto la primera
+  subcategoriaSelect.innerHTML = '<option value="">Sin subcategoría</option>';
+
+  const opcionesFiltradas = categoriaId
+    ? todasSubcategorias.filter(option => option.value && option.dataset.categoria === categoriaId)
+    : todasSubcategorias.filter(option => option.value);
+
+  opcionesFiltradas.forEach(option => {
+    subcategoriaSelect.appendChild(option.cloneNode(true));
+  });
+
+  // Restaurar selección si la opción sigue existiendo
+  if (subcategoriaSeleccionada) {
+    const exists = Array.from(subcategoriaSelect.options).some(opt => opt.value === subcategoriaSeleccionada);
+    if (exists) {
+      subcategoriaSelect.value = subcategoriaSeleccionada;
+    } else {
+      subcategoriaSelect.value = '';
+    }
+  }
+}
 
 if (categoriaSelect && subcategoriaSelect) {
-  categoriaSelect.addEventListener('change', function() {
-    const categoriaId = this.value;
-    
-    // Remover todas las opciones excepto la primera
-    subcategoriaSelect.innerHTML = '<option value="">Sin subcategoría</option>';
-    
-    if (categoriaId) {
-      // Filtrar y agregar subcategorías correspondientes
-      todasSubcategorias.forEach(option => {
-        if (option.value && option.dataset.categoria === categoriaId) {
-          subcategoriaSelect.appendChild(option.cloneNode(true));
-        }
-      });
-    } else {
-      // Si no hay categoría, mostrar todas
-      todasSubcategorias.forEach(option => {
-        if (option.value) {
-          subcategoriaSelect.appendChild(option.cloneNode(true));
-        }
-      });
-    }
-  });
+  categoriaSelect.addEventListener('change', filtrarSubcategoriasPorCategoria);
+  // Filtrar al cargar (especialmente útil en edición)
+  filtrarSubcategoriasPorCategoria();
 }
 
 // Auto-generar SKU basado en el nombre (opcional)
