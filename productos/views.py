@@ -267,15 +267,12 @@ def detalle(request, slug):
     # Obtener el producto
     producto = get_object_or_404(Producto, slug=slug, activo=True)
     
-    # Productos relacionados (misma categoría o subcategoría)
+    # Productos relacionados (solo misma categoría)
     productos_relacionados = Producto.objects.filter(
         activo=True,
-        disponible=True
-    ).filter(
-        Q(categoria=producto.categoria) | 
-        Q(subcategoria=producto.subcategoria) |
-        Q(marca=producto.marca)
-    ).exclude(id=producto.id).distinct()[:6]
+        disponible=True,
+        categoria=producto.categoria
+    ).exclude(id=producto.id).order_by('-destacado', '-fecha_creacion')[:8]
     
     context = {
         'producto': producto,
@@ -289,15 +286,12 @@ def get_producto_detalle_json(request, slug):
     """API para obtener detalle de producto en formato JSON"""
     producto = get_object_or_404(Producto, slug=slug, activo=True)
     
-    # Productos relacionados (misma categoría o subcategoría)
+    # Productos relacionados (solo misma categoría)
     productos_relacionados = Producto.objects.filter(
         activo=True,
-        disponible=True
-    ).filter(
-        Q(categoria=producto.categoria) | 
-        Q(subcategoria=producto.subcategoria) |
-        Q(marca=producto.marca)
-    ).exclude(id=producto.id).distinct()[:6]
+        disponible=True,
+        categoria=producto.categoria
+    ).exclude(id=producto.id).order_by('-destacado', '-fecha_creacion')[:8]
     
     # Serializar imágenes desde ProductImage (galería)
     imagenes = []

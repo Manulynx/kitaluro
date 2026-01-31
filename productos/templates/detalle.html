@@ -1,6 +1,8 @@
-{% extends 'base.html' %} {% load static %} {% block title %}{{producto.nombre}}
-- Kitaluro{% endblock %} {% block description %}{{producto.descripcion_corta}}
-{% endblock %} {% block content %}
+{% extends 'base.html' %} 
+{% load static %} 
+{% block title %}{{producto.nombre}} - Kitaluro{% endblock %} 
+{% block description %} {{producto.descripcion_corta}} {% endblock %} 
+{% block content %}
 <!-- Breadcrumb -->
 <div
   class="bg-gray-50 dark:bg-neutral-900/50 border-b border-gray-200 dark:border-neutral-800"
@@ -433,145 +435,151 @@
       </div>
     </div>
 
-    <!-- Related Products Carousel -->
-    <div class="relative group mt-8">
-      <h2
-        class="reveal text-2xl sm:text-3xl font-serif mb-4 text-neutral-900 dark:text-white drop-shadow-lg dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]"
-      >
-        Productos Relacionados
-      </h2>
+    <!-- Related Products Section -->
+    {% if productos_relacionados %}
+    <section class="mt-16 sm:mt-20 lg:mt-24">
+      <div class="text-center mb-8 sm:mb-12">
+        <h2
+          class="reveal font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white mb-3 sm:mb-4 drop-shadow-sm dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+        >
+          También Te Puede Interesar
+        </h2>
+        <p
+          class="reveal text-neutral-600 dark:text-neutral-400 text-base sm:text-lg tracking-wide"
+          data-delay="150"
+        >
+          Productos de la misma categoría
+        </p>
+      </div>
 
-      <!-- Wrapper con overflow controlado -->
-      <div class="relative overflow-hidden -mx-4 px-4">
+      <div class="relative overflow-hidden -mx-4 sm:mx-0">
         <div
           id="related-carousel"
-          class="flex overflow-x-scroll snap-x snap-mandatory hide-scrollbar gap-4 pb-4"
+          class="flex overflow-x-scroll snap-x snap-mandatory hide-scrollbar gap-4 sm:gap-6 pb-4 px-4 sm:px-0"
           style="scroll-padding: 0 1rem"
         >
-          {% for prod in productos_relacionados %}
-          <a
-            href="{% url 'productos:detalle' prod.slug %}"
-            class="snap-start flex-shrink-0 w-48 sm:w-56 md:w-64 group block rounded-xl overflow-hidden bg-white dark:bg-neutral-900/80 border border-gray-200 dark:border-neutral-800/50 shadow-lg dark:shadow-none hover:shadow-xl dark:hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] transition-all duration-300 hover:scale-[1.03]"
+        {% for prod in productos_relacionados %}
+        <a
+          href="{% url 'productos:detalle' prod.slug %}"
+          class="snap-start flex-shrink-0 w-[280px] sm:w-[320px] group flex flex-col overflow-hidden rounded-xl cursor-pointer bg-white dark:bg-neutral-900/50 shadow-xl dark:shadow-none border border-gray-200 dark:border-neutral-800/50 hover:shadow-2xl dark:hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] transition-all duration-500 hover:scale-[1.02]"
+        >
+          <!-- Image Section -->
+          <div
+            class="relative h-[200px] sm:h-[240px] flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-neutral-800"
           >
-            <div
-              class="relative aspect-square overflow-hidden bg-gray-100 dark:bg-neutral-800"
-            >
-              {% if prod.imagen %}
-              <img
-                src="{{ prod.imagen.url }}"
-                alt="{{ prod.nombre }}"
-                class="w-full h-full object-contain p-2 group-hover:scale-110 transition-transform duration-500"
-                loading="lazy"
-              />
-              {% elif prod.get_main_image %}
-              <img
-                src="{{ prod.get_main_image.url }}"
-                alt="{{ prod.nombre }}"
-                class="w-full h-full object-contain p-2 group-hover:scale-110 transition-transform duration-500"
-                loading="lazy"
-              />
-              {% else %}
-              <div
-                class="w-full h-full flex items-center justify-center text-neutral-400 dark:text-neutral-600"
-              >
-                <svg
-                  class="w-16 h-16"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-              {% endif %} {% if prod.en_oferta %}
-              <div
-                class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded"
-              >
-                OFERTA
-              </div>
+            {% if prod.imagen %}
+            <img
+              src="{{ prod.imagen.url }}"
+              alt="{{ prod.nombre }}"
+              class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+              style="
+                image-rendering: -webkit-optimize-contrast;
+                image-rendering: crisp-edges;
+              "
+              loading="lazy"
+            />
+            {% elif prod.get_main_image %}
+            <img
+              src="{{ prod.get_main_image.url }}"
+              alt="{{ prod.nombre }}"
+              class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+              style="
+                image-rendering: -webkit-optimize-contrast;
+                image-rendering: crisp-edges;
+              "
+              loading="lazy"
+            />
+            {% else %}
+            <img
+              src="{% static 'img/placeholder-product.jpg' %}"
+              alt="{{ prod.nombre }}"
+              class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+              style="
+                image-rendering: -webkit-optimize-contrast;
+                image-rendering: crisp-edges;
+              "
+              loading="lazy"
+            />
+            {% endif %}
+
+            <!-- Badge -->
+            {% if prod.en_oferta or prod.destacado %}
+            <div class="absolute top-3 right-3 z-10">
+              {% if prod.en_oferta %}
+              <span class="badge-offer shadow-lg text-xs">
+                {% if prod.porcentaje_descuento %}-{{ prod.porcentaje_descuento }}% OFF{% else %}Rebaja{% endif %}
+              </span>
+              {% elif prod.destacado %}
+              <span class="badge-offer bg-amber-500 shadow-lg text-xs">Destacado</span>
               {% endif %}
             </div>
+            {% endif %}
+          </div>
 
-            <div class="p-3 sm:p-4">
+          <!-- Content Section -->
+          <div class="flex-1 p-3 sm:p-4 bg-white dark:bg-neutral-900 flex flex-col">
+            <div class="flex-1 mb-2">
+              {% if prod.categoria or prod.marca %}
+              <div class="mb-1">
+                <span
+                  class="text-blue-500 dark:text-blue-400 text-[10px] sm:text-xs font-medium uppercase tracking-wide"
+                >
+                  {{ prod.marca.nombre|default:prod.categoria.nombre }}
+                </span>
+              </div>
+              {% endif %}
+
               <h3
-                class="font-semibold text-sm sm:text-base text-neutral-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
+                class="text-sm sm:text-base font-bold mb-1 text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all duration-500 line-clamp-2"
               >
                 {{ prod.nombre }}
               </h3>
 
-              <div class="flex items-baseline gap-2 flex-wrap">
-                {% if prod.tiene_descuento %}
+              {% if prod.descripcion_corta %}
+              <p
+                class="text-neutral-600 dark:text-neutral-400 text-[10px] sm:text-xs leading-relaxed line-clamp-2"
+              >
+                {{ prod.descripcion_corta }}
+              </p>
+              {% endif %}
+            </div>
+
+            <!-- Price -->
+            <div class="pt-2 border-t border-gray-100 dark:border-neutral-800">
+              {% if prod.tiene_descuento %}
+              <div class="flex items-baseline gap-1.5 flex-wrap">
                 <span
                   class="text-base sm:text-lg font-bold text-neutral-900 dark:text-white"
                   >${{ prod.precio_oferta }}</span
                 >
-                <span class="text-xs sm:text-sm text-gray-500 line-through"
+                <span
+                  class="text-[10px] sm:text-xs text-neutral-500 dark:text-neutral-500 line-through"
                   >${{ prod.precio }}</span
                 >
-                {% else %}
+                <span
+                  class="text-neutral-500 dark:text-neutral-500 text-[10px] ml-auto"
+                  >USD</span
+                >
+              </div>
+              {% else %}
+              <div class="flex items-baseline justify-between">
                 <span
                   class="text-base sm:text-lg font-bold text-neutral-900 dark:text-white"
-                  >${{ prod.precio }}</span
+                  >${{ prod.precio_final }}</span
                 >
-                {% endif %}
+                <span class="text-neutral-500 dark:text-neutral-500 text-[10px]"
+                  >USD</span
+                >
               </div>
-
-              {% if prod.categoria %}
-              <p
-                class="text-xs text-neutral-600 dark:text-neutral-400 mt-2 truncate"
-              >
-                {{ prod.categoria.nombre }}
-              </p>
               {% endif %}
             </div>
-          </a>
-          {% endfor %}
+          </div>
+        </a>
+        {% endfor %}
         </div>
-
-        <!-- Navigation Buttons -->
-        <button
-          id="related-prev"
-          class="absolute left-0 top-[60%] -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 19l-7-7 7-7"
-            ></path>
-          </svg>
-        </button>
-        <button
-          id="related-next"
-          class="absolute right-0 top-[60%] -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 5l7 7-7 7"
-            ></path>
-          </svg>
-        </button>
       </div>
-    </div>
+    </section>
+    {% endif %}
   </div>
 </section>
 {% endblock %} {% block extra_js %}
@@ -715,73 +723,6 @@
             dot.classList.remove("!bg-blue-600", "dark:!bg-blue-400", "w-4");
           }
         });
-      });
-    }
-  })();
-
-  // ========================================
-  // Related Products Smooth Scroll
-  // ========================================
-  (function () {
-    const carousel = document.getElementById("related-carousel");
-    const prevBtn = document.getElementById("related-prev");
-    const nextBtn = document.getElementById("related-next");
-
-    if (carousel && prevBtn && nextBtn) {
-      let scrollSpeed = 1;
-      let isHovering = false;
-      let animationId = null;
-
-      function autoScroll() {
-        if (!isHovering) {
-          if (
-            carousel.scrollLeft >=
-            carousel.scrollWidth - carousel.clientWidth - 2
-          ) {
-            carousel.scrollTo({ left: 0, behavior: "smooth" });
-            setTimeout(() => {
-              animationId = requestAnimationFrame(autoScroll);
-            }, 1000);
-            return;
-          }
-          carousel.scrollLeft += scrollSpeed;
-        }
-        animationId = requestAnimationFrame(autoScroll);
-      }
-
-      carousel.addEventListener("mouseenter", () => (isHovering = true));
-      carousel.addEventListener("mouseleave", () => (isHovering = false));
-      carousel.addEventListener("touchstart", () => (isHovering = true), {
-        passive: true,
-      });
-      carousel.addEventListener(
-        "touchend",
-        () => setTimeout(() => (isHovering = false), 2000),
-        { passive: true }
-      );
-
-      if (prevBtn && nextBtn) {
-        prevBtn.addEventListener("click", () => {
-          const scrollAmount = carousel.clientWidth * 0.8;
-          carousel.scrollBy({ left: -scrollAmount, behavior: "smooth" });
-        });
-        nextBtn.addEventListener("click", () => {
-          const scrollAmount = carousel.clientWidth * 0.8;
-          carousel.scrollBy({ left: scrollAmount, behavior: "smooth" });
-        });
-
-        [prevBtn, nextBtn].forEach((btn) => {
-          btn.addEventListener("mouseenter", () => (isHovering = true));
-          btn.addEventListener("mouseleave", () => (isHovering = false));
-        });
-      }
-
-      setTimeout(() => {
-        animationId = requestAnimationFrame(autoScroll);
-      }, 2000);
-
-      window.addEventListener("beforeunload", () => {
-        if (animationId) cancelAnimationFrame(animationId);
       });
     }
   })();
