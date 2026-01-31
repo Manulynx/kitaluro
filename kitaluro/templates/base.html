@@ -207,7 +207,7 @@
               href="{% url 'productos:index' %}"
               class="{% if 'productos' in request.resolver_match.namespace and 'admin' not in request.resolver_match.url_name and request.resolver_match.url_name != 'nuevo_producto' and request.resolver_match.url_name != 'editar_producto' %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-lg transition-all duration-300 relative group"
             >
-              PRODUCTOS
+              CATÁLOGO
               <span
                 class="nav-underline absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"
               ></span>
@@ -343,7 +343,7 @@
                       d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
                     />
                   </svg>
-                  <span class="font-semibold">PRODUCTOS</span>
+                  <span class="font-semibold">CATÁLOGO</span>
                 </a>
               </li>
               <li>
