@@ -1,6 +1,5 @@
 {% extends 'base.html' %} 
-{% load static %} 
-{% block title %}Productos - Kitaluro{% endblock %} 
+{% load static %} {% block title %}Productos - Kitaluro{% endblock %} 
 {% block description %}Explora nuestra colección de electrodomésticos premium con tecnología de vanguardia{% endblock %} 
 {% block content %}
 <!-- Hero Section -->
@@ -27,6 +26,44 @@
 <!-- Products Grid -->
 <section class="py-16 px-4 bg-gray-50 dark:bg-neutral-900">
   <div class="max-w-7xl mx-auto">
+    <!-- Filters Section -->
+    <div class="mb-8">
+      <!-- Categories Filter -->
+      <div class="mb-6">
+        <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4">
+          Categorías
+        </h3>
+        <div class="flex flex-wrap gap-2">
+          <button
+            class="filter-btn active px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-all shadow-md"
+            data-filter="all"
+            data-type="category"
+          >
+            Todos
+          </button>
+          {% for categoria in categorias %}
+          <button
+            class="filter-btn px-4 py-2 rounded-lg bg-white dark:bg-neutral-800 text-neutral-700 dark:text-gray-300 border border-gray-300 dark:border-neutral-700 hover:bg-blue-50 dark:hover:bg-neutral-700 hover:border-blue-300 dark:hover:border-blue-500 transition-all"
+            data-filter="{{ categoria.slug }}"
+            data-type="category"
+          >
+            {{ categoria.nombre }}
+          </button>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Subcategories Filter (Initially hidden, shown when category selected) -->
+      <div id="subcategoriesFilter" class="mb-6 hidden">
+        <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4">
+          Subcategorías
+        </h3>
+        <div class="flex flex-wrap gap-2" id="subcategoriesContainer">
+          <!-- Subcategories will be populated dynamically -->
+        </div>
+      </div>
+    </div>
+
     <!-- Results Counter & Search Bar -->
     <div
       class="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
@@ -78,14 +115,15 @@
       <!-- Product Card: {{ producto.nombre }} -->
       <a
         href="{% url 'productos:detalle' producto.slug %}"
-        class="reveal-scale product-card group flex flex-col overflow-hidden rounded-xl h-[400px] sm:h-[450px] cursor-pointer bg-white dark:bg-neutral-900/50 shadow-xl dark:shadow-none border border-gray-200 dark:border-neutral-800/50 hover:shadow-2xl dark:hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] transition-all duration-500 hover:scale-[1.02]"
+        class="reveal-scale product-card group flex flex-col overflow-hidden rounded-xl min-h-[450px] cursor-pointer bg-white dark:bg-neutral-900/50 shadow-xl dark:shadow-none border border-gray-200 dark:border-neutral-800/50 hover:shadow-2xl dark:hover:shadow-[0_0_30px_rgba(59,130,246,0.2)] transition-all duration-500 hover:scale-[1.02]"
         data-category="{{ producto.categoria.slug|default:'general' }}"
+        data-subcategory="{{ producto.subcategoria.slug|default:'' }}"
         data-name="{{ producto.nombre }}"
         data-price="{{ producto.precio_final }}"
       >
-        <!-- Image Section - 65% -->
+        <!-- Image Section -->
         <div
-          class="relative h-[65%] overflow-hidden bg-gray-100 dark:bg-neutral-800"
+          class="relative h-[260px] flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-neutral-800"
         >
           {% if producto.imagen %}
           <img
@@ -123,7 +161,9 @@
           {% if producto.en_oferta or producto.destacado %}
           <div class="absolute top-4 right-4 z-10">
             {% if producto.en_oferta %}
-            <span class="badge-offer shadow-lg">Oferta</span>
+            <span class="badge-offer shadow-lg">
+              {% if producto.porcentaje_descuento %}-{{ producto.porcentaje_descuento }}% OFF{% else %}Rebaja{% endif %}
+            </span>
             {% elif producto.destacado %}
             <span class="badge-offer bg-amber-500 shadow-lg">Destacado</span>
             {% endif %}
@@ -131,13 +171,13 @@
           {% endif %}
         </div>
 
-        <!-- Content Section - 35% -->
+        <!-- Content Section -->
         <div
-          class="h-[35%] p-4 sm:p-5 bg-white dark:bg-neutral-900 flex flex-col justify-between"
+          class="flex-1 p-4 sm:p-5 bg-white dark:bg-neutral-900 flex flex-col"
         >
-          <div class="flex-grow">
+          <div class="flex-1 mb-3">
             {% if producto.categoria or producto.marca %}
-            <div class="mb-1">
+            <div class="mb-2">
               <span
                 class="text-blue-500 dark:text-blue-400 text-xs font-medium uppercase tracking-wide"
               >
@@ -147,27 +187,26 @@
             {% endif %}
 
             <h3
-              class="text-base sm:text-lg font-bold mb-1 text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all duration-500 line-clamp-2"
+              class="text-base sm:text-lg font-bold mb-2 text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all duration-500"
             >
               {{ producto.nombre }}
             </h3>
 
             {% if producto.descripcion_corta %}
             <p
-              class="text-neutral-600 dark:text-neutral-400 text-xs mb-2 line-clamp-1"
+              class="text-neutral-600 dark:text-neutral-400 text-xs leading-relaxed"
             >
               {{ producto.descripcion_corta }}
             </p>
             {% endif %}
 
             <!-- Tech Features -->
-            
           </div>
 
-          <!-- Price -->
-          <div class="mt-auto">
+          <!-- Price - Always visible at bottom -->
+          <div class="pt-3 border-t border-gray-100 dark:border-neutral-800">
             {% if producto.tiene_descuento %}
-            <div class="flex items-baseline gap-2">
+            <div class="flex items-baseline gap-2 flex-wrap">
               <span
                 class="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white"
                 >${{ producto.precio_oferta }}</span
@@ -176,16 +215,22 @@
                 class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-500 line-through"
                 >${{ producto.precio }}</span
               >
+              <span
+                class="text-neutral-500 dark:text-neutral-500 text-xs ml-auto"
+                >USD</span
+              >
             </div>
             {% else %}
-            <span
-              class="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white"
-              >${{ producto.precio_final }}</span
-            >
+            <div class="flex items-baseline justify-between">
+              <span
+                class="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white"
+                >${{ producto.precio_final }}</span
+              >
+              <span class="text-neutral-500 dark:text-neutral-500 text-xs"
+                >USD</span
+              >
+            </div>
             {% endif %}
-            <span class="text-neutral-500 dark:text-neutral-500 text-xs ml-1"
-              >USD</span
-            >
           </div>
         </div>
       </a>
@@ -262,16 +307,40 @@
     const productCards = document.querySelectorAll(".product-card");
     const searchInput = document.getElementById("searchInput");
     const resultsCount = document.getElementById("resultsCount");
+    const filterButtons = document.querySelectorAll(".filter-btn");
+    const subcategoriesFilter = document.getElementById("subcategoriesFilter");
+    const subcategoriesContainer = document.getElementById("subcategoriesContainer");
 
-    // Search functionality
-    searchInput.addEventListener("input", function () {
-      const searchTerm = this.value.toLowerCase();
+    let currentCategory = "all";
+    let currentSubcategory = "all";
+    let currentSearchTerm = "";
+
+    // Subcategories data structure
+    const subcategoriesData = {
+      {% for categoria in categorias %}
+      "{{ categoria.slug }}": [
+        {% for subcategoria in categoria.subcategorias.all %}
+        { slug: "{{ subcategoria.slug }}", nombre: "{{ subcategoria.nombre }}" }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ]{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    };
+
+    // Filter products based on current filters
+    function filterProducts() {
       let visibleCount = 0;
 
       productCards.forEach((card) => {
-        const name = card.dataset.name.toLowerCase();
+        const cardCategory = card.dataset.category;
+        const cardSubcategory = card.dataset.subcategory;
+        const cardName = card.dataset.name.toLowerCase();
 
-        if (name.includes(searchTerm)) {
+        // Check if card matches all filters
+        const matchesCategory = currentCategory === "all" || cardCategory === currentCategory;
+        const matchesSubcategory = currentSubcategory === "all" || cardSubcategory === currentSubcategory;
+        const matchesSearch = cardName.includes(currentSearchTerm);
+
+        if (matchesCategory && matchesSubcategory && matchesSearch) {
           card.style.display = "block";
           card.classList.add("animate-fade-in");
           visibleCount++;
@@ -281,6 +350,88 @@
       });
 
       resultsCount.textContent = visibleCount;
+    }
+
+    // Handle category filter clicks
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", function () {
+        const filterType = this.dataset.type;
+        const filterValue = this.dataset.filter;
+
+        if (filterType === "category") {
+          // Update active state for category buttons
+          filterButtons.forEach((btn) => {
+            if (btn.dataset.type === "category") {
+              btn.classList.remove("active", "bg-blue-600", "text-white", "dark:bg-blue-500");
+              btn.classList.add("bg-white", "dark:bg-neutral-800", "text-neutral-700", "dark:text-gray-300", "border", "border-gray-300", "dark:border-neutral-700");
+            }
+          });
+
+          this.classList.add("active", "bg-blue-600", "text-white", "dark:bg-blue-500");
+          this.classList.remove("bg-white", "dark:bg-neutral-800", "text-neutral-700", "dark:text-gray-300", "border", "border-gray-300", "dark:border-neutral-700");
+
+          currentCategory = filterValue;
+          currentSubcategory = "all"; // Reset subcategory when category changes
+
+          // Show/hide subcategories filter
+          if (filterValue === "all") {
+            subcategoriesFilter.classList.add("hidden");
+          } else {
+            // Populate subcategories
+            const subcats = subcategoriesData[filterValue] || [];
+
+            if (subcats.length > 0) {
+              subcategoriesContainer.innerHTML = `
+                <button class="filter-btn active px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-all shadow-md" data-filter="all" data-type="subcategory">
+                  Todas
+                </button>
+              `;
+
+              subcats.forEach(subcat => {
+                subcategoriesContainer.innerHTML += `
+                  <button class="filter-btn px-4 py-2 rounded-lg bg-white dark:bg-neutral-800 text-neutral-700 dark:text-gray-300 border border-gray-300 dark:border-neutral-700 hover:bg-blue-50 dark:hover:bg-neutral-700 hover:border-blue-300 dark:hover:border-blue-500 transition-all" data-filter="${subcat.slug}" data-type="subcategory">
+                    ${subcat.nombre}
+                  </button>
+                `;
+              });
+
+              // Add event listeners to new subcategory buttons
+              subcategoriesContainer.querySelectorAll(".filter-btn").forEach(btn => {
+                btn.addEventListener("click", handleSubcategoryClick);
+              });
+
+              subcategoriesFilter.classList.remove("hidden");
+            } else {
+              subcategoriesFilter.classList.add("hidden");
+            }
+          }
+        }
+
+        filterProducts();
+      });
+    });
+
+    // Handle subcategory filter clicks
+    function handleSubcategoryClick() {
+      const filterValue = this.dataset.filter;
+
+      // Update active state for subcategory buttons
+      subcategoriesContainer.querySelectorAll(".filter-btn").forEach((btn) => {
+        btn.classList.remove("active", "bg-blue-600", "text-white", "dark:bg-blue-500");
+        btn.classList.add("bg-white", "dark:bg-neutral-800", "text-neutral-700", "dark:text-gray-300", "border", "border-gray-300", "dark:border-neutral-700");
+      });
+
+      this.classList.add("active", "bg-blue-600", "text-white", "dark:bg-blue-500");
+      this.classList.remove("bg-white", "dark:bg-neutral-800", "text-neutral-700", "dark:text-gray-300", "border", "border-gray-300", "dark:border-neutral-700");
+
+      currentSubcategory = filterValue;
+      filterProducts();
+    }
+
+    // Search functionality
+    searchInput.addEventListener("input", function () {
+      currentSearchTerm = this.value.toLowerCase();
+      filterProducts();
     });
   });
 </script>

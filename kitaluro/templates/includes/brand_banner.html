@@ -1,0 +1,61 @@
+{% comment %} Premium brand showcase banner - Desktop: static grid | Mobile:
+smooth marquee {% endcomment %} {% if brand_logos %}
+<section class="brands-showcase">
+  <div class="brands-showcase__container">
+    <!-- Header -->
+    <div class="brands-showcase__header">
+      <h2 class="brands-showcase__title">Marcas Oficiales</h2>
+      <p class="brands-showcase__subtitle">
+        Productos originales con garantía respaldada
+      </p>
+    </div>
+
+    <!-- Desktop: Static Grid -->
+    <div class="brands-showcase__grid">
+      {% for logo in brand_logos %}
+      <div class="brands-showcase__card">
+        <img
+          src="{{ logo.url }}"
+          alt="{{ logo.alt }}"
+          class="brands-showcase__logo"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Mobile: Smooth Marquee -->
+    <div class="brands-showcase__marquee" aria-hidden="true">
+      <div class="brands-showcase__marquee-track">
+        <div class="brands-showcase__marquee-group">
+          {% for logo in brand_logos %}
+          <div class="brands-showcase__marquee-item">
+            <img
+              src="{{ logo.url }}"
+              alt="{{ logo.alt }}"
+              class="brands-showcase__marquee-logo"
+              loading="eager"
+              decoding="async"
+            />
+          </div>
+          {% endfor %}
+        </div>
+        <div class="brands-showcase__marquee-group">
+          {% for logo in brand_logos %}
+          <div class="brands-showcase__marquee-item">
+            <img
+              src="{{ logo.url }}"
+              alt=""
+              class="brands-showcase__marquee-logo"
+              loading="eager"
+              decoding="async"
+            />
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}

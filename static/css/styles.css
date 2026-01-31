@@ -47,6 +47,266 @@ html {
   display: none;             /* Chrome, Safari, Opera */
 }
 
+/* ===========================================================================
+   PREMIUM BRANDS SHOWCASE
+   Desktop: Static elegant grid | Mobile: Smooth infinite marquee
+   =========================================================================== */
+
+.brands-showcase {
+  padding: 4rem 1.5rem;
+  background: linear-gradient(180deg, 
+    rgba(249, 250, 251, 0.5) 0%, 
+    rgba(255, 255, 255, 1) 50%, 
+    rgba(249, 250, 251, 0.5) 100%);
+  border-top: 1px solid rgba(229, 231, 235, 0.8);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+.dark .brands-showcase {
+  background: linear-gradient(180deg, 
+    rgba(10, 10, 10, 0.5) 0%, 
+    rgba(23, 23, 23, 1) 50%, 
+    rgba(10, 10, 10, 0.5) 100%);
+  border-top-color: rgba(64, 64, 64, 0.3);
+  border-bottom-color: rgba(64, 64, 64, 0.3);
+}
+
+.brands-showcase__container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Header */
+.brands-showcase__header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.brands-showcase__title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.dark .brands-showcase__title {
+  color: #f9fafb;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
+}
+
+.brands-showcase__subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.dark .brands-showcase__subtitle {
+  color: #9ca3af;
+}
+
+/* Desktop Grid (hidden on mobile) */
+.brands-showcase__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 2rem;
+  align-items: center;
+  justify-items: center;
+}
+
+.brands-showcase__card {
+  width: 100%;
+  max-width: 200px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid rgba(229, 231, 235, 0.6);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .brands-showcase__card {
+  background: rgba(38, 38, 38, 0.6);
+  border-color: rgba(64, 64, 64, 0.4);
+}
+
+.brands-showcase__card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.dark .brands-showcase__card:hover {
+  box-shadow: 0 12px 24px -8px rgba(59, 130, 246, 0.2);
+  background: rgba(38, 38, 38, 0.9);
+}
+
+.brands-showcase__logo {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: grayscale(1) opacity(0.7);
+  transition: filter 0.3s ease;
+}
+
+.brands-showcase__card:hover .brands-showcase__logo {
+  filter: grayscale(0) opacity(1);
+}
+
+/* Mobile Marquee (hidden on desktop) */
+.brands-showcase__marquee {
+  display: none;
+  position: relative;
+  overflow: hidden;
+  padding: 1rem 0;
+}
+
+.brands-showcase__marquee::before,
+.brands-showcase__marquee::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.brands-showcase__marquee::before {
+  left: 0;
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 1) 0%, 
+    rgba(255, 255, 255, 0) 100%);
+}
+
+.brands-showcase__marquee::after {
+  right: 0;
+  background: linear-gradient(270deg, 
+    rgba(255, 255, 255, 1) 0%, 
+    rgba(255, 255, 255, 0) 100%);
+}
+
+.dark .brands-showcase__marquee::before {
+  background: linear-gradient(90deg, 
+    rgba(23, 23, 23, 1) 0%, 
+    rgba(23, 23, 23, 0) 100%);
+}
+
+.dark .brands-showcase__marquee::after {
+  background: linear-gradient(270deg, 
+    rgba(23, 23, 23, 1) 0%, 
+    rgba(23, 23, 23, 0) 100%);
+}
+
+.brands-showcase__marquee-track {
+  display: flex;
+  width: max-content;
+  animation: brands-marquee-scroll 25s linear infinite;
+}
+
+.brands-showcase__marquee-group {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding-right: 32px;
+  flex-shrink: 0;
+}
+
+.brands-showcase__marquee-item {
+  width: 140px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  padding: 0.75rem;
+}
+
+.dark .brands-showcase__marquee-item {
+  background: rgba(38, 38, 38, 0.5);
+  border-color: rgba(64, 64, 64, 0.3);
+}
+
+.brands-showcase__marquee-logo {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: grayscale(0.8) opacity(0.8);
+}
+
+@keyframes brands-marquee-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .brands-showcase {
+    padding: 3rem 1rem;
+  }
+
+  .brands-showcase__header {
+    margin-bottom: 2rem;
+  }
+
+  .brands-showcase__title {
+    font-size: 1.75rem;
+  }
+
+  .brands-showcase__subtitle {
+    font-size: 0.75rem;
+  }
+
+  /* Mobile: 2-row grid instead of marquee */
+  .brands-showcase__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .brands-showcase__card {
+    max-width: 100%;
+    height: 80px;
+    padding: 1rem;
+  }
+
+  .brands-showcase__marquee {
+    display: none;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .brands-showcase__marquee-track {
+    animation: none;
+  }
+
+  .brands-showcase__marquee {
+    overflow-x: auto;
+  }
+
+  .brands-showcase__marquee::before,
+  .brands-showcase__marquee::after {
+    display: none;
+  }
+}
+
 /* ==========================================================================
    CUSTOM ANIMATIONS - Horizontal Bounce
    ========================================================================== */
@@ -2068,6 +2328,33 @@ h1, h2, h3, h4, h5, h6 {
   
   .button-group > * {
     width: 100%;
+  }
+}
+
+/* ==========================================================================
+   FILTER BUTTONS
+   ========================================================================== */
+
+.filter-btn {
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.filter-btn.active {
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3), 0 2px 4px -1px rgba(59, 130, 246, 0.2);
+}
+
+.filter-btn:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 640px) {
+  .filter-btn {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
   }
 }
 

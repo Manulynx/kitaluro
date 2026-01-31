@@ -29,7 +29,7 @@
       <div class="lux-hero-content">
         <p class="lux-hero-kicker">Colección 2025</p>
         <h1 class="lux-hero-title">KITALURO</h1>
-        <p class="lux-hero-subtitle">Redefiniendo el lujo.</p>
+        <p class="lux-hero-subtitle">Tu aliado en protección y tecnología</p>
         <div class="lux-hero-actions">
           <a href="{% url 'productos:index' %}" class="btn-crimson"
             >Explorar Colección</a
@@ -51,6 +51,9 @@
     </div>
   </div>
 </section>
+
+{% include 'includes/brand_banner.html' %}
+
 <section
   id="products"
   class="py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-neutral-900"
@@ -111,8 +114,7 @@
             <div class="absolute top-3 sm:top-4 right-3 sm:right-4 z-10">
               {% if producto.en_oferta %}
               <span class="badge-offer shadow-lg text-xs sm:text-sm">
-                {% if producto.porcentaje_descuento %}-{{
-                producto.porcentaje_descuento }}% OFF{% else %}Oferta{% endif %}
+                {% if producto.porcentaje_descuento %}-{{producto.porcentaje_descuento }}% OFF{% else %}Oferta{% endif %}
               </span>
               {% elif producto.destacado %}
               <span class="badge-offer bg-amber-500 shadow-lg text-xs sm:text-sm"
