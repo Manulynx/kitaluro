@@ -112,6 +112,14 @@ def index(request):
         'valoraciones'
     ).order_by('-destacado', '-en_oferta', '-fecha_creacion')
     
+    # Filtrar por categoría si viene en la URL (?categoria=slug)
+    categoria_activa = None
+    categoria_slug = request.GET.get('categoria')
+    if categoria_slug:
+        categoria_activa = Categoria.objects.filter(slug=categoria_slug, activo=True).first()
+        if categoria_activa:
+            productos = productos.filter(categoria=categoria_activa)
+    
     # Productos destacados y en oferta para destacar en la UI
     productos_destacados = Producto.get_featured_products()[:8]
     productos_oferta = Producto.get_on_sale_products()[:8]
@@ -126,6 +134,7 @@ def index(request):
         'estatus_list': estatus_list,
         'productos_destacados': productos_destacados,
         'productos_oferta': productos_oferta,
+        'categoria_activa': categoria_activa,
     }
     return render(request, 'index.html', context)
 

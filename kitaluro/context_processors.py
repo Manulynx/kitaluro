@@ -9,6 +9,15 @@ from django.conf import settings
 _IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".svg", ".gif", ".avif"}
 
 
+def nav_categories(request):
+    """Expose active categories with their subcategories to all templates for the navbar mega menu."""
+    from productos.models import Categoria
+    categorias = Categoria.objects.filter(activo=True).prefetch_related('subcategorias').order_by('nombre')
+    return {
+        "nav_categorias": categorias,
+    }
+
+
 def brand_logos(request):
     """Expose brand logo image URLs from MEDIA_ROOT/marcas.
 

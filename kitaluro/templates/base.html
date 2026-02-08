@@ -203,15 +203,21 @@
                 class="nav-underline absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"
               ></span>
             </a>
-            <a
-              href="{% url 'productos:index' %}"
-              class="{% if 'productos' in request.resolver_match.namespace and 'admin' not in request.resolver_match.url_name and request.resolver_match.url_name != 'nuevo_producto' and request.resolver_match.url_name != 'editar_producto' %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-lg transition-all duration-300 relative group"
-            >
-              CATÁLOGO
-              <span
-                class="nav-underline absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"
-              ></span>
-            </a>
+            <!-- Mega Menu CATÁLOGO -->
+            <div class="relative" id="catalogDropdown">
+              <button
+                id="catalogDropdownBtn"
+                class="{% if 'productos' in request.resolver_match.namespace and 'admin' not in request.resolver_match.url_name and request.resolver_match.url_name != 'nuevo_producto' and request.resolver_match.url_name != 'editar_producto' %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-lg transition-all duration-300 relative group flex items-center gap-1.5"
+              >
+                CATÁLOGO
+                <svg class="w-4 h-4 transition-transform duration-300" id="catalogChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+                <span
+                  class="nav-underline absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 dark:bg-blue-400 group-hover:w-full transition-all duration-300"
+                ></span>
+              </button>
+            </div>
             <a
               href="{% url 'contacto' %}"
               class="{% if request.resolver_match.url_name == 'contacto' %}nav-link-active{% else %}text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white{% endif %} font-semibold text-lg transition-all duration-300 relative group"
@@ -224,6 +230,82 @@
           </div>
         </div>
       </nav>
+
+      <!-- ==================== MEGA MENU PANEL (Desktop) ==================== -->
+      <div
+        id="megaMenuPanel"
+        class="hidden lg:block absolute left-0 right-0 top-full z-40 opacity-0 invisible -translate-y-2 transition-all duration-300 ease-out"
+      >
+        <!-- Invisible bridge to prevent gap between nav and panel -->
+        <div class="h-1"></div>
+        <div class="bg-white/95 dark:bg-neutral-950/95 backdrop-blur-xl border-b border-gray-200/80 dark:border-neutral-800/50 shadow-2xl dark:shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
+          <div class="max-w-7xl mx-auto px-6 py-8">
+            <!-- Header del mega menu -->
+            <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-100 dark:border-neutral-800/50">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-blue-600/10 dark:bg-blue-500/10 flex items-center justify-center">
+                  <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                </div>
+                <h3 class="text-sm font-semibold text-neutral-900 dark:text-white tracking-wide uppercase">Nuestras Categorías</h3>
+              </div>
+              <a
+                href="{% url 'productos:index' %}"
+                class="flex items-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors group"
+              >
+                Ver todo el catálogo
+                <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </a>
+            </div>
+
+            <!-- Grid de categorías -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+              {% for cat in nav_categorias %}
+              <a
+                href="{% url 'productos:index' %}?categoria={{ cat.slug }}"
+                class="mega-menu-card group relative flex flex-col p-4 rounded-xl border border-transparent hover:border-blue-200 dark:hover:border-blue-500/20 hover:bg-blue-50/50 dark:hover:bg-blue-500/5 transition-all duration-200"
+              >
+                <!-- Categoría nombre -->
+                <div class="flex items-center gap-2.5 mb-2">
+                  <span class="w-2 h-2 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></span>
+                  <span class="font-semibold text-sm text-neutral-800 dark:text-neutral-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
+                    {{ cat.nombre }}
+                  </span>
+                </div>
+                <!-- Subcategorías preview -->
+                {% if cat.subcategorias.all %}
+                <div class="ml-4.5 space-y-0.5">
+                  {% for sub in cat.subcategorias.all|slice:":3" %}
+                  <p class="text-xs text-neutral-400 dark:text-neutral-500 group-hover:text-neutral-500 dark:group-hover:text-neutral-400 transition-colors truncate">
+                    {{ sub.nombre }}
+                  </p>
+                  {% endfor %}
+                  {% if cat.subcategorias.count > 3 %}
+                  <p class="text-xs text-blue-500/60 dark:text-blue-400/40 font-medium">
+                    +{{ cat.subcategorias.count|add:"-3" }} más
+                  </p>
+                  {% endif %}
+                </div>
+                {% else %}
+                <p class="ml-4.5 text-xs text-neutral-400 dark:text-neutral-600 italic">Explorar</p>
+                {% endif %}
+                <!-- Hover arrow -->
+                <svg class="absolute top-4 right-3 w-4 h-4 text-blue-500 dark:text-blue-400 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+              {% empty %}
+              <div class="col-span-full text-center py-8">
+                <p class="text-neutral-400 dark:text-neutral-500">No hay categorías disponibles</p>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Mobile Sidebar Menu (Hamburger Lateral Lujoso) -->
       <div id="mobile-menu" class="fixed inset-0 z-[100] pointer-events-none">
@@ -326,25 +408,61 @@
                 </a>
               </li>
               <li>
-                <a
-                  href="{% url 'productos:index' %}"
-                  class="flex items-center gap-4 px-4 py-3 rounded-lg {% if 'productos' in request.resolver_match.namespace and 'admin' not in request.resolver_match.url_name and request.resolver_match.url_name != 'nuevo_producto' and request.resolver_match.url_name != 'editar_producto' %}nav-link-active{% else %}text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800/50{% endif %} transition-all duration-300 group"
-                >
-                  <svg
-                    class="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:tech-glow-subtle"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                <div class="flex items-center">
+                  <a
+                    href="{% url 'productos:index' %}"
+                    class="flex-1 flex items-center gap-4 px-4 py-3 rounded-lg {% if 'productos' in request.resolver_match.namespace and 'admin' not in request.resolver_match.url_name and request.resolver_match.url_name != 'nuevo_producto' and request.resolver_match.url_name != 'editar_producto' %}nav-link-active{% else %}text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-neutral-800/50{% endif %} transition-all duration-300 group"
                   >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                    />
-                  </svg>
-                  <span class="font-semibold">CATÁLOGO</span>
-                </a>
+                    <svg
+                      class="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:tech-glow-subtle"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                      />
+                    </svg>
+                    <span class="font-semibold">CATÁLOGO</span>
+                  </a>
+                  <button
+                    id="mobileCatToggle"
+                    class="p-3 rounded-lg text-neutral-500 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all"
+                    aria-label="Ver categorías"
+                  >
+                    <svg id="mobileCatChevron" class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
+                <!-- Categorías mobile (colapsable con animación) -->
+                <div id="mobileCatList" class="overflow-hidden transition-all duration-300 ease-out" style="max-height: 0;">
+                  <ul class="ml-6 mt-1 mb-2 space-y-0.5 border-l-2 border-blue-500/20 dark:border-blue-400/10 pl-3">
+                    {% for cat in nav_categorias %}
+                    <li>
+                      <a
+                        href="{% url 'productos:index' %}?categoria={{ cat.slug }}"
+                        class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-500/5 transition-all"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500/40 dark:bg-blue-400/30 flex-shrink-0 mt-0.5 self-start"></span>
+                        <span class="flex flex-col">
+                          <span class="font-medium">{{ cat.nombre }}</span>
+                          {% if cat.subcategorias.all %}
+                          <span class="flex flex-wrap gap-x-2 gap-y-0.5 mt-0.5">
+                            {% for sub in cat.subcategorias.all %}
+                            <span class="text-xs text-neutral-400 dark:text-neutral-500">{{ sub.nombre }}{% if not forloop.last %},{% endif %}</span>
+                            {% endfor %}
+                          </span>
+                          {% endif %}
+                        </span>
+                      </a>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
               </li>
               <li>
                 <a
@@ -436,11 +554,31 @@
           menuClose.addEventListener("click", closeMenu);
           menuOverlay.addEventListener("click", closeMenu);
 
-          // Cerrar menú al hacer clic en un enlace
+          // Cerrar menú al hacer clic en un enlace (excepto el toggle de categorías)
           const menuLinks = menuSidebar.querySelectorAll("a");
           menuLinks.forEach((link) => {
             link.addEventListener("click", closeMenu);
           });
+
+          // ==================== CATÁLOGO MOBILE TOGGLE ====================
+          const mobileCatToggle = document.getElementById("mobileCatToggle");
+          const mobileCatList = document.getElementById("mobileCatList");
+          const mobileCatChevron = document.getElementById("mobileCatChevron");
+          let mobileCatOpen = false;
+
+          if (mobileCatToggle && mobileCatList) {
+            mobileCatToggle.addEventListener("click", (e) => {
+              e.stopPropagation();
+              mobileCatOpen = !mobileCatOpen;
+              if (mobileCatOpen) {
+                mobileCatList.style.maxHeight = mobileCatList.scrollHeight + "px";
+                mobileCatChevron.style.transform = "rotate(180deg)";
+              } else {
+                mobileCatList.style.maxHeight = "0";
+                mobileCatChevron.style.transform = "rotate(0deg)";
+              }
+            });
+          }
 
           // Cerrar con tecla Escape
           document.addEventListener("keydown", function (e) {
@@ -451,6 +589,69 @@
               closeMenu();
             }
           });
+
+          // ==================== CATÁLOGO MEGA MENU (Desktop) ====================
+          const catalogBtn = document.getElementById("catalogDropdownBtn");
+          const megaMenu = document.getElementById("megaMenuPanel");
+          const catalogChevron = document.getElementById("catalogChevron");
+          const catalogDropdown = document.getElementById("catalogDropdown");
+          let megaOpen = false;
+          let megaCloseTimeout = null;
+
+          function openMegaMenu() {
+            clearTimeout(megaCloseTimeout);
+            if (megaOpen) return;
+            megaOpen = true;
+            megaMenu.classList.remove("opacity-0", "invisible", "-translate-y-2");
+            megaMenu.classList.add("opacity-100", "visible", "translate-y-0");
+            catalogChevron.style.transform = "rotate(180deg)";
+          }
+
+          function closeMegaMenu() {
+            if (!megaOpen) return;
+            megaOpen = false;
+            megaMenu.classList.remove("opacity-100", "visible", "translate-y-0");
+            megaMenu.classList.add("opacity-0", "invisible", "-translate-y-2");
+            catalogChevron.style.transform = "rotate(0deg)";
+          }
+
+          function scheduleMegaClose() {
+            megaCloseTimeout = setTimeout(closeMegaMenu, 200);
+          }
+
+          if (catalogBtn && megaMenu) {
+            // Hover on button opens menu
+            catalogDropdown.addEventListener("mouseenter", openMegaMenu);
+            catalogDropdown.addEventListener("mouseleave", scheduleMegaClose);
+
+            // Hover on mega menu keeps it open
+            megaMenu.addEventListener("mouseenter", () => {
+              clearTimeout(megaCloseTimeout);
+            });
+            megaMenu.addEventListener("mouseleave", scheduleMegaClose);
+
+            // Click toggles
+            catalogBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              if (megaOpen) {
+                closeMegaMenu();
+              } else {
+                openMegaMenu();
+              }
+            });
+
+            // Close on click outside
+            document.addEventListener("click", (e) => {
+              if (!catalogDropdown.contains(e.target) && !megaMenu.contains(e.target)) {
+                closeMegaMenu();
+              }
+            });
+
+            // Close on Escape
+            document.addEventListener("keydown", (e) => {
+              if (e.key === "Escape" && megaOpen) closeMegaMenu();
+            });
+          }
         });
       </script>
       {% endblock %}
