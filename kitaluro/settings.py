@@ -32,7 +32,7 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = [
-    'kitaluro-production.up.railway.app', # Sustituye por tu URL real de Railway
+    'shinkansen.proxy.rlwy.net', # Sustituye por tu URL real de Railway
     '127.0.0.1',
     'localhost',
 ]
