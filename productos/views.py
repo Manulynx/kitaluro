@@ -112,13 +112,11 @@ def index(request):
         'valoraciones'
     ).order_by('-destacado', '-en_oferta', '-fecha_creacion')
     
-    # Filtrar por categoría si viene en la URL (?categoria=slug)
+    # Detectar categoría activa desde la URL (?categoria=slug) para UI
     categoria_activa = None
     categoria_slug = request.GET.get('categoria')
     if categoria_slug:
         categoria_activa = Categoria.objects.filter(slug=categoria_slug, activo=True).first()
-        if categoria_activa:
-            productos = productos.filter(categoria=categoria_activa)
     
     # Productos destacados y en oferta para destacar en la UI
     productos_destacados = Producto.get_featured_products()[:8]
