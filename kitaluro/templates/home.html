@@ -55,6 +55,7 @@
 
 {% include 'includes/brand_banner.html' %}
 
+{% for producto in productos %}{% if producto.destacado %}
 <section
   id="products"
   class="py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-neutral-900"
@@ -73,6 +74,9 @@
         Selección Premium
       </p>
     </div>
+  {% break %}
+{% endif %}{% endfor %}
+{% for producto in productos %}{% if producto.destacado %}
 
     <div
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
@@ -217,11 +221,13 @@
     </div>
   </div>
 </section>
+{% endif %}{% endfor %}
+
+{% for producto in productos %}{% if not producto.destacado %}
 <section
   class="reveal py-12 sm:py-16 md:py-20 lg:py-24 px-0 bg-gray-100 dark:bg-neutral-950 overflow-hidden"
 >
   <div class="max-w-7xl mx-auto">
-    {% if productos %}
     <div class="text-center mb-8 sm:mb-10 lg:mb-12 px-4 sm:px-6">
       <h2
         class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 dark:text-white mb-3 sm:mb-4 drop-shadow-sm dark:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]"
@@ -229,7 +235,9 @@
         Otros Productos
       </h2>
     </div>
-    {% endif %}
+  {% break %}
+{% endif %}{% endfor %}
+{% for producto in productos %}{% if not producto.destacado %}
 
     <!-- Single-Item Carousel Container -->
     <div class="max-w-md mx-auto">
@@ -465,7 +473,9 @@
       </div>
     </div>
   </div>
-  {% endblock %} {% block extra_js %}
+</section>
+{% endif %}{% endfor %}
+{% endblock %} {% block extra_js %}
   <style>
     /* ======================================== */
     /* SINGLE-ITEM CAROUSEL WITH CROSSFADE     */
