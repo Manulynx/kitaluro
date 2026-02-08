@@ -31,15 +31,18 @@ SECRET_KEY = os.environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = os.environ.get(
-    'ALLOWED_HOSTS',
-    'pkitaluro.pythonanywhere.com','localhost','127.0.0.1','pruebakt.pythonanywhere.com','shinkansen.proxy.rlwy.net',
-).split(',')
+ALLOWED_HOSTS = [
+    'kitaluro-production.up.railway.app', # Sustituye por tu URL real de Railway
+    '127.0.0.1',
+    'localhost',
+]
 
-CSRF_TRUSTED_ORIGINS = os.environ.get(
-    'CSRF_TRUSTED_ORIGINS',
-    'https://pkitaluro.pythonanywhere.com','https://pruebakt.pythonanywhere.com','https://shinkansen.proxy.rlwy.net',
-).split(',')
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://pkitaluro.pythonanywhere.com',
+    'https://pruebakt.pythonanywhere.com',
+    'https://shinkansen.proxy.rlwy.net',
+]
 
 
 # Application definition
