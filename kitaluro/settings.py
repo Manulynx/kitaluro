@@ -33,12 +33,12 @@ DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = os.environ.get(
     'ALLOWED_HOSTS',
-    'pkitaluro.pythonanywhere.com,localhost,127.0.0.1,pruebakt.pythonanywhere.com,shinkansen.proxy.rlwy.net',
+    'pkitaluro.pythonanywhere.com','localhost','127.0.0.1','pruebakt.pythonanywhere.com','shinkansen.proxy.rlwy.net',
 ).split(',')
 
 CSRF_TRUSTED_ORIGINS = os.environ.get(
     'CSRF_TRUSTED_ORIGINS',
-    'https://pkitaluro.pythonanywhere.com,https://pruebakt.pythonanywhere.com,https://shinkansen.proxy.rlwy.net',
+    'https://pkitaluro.pythonanywhere.com','https://pruebakt.pythonanywhere.com','https://shinkansen.proxy.rlwy.net',
 ).split(',')
 
 
