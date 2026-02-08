@@ -19,18 +19,30 @@ def nav_categories(request):
 
 
 def brand_logos(request):
-    """Expose brand logo image URLs from MEDIA_ROOT/marcas.
+    """Expose brand logo image URLs from static/img/marcas.
 
+    Looks in both STATIC_ROOT and STATICFILES_DIRS for the marcas folder.
     This lets templates render a "Marcas Registradas" banner without needing
     per-view changes.
     """
-    media_root = Path(getattr(settings, "MEDIA_ROOT", ""))
-    if not media_root:
-        return {"brand_logos": []}
-
-    logos_dir = media_root / "marcas"
-    if not logos_dir.exists() or not logos_dir.is_dir():
-        return {"brand_logos": []}
+    # Try STATICFILES_DIRS first (development), then STATIC_ROOT (production)
+    logos_dir = None
+    candidates = []
+    
+    for d in getattr(settings, "STATICFILES_DIRS", []):
+        candidates.append(Path(d) / "img" / "marcas")
+    
+    static_root = Path(getattr(settings, "STATIC_ROOT", "") or "")
+    if static_root:
+        candidates.append(static_root / "img" / "marcas")
+    
+    for candidate in candidates:
+        if candidate.exists() and candidate.is_dir():
+            logos_dir = candidate
+            break
+    
+    if not logos_dir:
+        return {"brand_logos": [], "brand_logos_count": 0, "brand_logos_marquee_duration_s": 10}
 
     logos: list[dict[str, str]] = []
     for entry in sorted(logos_dir.iterdir()):
@@ -39,12 +51,12 @@ def brand_logos(request):
         if entry.suffix.lower() not in _IMAGE_EXTENSIONS:
             continue
 
-        # Build URL under MEDIA_URL; quote filename to support spaces/special chars.
+        # Build URL under STATIC_URL
         filename_stem = entry.stem
         alt = f"Logo {filename_stem}".replace("_", " ").replace("-", " ")
         logos.append(
             {
-                "url": f"{settings.MEDIA_URL}marcas/{quote(entry.name)}",
+                "url": f"{settings.STATIC_URL}img/marcas/{quote(entry.name)}",
                 "alt": alt,
             }
         )
