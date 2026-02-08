@@ -163,9 +163,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
-    'API_KEY': os.environ.get('CLOUDINARY_API_KEY', ''),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', ''),
+    'CLOUD_NAME': os.environ.get('duvfmtbb5', ''),
+    'API_KEY': os.environ.get('739327541233182', ''),
+    'API_SECRET': os.environ.get('i5USzfFvLDxJDTnuei3peEo27is', ''),
 }
 
 # Image optimization settings
