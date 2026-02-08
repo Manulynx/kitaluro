@@ -422,8 +422,7 @@
           <!-- Navigation Links -->
           <nav class="p-6">
             <ul class="space-y-2">
-              {% if request.user.is_authenticated and request.user.is_superuser
-              %}
+              {% if request.user.is_authenticated and request.user.is_superuser %}
               <li>
                 <a
                   href="{% url 'productos:admin_productos' %}"
@@ -539,10 +538,9 @@
                           <span class="flex flex-wrap gap-x-2 gap-y-0.5 mt-0.5">
                             {% for sub in cat.subcategorias.all %}
                             <span
-                              class="text-xs text-neutral-400 dark:text-neutral-500"
-                              >{{ sub.nombre }}{% if not forloop.last %},{%
-                              endif %}</span
-                            >
+                              class="text-xs text-neutral-400 dark:text-neutral-500">{{ sub.nombre }}
+                              {% if not forloop.last %},
+                              {% endif %}</span>
                             {% endfor %}
                           </span>
                           {% endif %}
