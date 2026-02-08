@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = 'productos'
 
@@ -34,4 +36,4 @@ urlpatterns = [
     path('api/buscar/', views.buscar_productos, name='buscar_productos'),
     path('<slug:slug>/json/', views.get_producto_detalle_json, name='detalle_json'),
     path('<slug:slug>/', views.detalle, name='detalle'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
