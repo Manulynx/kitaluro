@@ -125,26 +125,23 @@ html {
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  background: white;
+  background: transparent;
   border-radius: 12px;
-  border: 1px solid rgba(229, 231, 235, 0.6);
+  border: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dark .brands-showcase__card {
-  background: rgba(38, 38, 38, 0.6);
-  border-color: rgba(64, 64, 64, 0.4);
+  background: transparent;
+  border: none;
 }
 
 .brands-showcase__card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.12);
-  border-color: rgba(59, 130, 246, 0.3);
 }
 
 .dark .brands-showcase__card:hover {
-  box-shadow: 0 12px 24px -8px rgba(59, 130, 246, 0.2);
-  background: rgba(38, 38, 38, 0.9);
+  background: transparent;
 }
 
 .brands-showcase__logo {
