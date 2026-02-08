@@ -572,6 +572,17 @@
                 >
               </div>
               {% endif %}
+              {% if prod.stock %}
+              <div class="flex items-center gap-1.5 text-xs mt-1.5">
+                <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                <span class="text-neutral-600 dark:text-neutral-400">{{ prod.stock }} disponibles</span>
+              </div>
+              {% else %}
+              <div class="flex items-center gap-1.5 text-xs mt-1.5">
+                <div class="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
+                <span class="text-neutral-500 dark:text-neutral-500">Agotado</span>
+              </div>
+              {% endif %}
             </div>
           </div>
         </a>
