@@ -32,21 +32,31 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = [
-    'shinkansen.proxy.rlwy.net', # Sustituye por tu URL real de Railway
+    'shinkansen.proxy.rlwy.net',
+    '.up.railway.app',
     '127.0.0.1',
     'localhost',
 ]
 
 
 CSRF_TRUSTED_ORIGINS = [
-    
     'https://shinkansen.proxy.rlwy.net',
+    'https://*.up.railway.app',
 ]
 
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+# Seguridad de cookies — solo activar con HTTPS real (Railway)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    CSRF_COOKIE_SAMESITE = 'Lax'
+    SECURE_SSL_REDIRECT = False  # Railway ya maneja SSL en el proxy
+else:
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
