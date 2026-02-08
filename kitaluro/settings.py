@@ -46,6 +46,8 @@ CSRF_TRUSTED_ORIGINS = [
 # Seguridad de cookies — solo activar con HTTPS real (Railway)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
 
 if not DEBUG:
     SESSION_COOKIE_SECURE = True
@@ -72,6 +74,7 @@ INSTALLED_APPS = [
     # Third-party
     'cloudinary_storage',
     'cloudinary',
+    
     # Local apps
     'productos',
     'usuarios',
@@ -220,3 +223,14 @@ ALLOWED_IMAGE_FORMATS = ['JPEG', 'JPG', 'PNG', 'WEBP']
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+REDIS_URL = os.environ.get("REDIS_URL")
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
