@@ -197,6 +197,17 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ.get('i5USzfFvLDxJDTnuei3peEo27is', ''),
 }
 
+STORAGES = {
+    # default used by FileField/ImageField
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"
+    },
+    # optional: si quieres subir estáticos también a Cloudinary
+    "staticfiles": {
+        "BACKEND": "cloudinary_storage.storage.StaticHashedCloudinaryStorage"
+    }
+}
+
 # Image optimization settings
 IMAGE_QUALITY = 90
 MAX_IMAGE_SIZE = (1200, 1200)
