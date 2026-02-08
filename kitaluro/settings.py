@@ -39,12 +39,18 @@ ALLOWED_HOSTS = [
 
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://pkitaluro.pythonanywhere.com',
-    'https://pruebakt.pythonanywhere.com',
+    
     'https://shinkansen.proxy.rlwy.net',
 ]
 
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
 # Application definition
 
 INSTALLED_APPS = [
