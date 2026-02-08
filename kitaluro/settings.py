@@ -32,7 +32,7 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = [
-    'kitaluro.up.railway.app',
+    'kitaluro-production.up.railway.app',
     '.up.railway.app',
     '127.0.0.1',
     'localhost',
