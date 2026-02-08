@@ -32,7 +32,7 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = [
-    'shinkansen.proxy.rlwy.net',
+    'kitaluro.up.railway.app',
     '.up.railway.app',
     '127.0.0.1',
     'localhost',
@@ -40,7 +40,7 @@ ALLOWED_HOSTS = [
 
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://shinkansen.proxy.rlwy.net',
+    'https://kitaluro.up.railway.app',
     'https://*.up.railway.app',
 ]
 
