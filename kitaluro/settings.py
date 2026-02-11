@@ -34,6 +34,9 @@ SECRET_KEY = os.environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
+# Detectar si estamos en Railway
+IS_RAILWAY = os.environ.get('RAILWAY_ENVIRONMENT_NAME') is not None
+
 ALLOWED_HOSTS = [
     'kitaluro-production.up.railway.app',
     'www.kitaluro.com',
@@ -80,8 +83,8 @@ INSTALLED_APPS = [
     'kitaluro',
 ]
 
-# Solo agregar cloudinary en producción
-if not DEBUG:
+# Agregar cloudinary si está configurado (Railway/producción)
+if os.environ.get('CLOUDINARY_CLOUD_NAME'):
     INSTALLED_APPS.insert(6, 'cloudinary_storage')
     INSTALLED_APPS.insert(7, 'cloudinary')
 
@@ -196,8 +199,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# En producción, los archivos media se suben a Cloudinary
-if not DEBUG:
+# Si Cloudinary está configurado, usarlo (Railway/producción)
+if os.environ.get('CLOUDINARY_CLOUD_NAME'):
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
     CLOUDINARY_STORAGE = {
@@ -234,13 +237,13 @@ ALLOWED_IMAGE_FORMATS = ['JPEG', 'JPG', 'PNG', 'WEBP']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # =============================================================================
-# CACHE — Redis en producción, base de datos en local
+# CACHE — Redis si está configurado, sino sesiones en BD
 # =============================================================================
 
 REDIS_URL = os.environ.get("REDIS_URL")
 
-if not DEBUG and REDIS_URL:
-    # Redis en producción
+if REDIS_URL:
+    # Redis si está disponible
     CACHES = {
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
@@ -253,11 +256,11 @@ if not DEBUG and REDIS_URL:
     SESSION_ENGINE = "django.contrib.sessions.backends.cache"
     SESSION_CACHE_ALIAS = "default"
 else:
-    # En local, usar cache en base de datos
+    # Sesiones en base de datos (más simple y funciona siempre)
     CACHES = {
         "default": {
-            "BACKEND": "django.core.cache.backends.db.DatabaseCache",
-            "LOCATION": "django_cache_table",
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "unique-snowflake",
         }
     }
     SESSION_ENGINE = 'django.contrib.sessions.backends.db'
