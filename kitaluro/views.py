@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 from productos.models import Producto
 
 def home(request):
@@ -17,3 +18,6 @@ def home(request):
 def contacto(request):
     """Vista para la página de contacto"""
     return render(request, 'contacto.html')
+
+def health_check(request):
+    return HttpResponse("OK", status=200)

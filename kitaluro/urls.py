@@ -26,6 +26,7 @@ urlpatterns = [
     path('productos/', include('productos.urls')),
     path('usuarios/', include('usuarios.urls')),
     path('contacto/', views.contacto, name='contacto'),  # Nueva ruta para contacto
+    path('health/', views.health_check, name='health'),
 ]
 
 # Configuración para servir archivos estáticos en desarrollo
