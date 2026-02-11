@@ -54,8 +54,9 @@ pip install -r requirements.txt
 - python-dotenv (variables de entorno)
 - dj-database-url
 - whitenoise (archivos estáticos)
-- django-cloudinary-storage
-- django-redis
+- Pillow (procesamiento de imágenes)
+
+**Nota:** Cloudinary y Redis se instalan pero solo se usan en producción.
 
 ### Paso 3: Configurar PostgreSQL con Docker
 
@@ -107,14 +108,6 @@ SECRET_KEY=django-insecure-lmh&7!%ru4a!t$l)an3%t14#9%udo=m*pru)qc%yw$kzmj@j29
 # PostgreSQL Local (Docker en puerto 54320)
 # Usuario: postgres | Contraseña: Kitaluro2026! | Base de datos: kitaluro_local
 DATABASE_URL=postgresql://postgres:Kitaluro2026!@localhost:54320/kitaluro_local
-
-# Cloudinary (opcional en local - usa archivos locales si está vacío)
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
-
-# Redis (opcional en local)
-REDIS_URL=redis://localhost:6379/0
 ```
 
 ### Paso 5: Ejecutar Migraciones
@@ -274,8 +267,13 @@ Este proyecto está configurado para desplegarse automáticamente en Railway. La
 
 ### Archivos Media
 
-- **Local**: Se guardan en la carpeta `media/` del proyecto
+- **Local**: Se guardan en la carpeta `media/` del proyecto (almacenamiento local)
 - **Producción**: Se suben a Cloudinary automáticamente
+
+### Cache y Sesiones
+
+- **Local**: Se usa cache en base de datos PostgreSQL y sesiones en BD
+- **Producción**: Se usa Redis para cache y sesiones (mejor rendimiento)
 
 ---
 
