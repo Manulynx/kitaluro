@@ -50,9 +50,6 @@ CSRF_TRUSTED_ORIGINS = [
 
 # Seguridad de cookies — solo activar con HTTPS real (Railway)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-SESSION_CACHE_ALIAS = "default"
 
 if not DEBUG:
     SESSION_COOKIE_SECURE = True
@@ -76,15 +73,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Third-party
-    'cloudinary_storage',
-    'cloudinary',
     
     # Local apps
     'productos',
     'usuarios',
     'kitaluro',
 ]
+
+# Solo agregar cloudinary en producción
+if not DEBUG:
+    INSTALLED_APPS.insert(6, 'cloudinary_storage')
+    INSTALLED_APPS.insert(7, 'cloudinary')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -191,31 +190,35 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # =============================================================================
-# MEDIA FILES — Cloudinary (imágenes de productos subidas por admin)
+# MEDIA FILES — Configuración según entorno
 # =============================================================================
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # En producción, los archivos media se suben a Cloudinary
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+if not DEBUG:
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
-    'API_KEY': os.environ.get('CLOUDINARY_API_KEY', ''),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', ''),
-}
-
-STORAGES = {
-    # default used by FileField/ImageField
-    "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"
-    },
-    # optional: si quieres subir estáticos también a Cloudinary
-    "staticfiles": {
-        "BACKEND": "cloudinary_storage.storage.StaticHashedCloudinaryStorage"
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
+        'API_KEY': os.environ.get('CLOUDINARY_API_KEY', ''),
+        'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', ''),
     }
-}
+
+    STORAGES = {
+        # default used by FileField/ImageField
+        "default": {
+            "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"
+        },
+        # optional: si quieres subir estáticos también a Cloudinary
+        "staticfiles": {
+            "BACKEND": "cloudinary_storage.storage.StaticHashedCloudinaryStorage"
+        }
+    }
+else:
+    # En local usar almacenamiento de archivos estándar de Django
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 # Image optimization settings
 IMAGE_QUALITY = 90
@@ -229,14 +232,32 @@ ALLOWED_IMAGE_FORMATS = ['JPEG', 'JPG', 'PNG', 'WEBP']
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# =============================================================================
+# CACHE — Redis en producción, base de datos en local
+# =============================================================================
+
 REDIS_URL = os.environ.get("REDIS_URL")
 
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": REDIS_URL,
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+if not DEBUG and REDIS_URL:
+    # Redis en producción
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": REDIS_URL,
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
         }
     }
-}
+    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+    SESSION_CACHE_ALIAS = "default"
+else:
+    # En local, usar cache en base de datos
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+            "LOCATION": "django_cache_table",
+        }
+    }
+    SESSION_ENGINE = 'django.contrib.sessions.backends.db'
