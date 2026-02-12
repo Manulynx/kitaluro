@@ -229,8 +229,11 @@ class Producto(models.Model):
         return self.nombre
     
     def save(self, *args, **kwargs):
-        # Optimizar imagen principal antes de guardar
-        if self.imagen:
+        # Solo optimizar si es una subida nueva (no guardada aún en storage)
+        # _committed es False para archivos nuevos, True para existentes
+        if (self.imagen
+                and hasattr(self.imagen, '_committed')
+                and not self.imagen._committed):
             self.imagen = self.optimize_image(self.imagen)
         
         # Generar slug si no existe
@@ -444,8 +447,10 @@ class ProductImage(models.Model):
         verbose_name_plural = "Imágenes de Galería"
 
     def save(self, *args, **kwargs):
-        # Optimizar imagen antes de guardar
-        if self.image:
+        # Solo optimizar si es una imagen nueva (no guardada aún en storage)
+        if (self.image
+                and hasattr(self.image, '_committed')
+                and not self.image._committed):
             self.image = Producto.optimize_image(self.image)
         
         # Si es imagen principal, desmarcar otras como principales

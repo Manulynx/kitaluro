@@ -11,6 +11,11 @@ from functools import wraps
 import json
 from .models import (Producto, Categoria, Subcategoria, Marca, Proveedor, 
                      Estatus, ProductImage, ProductVideo)
+from .cloudinary_utils import (
+    is_cloudinary_enabled, upload_product_image, upload_product_video,
+    upload_product_file, upload_gallery_image, upload_gallery_video,
+    destroy_cloudinary_resource, get_public_id_from_field,
+)
 
 
 # ==================== DECORADORES DE AUTENTICACIÓN ====================
@@ -573,52 +578,132 @@ def guardar_producto(request, producto_id=None):
         # Establecer valores por defecto para disponible y en_oferta
         producto.disponible = True  # Siempre disponible por defecto
         
-        # En oferta se determina autom\u00e1ticamente si hay precio_oferta
+        # En oferta se determina automáticamente si hay precio_oferta
         producto.en_oferta = bool(producto.precio_oferta and producto.precio_oferta > 0)
         
-        # Manejar archivos
-        if 'imagen' in request.FILES:
-            producto.imagen = request.FILES['imagen']
-            
-        if 'video' in request.FILES:
-            producto.video = request.FILES['video']
-            
-        if 'ficha_tecnica' in request.FILES:
-            producto.ficha_tecnica = request.FILES['ficha_tecnica']
+        # ---- Recoger archivos nuevos (NO asignar al modelo aún) ----
+        nueva_imagen = request.FILES.get('imagen')
+        nuevo_video = request.FILES.get('video')
+        nueva_ficha = request.FILES.get('ficha_tecnica')
+        
+        # En entorno local (sin Cloudinary): asignar archivos directamente
+        # Django FileSystemStorage los maneja de forma nativa
+        if not is_cloudinary_enabled():
+            if nueva_imagen:
+                producto.imagen = nueva_imagen
+            if nuevo_video:
+                producto.video = nuevo_video
+            if nueva_ficha:
+                producto.ficha_tecnica = nueva_ficha
         
         producto.save()
         
-        # Manejar eliminación de imágenes de galería
+        # ---- Cloudinary: subir con public_id determinístico y overwrite=True ----
+        if is_cloudinary_enabled():
+            cloudinary_updates = {}
+            
+            if nueva_imagen:
+                path = upload_product_image(nueva_imagen, producto.id)
+                if path:
+                    cloudinary_updates['imagen'] = path
+            
+            if nuevo_video:
+                path = upload_product_video(nuevo_video, producto.id)
+                if path:
+                    cloudinary_updates['video'] = path
+            
+            if nueva_ficha:
+                path = upload_product_file(nueva_ficha, producto.id)
+                if path:
+                    cloudinary_updates['ficha_tecnica'] = path
+            
+            # Actualizar campos de archivo directamente en BD
+            # (evita pasar por save() y posible re-subida)
+            if cloudinary_updates:
+                Producto.objects.filter(pk=producto.pk).update(**cloudinary_updates)
+        
+        # ---- Manejar eliminación de imágenes de galería ----
         remove_gallery_images = request.POST.get('remove_gallery_images', '')
         if remove_gallery_images:
             image_ids = [int(id) for id in remove_gallery_images.split(',') if id]
+            # Limpiar archivos de Cloudinary antes de borrar registros
+            if is_cloudinary_enabled():
+                for img in ProductImage.objects.filter(id__in=image_ids, producto=producto):
+                    old_pid = get_public_id_from_field(img.image)
+                    destroy_cloudinary_resource(old_pid, resource_type='image')
             ProductImage.objects.filter(id__in=image_ids, producto=producto).delete()
         
-        # Manejar nuevas imágenes de galería
+        # ---- Manejar nuevas imágenes de galería ----
         if 'imagenes_galeria' in request.FILES:
             imagenes = request.FILES.getlist('imagenes_galeria')
+            # Calcular siguiente índice de orden
+            next_order = ProductImage.objects.filter(producto=producto).count()
+            
             for idx, imagen in enumerate(imagenes):
-                ProductImage.objects.create(
-                    producto=producto,
-                    image=imagen,
-                    order=idx
-                )
+                order = next_order + idx
+                
+                if is_cloudinary_enabled():
+                    # Subir con public_id determinístico
+                    path = upload_gallery_image(imagen, producto.id, order)
+                    if path:
+                        ProductImage.objects.create(
+                            producto=producto,
+                            image=path,
+                            order=order
+                        )
+                    else:
+                        # Fallback: subida estándar via storage
+                        ProductImage.objects.create(
+                            producto=producto,
+                            image=imagen,
+                            order=order
+                        )
+                else:
+                    ProductImage.objects.create(
+                        producto=producto,
+                        image=imagen,
+                        order=order
+                    )
         
-        # Manejar eliminación de videos
+        # ---- Manejar eliminación de videos ----
         remove_videos = request.POST.get('remove_videos', '')
         if remove_videos:
             video_ids = [int(id) for id in remove_videos.split(',') if id]
+            # Limpiar archivos de Cloudinary antes de borrar registros
+            if is_cloudinary_enabled():
+                for vid in ProductVideo.objects.filter(id__in=video_ids, producto=producto):
+                    old_pid = get_public_id_from_field(vid.video)
+                    destroy_cloudinary_resource(old_pid, resource_type='video')
             ProductVideo.objects.filter(id__in=video_ids, producto=producto).delete()
         
-        # Manejar nuevos videos
+        # ---- Manejar nuevos videos ----
         if 'videos_galeria' in request.FILES:
             videos = request.FILES.getlist('videos_galeria')
+            next_order = ProductVideo.objects.filter(producto=producto).count()
+            
             for idx, video in enumerate(videos):
-                ProductVideo.objects.create(
-                    producto=producto,
-                    video=video,
-                    order=idx
-                )
+                order = next_order + idx
+                
+                if is_cloudinary_enabled():
+                    path = upload_gallery_video(video, producto.id, order)
+                    if path:
+                        ProductVideo.objects.create(
+                            producto=producto,
+                            video=path,
+                            order=order
+                        )
+                    else:
+                        ProductVideo.objects.create(
+                            producto=producto,
+                            video=video,
+                            order=order
+                        )
+                else:
+                    ProductVideo.objects.create(
+                        producto=producto,
+                        video=video,
+                        order=order
+                    )
         
         messages.success(request, mensaje)
         
