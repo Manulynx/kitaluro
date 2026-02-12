@@ -23,7 +23,14 @@ logger = logging.getLogger(__name__)
 
 def is_cloudinary_enabled():
     """Verifica si Cloudinary está configurado como storage."""
-    return bool(os.environ.get('CLOUDINARY_CLOUD_NAME'))
+    return bool(
+        os.environ.get('CLOUDINARY_URL')
+        or (
+            os.environ.get('CLOUDINARY_CLOUD_NAME')
+            and os.environ.get('CLOUDINARY_API_KEY')
+            and os.environ.get('CLOUDINARY_API_SECRET')
+        )
+    )
 
 
 # =============================================================================

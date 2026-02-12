@@ -11,19 +11,26 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env (local/dev). In production, rely on real env vars.
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-lmh&7!%ru4a!t$l)an3%t14#9%udo=m*pru)qc%yw$kzmj@j29'
+DEFAULT_SECRET_KEY = 'django-insecure-lmh&7!%ru4a!t$l)an3%t14#9%udo=m*pru)qc%yw$kzmj@j29'
+SECRET_KEY = os.getenv('SECRET_KEY', DEFAULT_SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').lower() in ('1', 'true', 'yes', 'on')
 
 ALLOWED_HOSTS = ['pkitaluro.pythonanywhere.com',
                  'localhost', 
@@ -48,6 +55,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -123,15 +131,72 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# If DEBUG is accidentally left on in production, this prevents /static/* from 404ing
+# by letting Whitenoise resolve files directly via Django's staticfiles finders.
+WHITENOISE_USE_FINDERS = DEBUG
+WHITENOISE_AUTOREFRESH = DEBUG
+
+# Use Whitenoise for static files in production.
+# Django 5+ uses STORAGES; this keeps hashed filenames for cache-busting.
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': (
+            'django.contrib.staticfiles.storage.StaticFilesStorage'
+            if DEBUG
+            else 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+        ),
+    },
+}
+
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Cloudinary (optional). Enable when CLOUDINARY_URL or CLOUDINARY_* vars exist.
+CLOUDINARY_URL = os.getenv('CLOUDINARY_URL')
+CLOUDINARY_CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME')
+CLOUDINARY_API_KEY = os.getenv('CLOUDINARY_API_KEY')
+CLOUDINARY_API_SECRET = os.getenv('CLOUDINARY_API_SECRET')
+
+CLOUDINARY_ENABLED = bool(
+    CLOUDINARY_URL
+    or (CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET)
+)
+
+# Optional: serve brand logos (static/img/marcas) via Cloudinary URLs.
+BRAND_LOGOS_USE_CLOUDINARY = os.getenv('BRAND_LOGOS_USE_CLOUDINARY', '').lower() in (
+    '1', 'true', 'yes', 'on'
+)
+BRAND_LOGOS_CLOUDINARY_FOLDER = os.getenv('BRAND_LOGOS_CLOUDINARY_FOLDER', 'marcas')
+
+if CLOUDINARY_ENABLED:
+    # django-cloudinary-storage
+    INSTALLED_APPS += [
+        'cloudinary',
+        'cloudinary_storage',
+    ]
+
+    # Django 5+: prefer STORAGES; keep existing local MEDIA_* for fallback.
+    STORAGES['default'] = {
+        'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
+    }
+
+    # If you prefer explicit keys instead of CLOUDINARY_URL, set these env vars.
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
+        'API_KEY': CLOUDINARY_API_KEY,
+        'API_SECRET': CLOUDINARY_API_SECRET,
+        'SECURE': True,
+    }
 
 # Image optimization settings
 IMAGE_QUALITY = 90

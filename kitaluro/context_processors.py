@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from urllib.parse import quote
 
@@ -25,6 +26,11 @@ def brand_logos(request):
     This lets templates render a "Marcas Registradas" banner without needing
     per-view changes.
     """
+    use_cloudinary = bool(getattr(settings, 'BRAND_LOGOS_USE_CLOUDINARY', False)) and bool(
+        getattr(settings, 'CLOUDINARY_ENABLED', False)
+    )
+    cloudinary_folder = getattr(settings, 'BRAND_LOGOS_CLOUDINARY_FOLDER', 'marcas')
+
     # Try STATICFILES_DIRS first (development), then STATIC_ROOT (production)
     logos_dir = None
     candidates = []
@@ -51,9 +57,27 @@ def brand_logos(request):
         if entry.suffix.lower() not in _IMAGE_EXTENSIONS:
             continue
 
-        # Build URL under STATIC_URL
         filename_stem = entry.stem
         alt = f"Logo {filename_stem}".replace("_", " ").replace("-", " ")
+
+        if use_cloudinary:
+            try:
+                from cloudinary.utils import cloudinary_url
+
+                public_id = f"{cloudinary_folder}/{filename_stem}"
+                url, _ = cloudinary_url(
+                    public_id,
+                    secure=True,
+                    fetch_format='auto',
+                    quality='auto',
+                )
+                logos.append({"url": url, "alt": alt})
+                continue
+            except Exception:
+                # Fallback to static if Cloudinary isn't available/misconfigured.
+                pass
+
+        # Default: build URL under STATIC_URL
         logos.append(
             {
                 "url": f"{settings.STATIC_URL}img/marcas/{quote(entry.name)}",
