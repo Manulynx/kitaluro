@@ -1,1 +1,1 @@
-web: python manage.py migrate && python manage.py collectstatic --noinput && python railway_setup.py && gunicorn --bind 0.0.0.0:$PORT kitaluro.wsgi:application --workers 2 --timeout 120 --access-logfile - --error-logfile -
+web: python manage.py migrate && python manage.py collectstatic --noinput && python railway_setup.py && python manage.py createsuperuser && gunicorn --bind 0.0.0.0:$PORT kitaluro.wsgi:application --workers 2 --timeout 120 --access-logfile - --error-logfile -

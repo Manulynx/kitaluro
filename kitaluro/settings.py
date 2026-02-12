@@ -137,15 +137,6 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# If DEBUG is accidentally left on in production, this prevents /static/* from 404ing
-# by letting Whitenoise resolve files directly via Django's staticfiles finders.
-WHITENOISE_USE_FINDERS = DEBUG
-WHITENOISE_AUTOREFRESH = DEBUG
-
-# Avoid hard 500s if a static file isn't present in the manifest.
-# With strict=False Django will fall back to the unhashed path.
-WHITENOISE_MANIFEST_STRICT = False
-
 # Use Whitenoise for static files in production.
 # Django 5+ uses STORAGES; this keeps hashed filenames for cache-busting.
 STORAGES = {
