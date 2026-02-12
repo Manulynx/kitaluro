@@ -25,7 +25,11 @@ SECRET_KEY = 'django-insecure-lmh&7!%ru4a!t$l)an3%t14#9%udo=m*pru)qc%yw$kzmj@j29
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['pkitaluro.pythonanywhere.com','localhost', '127.0.0.1', 'pruebakt.pythonanywhere.com']
+ALLOWED_HOSTS = ['pkitaluro.pythonanywhere.com',
+                 'localhost', 
+                 '127.0.0.1', 
+                 'pruebakt.pythonanywhere.com',
+                 'kitaluro-pruebas.up.railway.app']
 
 
 # Application definition
