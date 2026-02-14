@@ -38,6 +38,10 @@ ALLOWED_HOSTS = ['pkitaluro.pythonanywhere.com',
                  'pruebakt.pythonanywhere.com',
                  'kitaluro-pruebas.up.railway.app']
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://kitaluro-pruebas.up.railway.app",
+]
+
 
 # Application definition
 
