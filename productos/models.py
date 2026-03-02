@@ -4,10 +4,6 @@ from django.core.validators import MinValueValidator
 from django.utils.text import slugify
 from decimal import Decimal
 from datetime import datetime
-from PIL import Image
-from io import BytesIO
-from django.core.files.uploadedfile import InMemoryUploadedFile
-import sys
 import uuid
 
 # Create your models here.
@@ -228,13 +224,6 @@ class Producto(models.Model):
         return self.nombre
     
     def save(self, *args, **kwargs):
-        # Optimizar imagen principal antes de guardar (solo si es archivo nuevo subido)
-        if self.imagen and hasattr(self.imagen, 'file') and hasattr(self.imagen.file, 'read'):
-            try:
-                self.imagen = self.optimize_image(self.imagen)
-            except Exception as e:
-                print(f"Advertencia: No se pudo optimizar imagen, se usará original: {e}")
-        
         # Generar slug si no existe
         if not self.slug:
             base_slug = slugify(self.nombre)
@@ -252,56 +241,6 @@ class Producto(models.Model):
             self.en_oferta = False
             
         super().save(*args, **kwargs)
-    
-    @staticmethod
-    def optimize_image(image_field, max_size=(1200, 1200), quality=90):
-        """Optimiza la imagen manteniendo calidad y aspecto"""
-        try:
-            # Asegurarse de que el archivo esté al inicio
-            if hasattr(image_field, 'seek'):
-                image_field.seek(0)
-            
-            img = Image.open(image_field)
-            
-            # Convertir RGBA a RGB si es necesario
-            if img.mode in ('RGBA', 'LA', 'P'):
-                background = Image.new('RGB', img.size, (255, 255, 255))
-                if img.mode == 'P':
-                    img = img.convert('RGBA')
-                background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
-                img = background
-            
-            # Redimensionar manteniendo aspecto
-            img.thumbnail(max_size, Image.Resampling.LANCZOS)
-            
-            # Guardar optimizada
-            output = BytesIO()
-            img.save(output, format='JPEG', quality=quality, optimize=True)
-            output.seek(0)
-            
-            # Generar nombre seguro (solo el nombre del archivo, sin paths)
-            original_name = getattr(image_field, 'name', 'product_image.jpg')
-            # Tomar solo el nombre del archivo sin directorios
-            base_name = original_name.split('/')[-1].split('\\')[-1]
-            # Quitar extensión
-            if '.' in base_name:
-                base_name = base_name.rsplit('.', 1)[0]
-            new_name = f"{base_name}.jpg"
-            
-            return InMemoryUploadedFile(
-                output,
-                'ImageField',
-                new_name,
-                'image/jpeg',
-                output.getbuffer().nbytes,
-                None
-            )
-        except Exception as e:
-            print(f"Error optimizando imagen: {e}")
-            # Resetear el puntero del archivo original
-            if hasattr(image_field, 'seek'):
-                image_field.seek(0)
-            return image_field
     
     def generar_sku(self):
         """Genera un SKU único para el producto con formato PROV-CAT-YYMMDD-HHMM-UUID4"""
@@ -462,13 +401,6 @@ class ProductImage(models.Model):
         verbose_name_plural = "Imágenes de Galería"
 
     def save(self, *args, **kwargs):
-        # Optimizar imagen antes de guardar (solo si es archivo nuevo subido)
-        if self.image and hasattr(self.image, 'file') and hasattr(self.image.file, 'read'):
-            try:
-                self.image = Producto.optimize_image(self.image)
-            except Exception as e:
-                print(f"Advertencia: No se pudo optimizar imagen de galería: {e}")
-        
         # Si es imagen principal, desmarcar otras como principales
         if self.is_main:
             ProductImage.objects.filter(producto=self.producto, is_main=True).exclude(pk=self.pk).update(is_main=False)
