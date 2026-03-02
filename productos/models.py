@@ -229,8 +229,9 @@ class Producto(models.Model):
     
     def save(self, *args, **kwargs):
         # Optimizar imagen principal antes de guardar
-        # SOLO optimizar si NO estamos usando Cloudinary (Cloudinary optimiza solo)
-        if self.imagen and hasattr(self.imagen, 'file') and hasattr(self.imagen.file, 'content_type'):
+        # _committed=False significa que es un archivo NUEVO (no uno ya guardado en storage)
+        # Esto evita que Cloudinary intente descargar el archivo existente y lance OSError
+        if self.imagen and hasattr(self.imagen, '_committed') and not self.imagen._committed:
             if not self._is_cloudinary_enabled():
                 try:
                     self.imagen = self.optimize_image(self.imagen)
@@ -471,7 +472,8 @@ class ProductImage(models.Model):
 
     def save(self, *args, **kwargs):
         # Optimizar imagen antes de guardar (solo sin Cloudinary)
-        if self.image and hasattr(self.image, 'file') and hasattr(self.image.file, 'content_type'):
+        # _committed=False = archivo nuevo, evita OSError al abrir archivos ya en Cloudinary
+        if self.image and hasattr(self.image, '_committed') and not self.image._committed:
             if not Producto._is_cloudinary_enabled():
                 try:
                     self.image = Producto.optimize_image(self.image)
