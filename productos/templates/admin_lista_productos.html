@@ -1,7 +1,5 @@
-{% extends 'base.html' %} 
-{% load static %} 
-{% block title %}Inventario - Kitaluro Admin{% endblock %} 
-{% block extra_css %}
+{% extends 'base.html' %} {% load static %} {% block title %}Inventario -
+Kitaluro Admin{% endblock %} {% block extra_css %}
 <style>
   @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap");
 
@@ -92,8 +90,7 @@
     }
   }
 </style>
-{% endblock %} 
-{% block content %}
+{% endblock %} {% block content %}
 <section
   class="min-h-screen bg-gray-50 dark:bg-neutral-950 py-8 px-4 sm:px-6 lg:px-8"
 >
@@ -534,8 +531,7 @@
   </div>
 </div>
 
-{% endblock %} 
-{% block extra_js %}
+{% endblock %} {% block extra_js %}
 <script>
   // Función para actualizar contador de productos activos
   function updateActiveCount() {
@@ -625,11 +621,10 @@
   }
 
   // Modal de confirmación de eliminación
-  function confirmDelete(productId, productName) {
+  function openDeleteModal(productId, productName) {
     document.getElementById("deleteProductName").textContent = productName;
-    document.getElementById(
-      "deleteForm"
-    ).action = `/productos/admin/eliminar/${productId}/`;
+    document.getElementById("deleteForm").action =
+      `/productos/admin/eliminar/${productId}/`;
     document.getElementById("deleteModal").classList.remove("hidden");
   }
 
