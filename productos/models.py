@@ -229,12 +229,12 @@ class Producto(models.Model):
         return self.nombre
     
     def save(self, *args, **kwargs):
-        # Solo optimizar si es una subida nueva (no guardada aún en storage)
-        # _committed es False para archivos nuevos, True para existentes
-        if (self.imagen
-                and hasattr(self.imagen, '_committed')
-                and not self.imagen._committed):
-            self.imagen = self.optimize_image(self.imagen)
+        # Optimizar imagen principal antes de guardar (solo si es un archivo nuevo, no de Cloudinary)
+        if self.imagen and hasattr(self.imagen, 'file') and hasattr(self.imagen.file, 'content_type'):
+            try:
+                self.imagen = self.optimize_image(self.imagen)
+            except Exception as e:
+                print(f"Advertencia: No se pudo optimizar imagen, se usará original: {e}")
         
         # Generar slug si no existe
         if not self.slug:
@@ -258,6 +258,10 @@ class Producto(models.Model):
     def optimize_image(image_field, max_size=(1200, 1200), quality=90):
         """Optimiza la imagen manteniendo calidad y aspecto"""
         try:
+            # Asegurarse de que el archivo esté al inicio
+            if hasattr(image_field, 'seek'):
+                image_field.seek(0)
+            
             img = Image.open(image_field)
             
             # Convertir RGBA a RGB si es necesario
@@ -276,16 +280,29 @@ class Producto(models.Model):
             img.save(output, format='JPEG', quality=quality, optimize=True)
             output.seek(0)
             
+            # Generar nombre seguro
+            original_name = getattr(image_field, 'name', 'product_image.jpg')
+            if '.' in original_name:
+                base_name = original_name.rsplit('.', 1)[0]
+            else:
+                base_name = original_name
+            # Limpiar el nombre de caracteres problemáticos
+            base_name = base_name.split('/')[-1]  # Tomar solo el nombre del archivo
+            new_name = f"{base_name}.jpg"
+            
             return InMemoryUploadedFile(
                 output,
                 'ImageField',
-                f"{image_field.name.split('.')[0]}.jpg",
+                new_name,
                 'image/jpeg',
-                sys.getsizeof(output),
+                output.getbuffer().nbytes,
                 None
             )
         except Exception as e:
             print(f"Error optimizando imagen: {e}")
+            # Resetear el puntero del archivo original antes de devolverlo
+            if hasattr(image_field, 'seek'):
+                image_field.seek(0)
             return image_field
     
     def generar_sku(self):
@@ -447,11 +464,12 @@ class ProductImage(models.Model):
         verbose_name_plural = "Imágenes de Galería"
 
     def save(self, *args, **kwargs):
-        # Solo optimizar si es una imagen nueva (no guardada aún en storage)
-        if (self.image
-                and hasattr(self.image, '_committed')
-                and not self.image._committed):
-            self.image = Producto.optimize_image(self.image)
+        # Optimizar imagen antes de guardar (solo si es archivo nuevo)
+        if self.image and hasattr(self.image, 'file') and hasattr(self.image.file, 'content_type'):
+            try:
+                self.image = Producto.optimize_image(self.image)
+            except Exception as e:
+                print(f"Advertencia: No se pudo optimizar imagen de galería, se usará original: {e}")
         
         # Si es imagen principal, desmarcar otras como principales
         if self.is_main:
