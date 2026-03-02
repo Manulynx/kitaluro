@@ -1,15 +1,14 @@
+import os
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils.text import slugify
 from decimal import Decimal
-import random
-import string
-import uuid
 from datetime import datetime
 from PIL import Image
 from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import sys
+import uuid
 
 # Create your models here.
 
@@ -229,12 +228,14 @@ class Producto(models.Model):
         return self.nombre
     
     def save(self, *args, **kwargs):
-        # Optimizar imagen principal antes de guardar (solo si es un archivo nuevo, no de Cloudinary)
+        # Optimizar imagen principal antes de guardar
+        # SOLO optimizar si NO estamos usando Cloudinary (Cloudinary optimiza solo)
         if self.imagen and hasattr(self.imagen, 'file') and hasattr(self.imagen.file, 'content_type'):
-            try:
-                self.imagen = self.optimize_image(self.imagen)
-            except Exception as e:
-                print(f"Advertencia: No se pudo optimizar imagen, se usará original: {e}")
+            if not self._is_cloudinary_enabled():
+                try:
+                    self.imagen = self.optimize_image(self.imagen)
+                except Exception as e:
+                    print(f"Advertencia: No se pudo optimizar imagen: {e}")
         
         # Generar slug si no existe
         if not self.slug:
@@ -255,6 +256,11 @@ class Producto(models.Model):
         super().save(*args, **kwargs)
     
     @staticmethod
+    def _is_cloudinary_enabled():
+        """Verificar si Cloudinary está configurado"""
+        return bool(os.environ.get('CLOUDINARY_CLOUD_NAME'))
+
+    @staticmethod
     def optimize_image(image_field, max_size=(1200, 1200), quality=90):
         """Optimiza la imagen manteniendo calidad y aspecto"""
         try:
@@ -269,7 +275,10 @@ class Producto(models.Model):
                 background = Image.new('RGB', img.size, (255, 255, 255))
                 if img.mode == 'P':
                     img = img.convert('RGBA')
-                background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
+                if img.mode == 'RGBA':
+                    background.paste(img, mask=img.split()[-1])
+                else:
+                    background.paste(img)
                 img = background
             
             # Redimensionar manteniendo aspecto
@@ -282,12 +291,10 @@ class Producto(models.Model):
             
             # Generar nombre seguro
             original_name = getattr(image_field, 'name', 'product_image.jpg')
-            if '.' in original_name:
-                base_name = original_name.rsplit('.', 1)[0]
-            else:
-                base_name = original_name
-            # Limpiar el nombre de caracteres problemáticos
-            base_name = base_name.split('/')[-1]  # Tomar solo el nombre del archivo
+            # Tomar solo el nombre del archivo (sin paths)
+            base_name = original_name.split('/')[-1].split('\\')[-1]
+            if '.' in base_name:
+                base_name = base_name.rsplit('.', 1)[0]
             new_name = f"{base_name}.jpg"
             
             return InMemoryUploadedFile(
@@ -295,12 +302,11 @@ class Producto(models.Model):
                 'ImageField',
                 new_name,
                 'image/jpeg',
-                output.getbuffer().nbytes,
+                output.getbuffer().nbytes,  # FIX: era sys.getsizeof que da tamaño incorrecto
                 None
             )
         except Exception as e:
             print(f"Error optimizando imagen: {e}")
-            # Resetear el puntero del archivo original antes de devolverlo
             if hasattr(image_field, 'seek'):
                 image_field.seek(0)
             return image_field
@@ -464,12 +470,13 @@ class ProductImage(models.Model):
         verbose_name_plural = "Imágenes de Galería"
 
     def save(self, *args, **kwargs):
-        # Optimizar imagen antes de guardar (solo si es archivo nuevo)
+        # Optimizar imagen antes de guardar (solo sin Cloudinary)
         if self.image and hasattr(self.image, 'file') and hasattr(self.image.file, 'content_type'):
-            try:
-                self.image = Producto.optimize_image(self.image)
-            except Exception as e:
-                print(f"Advertencia: No se pudo optimizar imagen de galería, se usará original: {e}")
+            if not Producto._is_cloudinary_enabled():
+                try:
+                    self.image = Producto.optimize_image(self.image)
+                except Exception as e:
+                    print(f"Advertencia: No se pudo optimizar imagen de galería: {e}")
         
         # Si es imagen principal, desmarcar otras como principales
         if self.is_main:

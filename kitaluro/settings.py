@@ -218,9 +218,9 @@ if os.environ.get('CLOUDINARY_CLOUD_NAME'):
         "default": {
             "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"
         },
-        # optional: si quieres subir estáticos también a Cloudinary
+        # Mantener WhiteNoise para estáticos — NO usar Cloudinary para static
         "staticfiles": {
-            "BACKEND": "cloudinary_storage.storage.StaticHashedCloudinaryStorage"
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage" if IS_RAILWAY else "whitenoise.storage.CompressedStaticFilesStorage"
         }
     }
 else:
