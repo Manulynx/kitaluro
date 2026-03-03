@@ -755,11 +755,21 @@ def eliminar_producto(request, producto_id):
 @admin_required
 def admin_taxonomias(request):
     """Vista para gestionar categorías y subcategorías"""
+    from django.db.models import Prefetch
+    
+    # Prefetch subcategorías con conteo de productos anotado
+    subcategorias_prefetch = Prefetch(
+        'subcategorias',
+        queryset=Subcategoria.objects.annotate(
+            count_productos=Count('productos')
+        )
+    )
+    
     categorias = Categoria.objects.prefetch_related(
-        'subcategorias'
+        subcategorias_prefetch
     ).annotate(
-        num_subcategorias=Count('subcategorias'),
-        num_productos=Count('productos')
+        num_subcategorias=Count('subcategorias', distinct=True),
+        num_productos=Count('productos', distinct=True)
     ).order_by('nombre')
     
     context = {
