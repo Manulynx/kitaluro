@@ -82,7 +82,11 @@ def _cloudinary_upload(file_obj, public_id, resource_type='image'):
             unique_filename=False,
             use_filename=False,
         )
-        return result.get('public_id', '')
+        # Retornar secure_url en lugar de public_id.
+        # Si el campo almacena una URL completa (https://...), cloudinary_storage
+        # la devuelve directamente en .url() sin intentar reconstruirla,
+        # lo que evita URLs rotas por falta de formato/extensión.
+        return result.get('secure_url') or result.get('public_id', '')
     except ImportError:
         logger.warning("El paquete 'cloudinary' no está instalado.")
         return None
@@ -189,12 +193,37 @@ def destroy_cloudinary_resource(public_id, resource_type='image'):
 def get_public_id_from_field(file_field):
     """
     Extrae el public_id de Cloudinary desde un campo de archivo Django.
-    Ejemplo: 'productos/galeria/abc.jpg' -> 'productos/galeria/abc'
+    Maneja tanto URLs completas como public_ids cortos.
+    Ejemplos:
+      'https://res.cloudinary.com/cloud/image/upload/v123/productos/5/main.jpg' -> 'productos/5/main'
+      'productos/galeria/abc.jpg' -> 'productos/galeria/abc'
     """
     if not file_field or not file_field.name:
         return None
     name = file_field.name
-    # Remover extensión para obtener el public_id
+
+    # Si es una URL completa, extraer el public_id
+    if name.startswith('http://') or name.startswith('https://'):
+        # Formato: .../image/upload/v123/public_id.ext  o  .../image/upload/public_id.ext
+        try:
+            # Buscar '/upload/' y tomar lo que sigue
+            upload_marker = '/upload/'
+            idx = name.find(upload_marker)
+            if idx != -1:
+                after_upload = name[idx + len(upload_marker):]
+                # Quitar versión si existe: 'v1234567890/...'
+                parts = after_upload.split('/', 1)
+                if parts[0].startswith('v') and parts[0][1:].isdigit() and len(parts) > 1:
+                    after_upload = parts[1]
+                # Quitar extensión
+                if '.' in after_upload:
+                    after_upload = after_upload.rsplit('.', 1)[0]
+                return after_upload
+        except Exception:
+            pass
+        return None
+
+    # Si es un path corto (public_id), quitar extensión
     if '.' in name:
         name = name.rsplit('.', 1)[0]
     return name
