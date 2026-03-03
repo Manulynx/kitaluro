@@ -8,10 +8,7 @@ import string
 import uuid
 from datetime import datetime
 
-# ELIMINADO: from PIL import Image
-# ELIMINADO: from io import BytesIO
-# ELIMINADO: from django.core.files.uploadedfile import InMemoryUploadedFile
-# ELIMINADO: import sys
+# ELIMINADOS: PIL, BytesIO, InMemoryUploadedFile, sys
 
 # Create your models here.
 
@@ -64,7 +61,13 @@ class Categoria(models.Model):
     
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.nombre)
+            base_slug = slugify(self.nombre)
+            slug = base_slug
+            counter = 1
+            while Categoria.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         super().save(*args, **kwargs)
     
     class Meta:
