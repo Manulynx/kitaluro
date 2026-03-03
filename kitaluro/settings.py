@@ -205,7 +205,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Si Cloudinary está configurado, usarlo (Railway/producción)
 if os.environ.get('CLOUDINARY_CLOUD_NAME'):
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    DEFAULT_FILE_STORAGE = 'productos.cloudinary_utils.SafeCloudinaryStorage'
 
     CLOUDINARY_STORAGE = {
         'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
@@ -214,9 +214,10 @@ if os.environ.get('CLOUDINARY_CLOUD_NAME'):
     }
 
     STORAGES = {
-        # default used by FileField/ImageField
+        # Storage personalizado que maneja URLs completas guardadas en campos
+        # de imagen (evita que cloudinary_storage doble-wrappee una URL completa)
         "default": {
-            "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"
+            "BACKEND": "productos.cloudinary_utils.SafeCloudinaryStorage"
         },
         # Mantener WhiteNoise para estáticos — NO usar Cloudinary para static
         "staticfiles": {

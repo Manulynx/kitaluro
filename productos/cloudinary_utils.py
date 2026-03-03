@@ -14,6 +14,26 @@ import logging
 from io import BytesIO
 from PIL import Image
 
+try:
+    from cloudinary_storage.storage import MediaCloudinaryStorage as _BaseCloudinaryStorage
+
+    class SafeCloudinaryStorage(_BaseCloudinaryStorage):
+        """
+        Storage personalizado que maneja correctamente campos que almacenan
+        URLs completas (https://res.cloudinary.com/...) en lugar de public_ids.
+
+        Sin este override, cloudinary_storage.url() intentaría construir una URL
+        desde la URL completa, generando una URL doble rota como:
+        https://res.cloudinary.com/CLOUD/image/upload/https%3A%2F%2Fres.cloudinary.com%2F...
+        """
+        def url(self, name):
+            if name and (name.startswith('http://') or name.startswith('https://')):
+                return name
+            return super().url(name)
+
+except ImportError:
+    SafeCloudinaryStorage = None
+
 logger = logging.getLogger(__name__)
 
 
@@ -82,11 +102,17 @@ def _cloudinary_upload(file_obj, public_id, resource_type='image'):
             unique_filename=False,
             use_filename=False,
         )
-        # Retornar secure_url en lugar de public_id.
-        # Si el campo almacena una URL completa (https://...), cloudinary_storage
-        # la devuelve directamente en .url() sin intentar reconstruirla,
-        # lo que evita URLs rotas por falta de formato/extensión.
-        return result.get('secure_url') or result.get('public_id', '')
+        # Retornar secure_url completa para evitar que cloudinary_storage
+        # intente reconstruir la URL desde un public_id sin extensión.
+        # SafeCloudinaryStorage (en settings) detecta que ya es una URL y la
+        # devuelve directamente sin doble-wrap.
+        secure_url = result.get('secure_url')
+        if secure_url:
+            return secure_url
+        # Fallback: public_id + formato (con extensión para URL válida)
+        pid = result.get('public_id', '')
+        fmt = result.get('format', '')
+        return f"{pid}.{fmt}" if pid and fmt else pid
     except ImportError:
         logger.warning("El paquete 'cloudinary' no está instalado.")
         return None
