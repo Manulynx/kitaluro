@@ -3,8 +3,15 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils.text import slugify
 from decimal import Decimal
-from datetime import datetime
+import random
+import string
 import uuid
+from datetime import datetime
+
+# ELIMINADO: from PIL import Image
+# ELIMINADO: from io import BytesIO
+# ELIMINADO: from django.core.files.uploadedfile import InMemoryUploadedFile
+# ELIMINADO: import sys
 
 # Create your models here.
 
@@ -403,7 +410,9 @@ class ProductImage(models.Model):
     def save(self, *args, **kwargs):
         # Si es imagen principal, desmarcar otras como principales
         if self.is_main:
-            ProductImage.objects.filter(producto=self.producto, is_main=True).exclude(pk=self.pk).update(is_main=False)
+            ProductImage.objects.filter(
+                producto=self.producto, is_main=True
+            ).exclude(pk=self.pk).update(is_main=False)
         super().save(*args, **kwargs)
 
 
