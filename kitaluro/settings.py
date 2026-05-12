@@ -40,6 +40,7 @@ IS_RAILWAY = os.environ.get('RAILWAY_ENVIRONMENT_NAME') is not None
 ALLOWED_HOSTS = [
     'kitaluro-production.up.railway.app',
     'www.kitaluro.com',
+    'kitaluro.com',
     '.up.railway.app',
     '127.0.0.1',
     'localhost',
@@ -49,6 +50,8 @@ ALLOWED_HOSTS = [
 CSRF_TRUSTED_ORIGINS = [
     'https://kitaluro-production.up.railway.app',
     'https://*.up.railway.app',
+    'https://www.kitaluro.com',
+    'https://kitaluro.com',
 ]
 
 # Seguridad de cookies — solo activar con HTTPS real (Railway)
