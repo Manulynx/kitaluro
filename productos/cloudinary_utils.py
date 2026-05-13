@@ -15,23 +15,18 @@ from io import BytesIO
 from PIL import Image
 
 try:
-    from cloudinary_storage.storage import MediaCloudinaryStorage as _BaseCloudinaryStorage
+    if os.environ.get('CLOUDINARY_CLOUD_NAME'):
+        from cloudinary_storage.storage import MediaCloudinaryStorage as _BaseCloudinaryStorage
 
-    class SafeCloudinaryStorage(_BaseCloudinaryStorage):
-        """
-        Storage personalizado que maneja correctamente campos que almacenan
-        URLs completas (https://res.cloudinary.com/...) en lugar de public_ids.
+        class SafeCloudinaryStorage(_BaseCloudinaryStorage):
+            def url(self, name):
+                if name and (name.startswith('http://') or name.startswith('https://')):
+                    return name
+                return super().url(name)
+    else:
+        SafeCloudinaryStorage = None
 
-        Sin este override, cloudinary_storage.url() intentaría construir una URL
-        desde la URL completa, generando una URL doble rota como:
-        https://res.cloudinary.com/CLOUD/image/upload/https%3A%2F%2Fres.cloudinary.com%2F...
-        """
-        def url(self, name):
-            if name and (name.startswith('http://') or name.startswith('https://')):
-                return name
-            return super().url(name)
-
-except ImportError:
+except Exception:
     SafeCloudinaryStorage = None
 
 logger = logging.getLogger(__name__)
