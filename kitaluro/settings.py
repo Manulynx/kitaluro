@@ -40,7 +40,6 @@ IS_RAILWAY = os.environ.get('RAILWAY_ENVIRONMENT_NAME') is not None
 ALLOWED_HOSTS = [
     'kitaluro-production.up.railway.app',
     'www.kitaluro.com',
-    'kitaluro.com',
     '.up.railway.app',
     '127.0.0.1',
     'localhost',
@@ -50,8 +49,6 @@ ALLOWED_HOSTS = [
 CSRF_TRUSTED_ORIGINS = [
     'https://kitaluro-production.up.railway.app',
     'https://*.up.railway.app',
-    'https://www.kitaluro.com',
-    'https://kitaluro.com',
 ]
 
 # Seguridad de cookies — solo activar con HTTPS real (Railway)
@@ -192,8 +189,11 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# WhiteNoise para servir archivos estáticos en Railway sin depender del manifest
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+# En Railway usar CompressedManifest, en local usar básico de WhiteNoise
+if IS_RAILWAY:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+else:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 
 # =============================================================================
@@ -219,9 +219,9 @@ if os.environ.get('CLOUDINARY_CLOUD_NAME'):
         "default": {
             "BACKEND": "productos.cloudinary_utils.SafeCloudinaryStorage"
         },
-    # Mantener WhiteNoise para estáticos — NO usar Cloudinary para static
+        # Mantener WhiteNoise para estáticos — NO usar Cloudinary para static
         "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage" if IS_RAILWAY else "whitenoise.storage.CompressedStaticFilesStorage"
         }
     }
 else:
